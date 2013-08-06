@@ -3,6 +3,7 @@
 from scrapy.spider import BaseSpider
 from scrapy.http import HtmlResponse
 from scrapy.selector import HtmlXPathSelector
+from scrapy.http import Request
 
 from crawler.items import Content, Chapter
 
@@ -25,16 +26,17 @@ class ChapterSpider(BaseSpider):
             self.cid += 1
             chapter_item = Chapter(cid=self.cid, bid=self.bid, title=title)
             yield chapter_item
-            content_item = self.make_requests_from_url(url).replace(callback=self.parse_chapter)
-            yield content_item
+            yield Request(url, meta={'cid': self.cid},
+                          callback=self.parse_chapter)
 
     def parse_chapter(self, response):
         response.replace(body=response.body.decode('gbk').encode('utf-8'))
+        cid = response.meta['cid']
         hxs = HtmlXPathSelector(response)
         title = hxs.select("//div[@class='bookname']/h1/text()").extract()[0]
         content = hxs.select("//div[@id='content']/text()").extract()
         content = '<br>'.join(content)
-        content_item = Content(cid=self.cid, content=content,
+        content_item = Content(cid=cid, content=content,
                                source=response.url)
-        return content_item
+        yield content_item
 
