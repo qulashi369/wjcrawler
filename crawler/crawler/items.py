@@ -21,3 +21,12 @@ class Chapter(Item):
 
     def __str__(self):
         return 'Chapter (title: %s)' % self['title']
+
+
+class Book(Item):
+    '''小说'''
+    bid = Field()
+    title = Field()
+
+    def __str__(self):
+        return 'Book (title: %s)' % self['title']

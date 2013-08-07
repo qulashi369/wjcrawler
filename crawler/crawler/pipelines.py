@@ -2,24 +2,30 @@
 
 from pymongo import MongoClient
 from items import Content, Chapter
+from settings import MONGO_SERVER, MONGO_PORT, MONGO_DB_NAME
+
 
 class CrawlerPipeline(object):
-    db_name = 'xiaoshuo'
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client[self.db_name]
+        self.client = MongoClient(MONGO_SERVER, MONGO_PORT)
+        self.db = self.client[MONGO_DB_NAME]
         self.Chapter = self.db.Chapter
         self.Content = self.db.Content
 
     def process_item(self, item, spider):
         if isinstance(item, Content):
-            self.Content.insert(dict(cid=item['cid'],
-                                     content=item['content'],
-                                     source=item['source']))
-
+            self.save_content(item)
         elif isinstance(item, Chapter):
-            self.Chapter.insert(dict(cid=item['cid'],
-                                     bid=item['bid'],
-                                     title=item['title']))
+            self.save_chapter(item)
         return item
+
+    def save_content(self, item):
+        self.Content.insert(dict(cid=item['cid'],
+                                 content=item['content'],
+                                 source=item['source']))
+
+    def save_chapter(self, item):
+        self.Chapter.insert(dict(cid=item['cid'],
+                                 bid=item['bid'],
+                                 title=item['title']))
