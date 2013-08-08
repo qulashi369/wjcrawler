@@ -13,6 +13,7 @@ SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 ITEM_PIPELINES = ['crawler.pipelines.CrawlerPipeline']
 
+
 #mongodb setting
 MONGO_SERVER = 'localhost'
 MONGO_PORT = 27017
