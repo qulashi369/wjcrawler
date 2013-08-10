@@ -28,7 +28,7 @@ class ChapterSpider(BaseSpider):
                           callback=self.parse_book)
 
     def parse_book(self, response):
-        response.replace(body=response.body.decode('gbk').encode('utf-8'))
+        response.replace(body=response.body.decode('gbk', 'ignore').encode('utf-8'))
         hxs = HtmlXPathSelector(response)
         book_title = hxs.select("//div[@class='book_news_style_text2']/h1/text()").extract()[0]
         chapters = hxs.select("//dl[@id='chapterlist']/dd/a")
@@ -43,7 +43,7 @@ class ChapterSpider(BaseSpider):
                           callback=self.parse_chapter)
 
     def parse_chapter(self, response):
-        response.replace(body=response.body.decode('gbk').encode('utf-8'))
+        response.replace(body=response.body.decode('gbk', 'ignore').encode('utf-8'))
         cid = response.meta['cid']
         hxs = HtmlXPathSelector(response)
         content = hxs.select("//div[@id='content']/text()").extract()
