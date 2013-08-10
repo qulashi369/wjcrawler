@@ -4,6 +4,15 @@
 # C extensions
 *.so
 
+# Virtualenv
+.Python
+bin
+lib
+include
+#
+# # Mac OS X custom attribute files
+.DS_Store
+
 # Packages
 *.egg
 *.egg-info
