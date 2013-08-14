@@ -47,7 +47,8 @@ class BookSpider(BaseSpider):
                 url = 'http://www.hao123.se'+url
                 yield Request(url=url, callback=self.parse_book)
             else:
-                log.msg("No book result in  %s" % response.url, level=log.WARNING)
+                log.msg("No book result in  %s" % response.url,
+                        level=log.WARNING)
         else:
             book_title = hxs.select(_book_title_xpath).extract()[0]
             book_author = hxs.select(_book_info_xpath).extract()[0]
@@ -67,7 +68,6 @@ class BookSpider(BaseSpider):
                        image_url=image_url)
 
 
-
 class ChapterSpider(BaseSpider):
     '''抓取书籍目录'''
     name = "chapter"
@@ -81,7 +81,7 @@ class ChapterSpider(BaseSpider):
         for book in self.Book.find():
             url = book.get('source')
             if self.Chapter.find_one({"book_id": book.get('bid')}):
-                print 'already crawl chapters: %s'% book.get('title')
+                print 'already crawl chapters: %s' % book.get('title')
             else:
                 yield Request(url=url, callback=self.parse_chapters)
 
@@ -89,11 +89,11 @@ class ChapterSpider(BaseSpider):
         response.replace(body=response.body.decode('gbk', 'ignore').encode('utf-8'))
         hxs = HtmlXPathSelector(response)
         chapters = hxs.select(_chapters_xpath)
-        for cid,chapter in enumerate(chapters):
+        for cid, chapter in enumerate(chapters):
             title = chapter.select('text()').extract()[0]
             url = chapter.select('@href').extract()[0]
             book_id = response.url.rsplit('/', 2)[1]
-            yield Chapter(book_id=book_id, title=title,cid=cid, url=url)
+            yield Chapter(book_id=book_id, title=title, cid=cid, url=url)
 
     def parse_content(self, response):
         response.replace(body=response.body.decode('gbk', 'ignore').encode('utf-8'))

@@ -1,13 +1,10 @@
 #coding:utf8
 
-from cStringIO import StringIO
-
 from scrapy.http import Request
 from scrapy.exceptions import DropItem
-from scrapy.contrib.pipeline.images import ImagesPipeline, ImageException
+from scrapy.contrib.pipeline.images import ImagesPipeline
 from pymongo import MongoClient
 
-from items import Book
 from settings import MONGO_SERVER, MONGO_PORT, MONGO_DB_NAME
 
 db_book = None
@@ -22,6 +19,7 @@ def get_db_book():
         db_book = db.Book
     return db_book
 
+
 def get_db_chapter():
     global db_chapter
     if not db_chapter:
@@ -29,8 +27,6 @@ def get_db_chapter():
         db = client[MONGO_DB_NAME]
         db_chapter = db.Chapter
     return db_chapter
-
-
 
 
 class BookPipeline(object):
@@ -50,7 +46,6 @@ class BookPipeline(object):
                               image_path=item['image_path'],
                               description=item['description'],
                               create_time=item['create_time']))
-
 
 
 class MyImagePipeline(ImagesPipeline):
@@ -89,4 +84,3 @@ class ChapterPipeline(object):
         if get_db_chapter().find_one({"url": url}):
             return True
         return False
-

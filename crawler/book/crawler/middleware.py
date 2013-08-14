@@ -34,11 +34,11 @@ class ProxyMiddleware(object):
         )
 
     def process_request(self, request, spider):
-        fd = open(self.file,'r')
+        fd = open(self.file, 'r')
         data = fd.readlines()
         fd.close()
         length = len(data)
-        index  = random.randint(0, length -1)
-        item   = data[index]
-        arr    = item.split()
-        request.meta['proxy'] = 'http://%s:%s' % (arr[1],arr[2])
+        index = random.randint(0, length-1)
+        item = data[index]
+        arr = item.split()
+        request.meta['proxy'] = 'http://%s:%s' % (arr[1], arr[2])

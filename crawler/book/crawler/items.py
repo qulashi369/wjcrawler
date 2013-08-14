@@ -15,7 +15,6 @@ class Book(Item):
     image_url = Field()
     image_path = Field()
 
-
     def __str__(self):
         return 'Book (title: %s)' % self['title'].encode('utf8')
 
