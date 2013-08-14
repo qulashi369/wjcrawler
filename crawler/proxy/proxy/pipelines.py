@@ -29,7 +29,7 @@ class ProxyPipeline(object):
         proxy_  = str('http://%s:%s' % (str(item['address']), str(item['port'])))
         proxies = {'http':proxy_}
         begin_time = time.time()
-        timeout = 1
+        timeout = 3
         socket.setdefaulttimeout(timeout)
         try:
             data  = urllib.urlopen(detect_service_url, proxies=proxies).read()
