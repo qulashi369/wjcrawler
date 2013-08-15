@@ -7,7 +7,8 @@ BOT_NAME = 'crawler'
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 #ITEM_PIPELINES = ['crawler.pipelines.MyImagePipeline','crawler.pipelines.BookPipeline']
-ITEM_PIPELINES = ['crawler.pipelines.ChapterPipeline']
+#ITEM_PIPELINES = ['crawler.pipelines.ChapterPipeline']
+ITEM_PIPELINES = ['crawler.pipelines.ContentPipeline']
 
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,9 +17,10 @@ IMAGES_STORE = os.path.join(project_dir, 'pics')
 IMAGES_EXPIRES = 90
 
 
-DOWNLOAD_DELAY = 0
+DOWNLOAD_DELAY = 1.5 # 0.5*1.5 - 1.5*1.5 s
+DOWNLOAD_TIMEOUT = 30  # 60s
 COOKIES_ENABLED = False
-CONCURRENT_REQUESTS_PER_DOMAIN = 8
+CONCURRENT_REQUESTS_PER_DOMAIN = 5
 USER_AGENTS_LIST_FILE = os.path.join(project_dir, 'user-agents.txt')
 PROXY_LIST_FILE = os.path.join(project_dir, 'proxies.txt')
 DEFAULT_REQUEST_HEADERS = {'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',

@@ -9,6 +9,7 @@ from settings import MONGO_SERVER, MONGO_PORT, MONGO_DB_NAME
 
 db_book = None
 db_chapter = None
+db_content = None
 
 
 def get_db_book():
@@ -27,6 +28,14 @@ def get_db_chapter():
         db = client[MONGO_DB_NAME]
         db_chapter = db.Chapter
     return db_chapter
+
+def get_db_content():
+    global db_content
+    if not db_content:
+        client = MongoClient(MONGO_SERVER, MONGO_PORT)
+        db = client[MONGO_DB_NAME]
+        db_content = db.Content
+    return db_content
 
 
 class BookPipeline(object):
@@ -84,3 +93,14 @@ class ChapterPipeline(object):
         if get_db_chapter().find_one({"url": url}):
             return True
         return False
+
+
+class ContentPipeline(object):
+    def __init__(self):
+        self.Content = get_db_content()
+
+    def process_item(self, item, spider):
+        self.Content.insert(dict(cid=item['cid'], content=item['content'],
+                                 book_id=item['book_id']))
+        return item
+

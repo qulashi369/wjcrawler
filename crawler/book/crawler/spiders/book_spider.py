@@ -8,8 +8,8 @@ from scrapy import log
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 
-from crawler.items import Book, Chapter
-from crawler.pipelines import get_db_book, get_db_chapter
+from crawler.items import Book, Chapter, Content
+from crawler.pipelines import get_db_book, get_db_chapter, get_db_content
 from books import books
 
 _book_title_xpath = "//div[@class='book_news_style_text2']/h1/text()"
@@ -50,11 +50,13 @@ class BookSpider(BaseSpider):
                 log.msg("No book result in  %s" % response.url,
                         level=log.WARNING)
         else:
+            # 直接跳转到书本页
             book_title = hxs.select(_book_title_xpath).extract()[0]
             book_author = hxs.select(_book_info_xpath).extract()[0]
             book_category = hxs.select(_book_info_xpath).extract()[1]
             book_desc_result = hxs.select(_book_desc_xpath).extract()
             if book_desc_result:
+                # 有可能木有书本描述
                 book_desc = book_desc_result[0]
             else:
                 book_desc = ''
@@ -95,14 +97,33 @@ class ChapterSpider(BaseSpider):
             book_id = response.url.rsplit('/', 2)[1]
             yield Chapter(book_id=book_id, title=title, cid=cid, url=url)
 
+
+class ContentSpider(BaseSpider):
+    '''抓取章节内容'''
+    name = "content"
+    allowed_domains = ["hao123.se"]
+
+    def __init__(self):
+        self.Chapter = get_db_chapter()
+        self.Content = get_db_content()
+
+    def start_requests(self):
+        for chapter in self.Chapter.find()[0:20000]:  # 左开右闭， [0:5): 0,1,2,3,4
+            cid = chapter.get('cid')
+            book_id = chapter.get('book_id')
+            if self.Content.find_one({"cid": cid, "book_id": book_id}):
+                print 'already crawl content: %s' % chapter.get('title')
+            else:
+                url = chapter.get('url')
+                yield Request(url=url, meta={'cid': cid, 'book_id': book_id},
+                              callback=self.parse_content)
+
     def parse_content(self, response):
         response.replace(body=response.body.decode('gbk', 'ignore').encode('utf-8'))
-        bid = response.meta['bid']
         cid = response.meta['cid']
-        title = response.meta['title']
+        book_id = response.meta['book_id']
         hxs = HtmlXPathSelector(response)
         content = hxs.select("//div[@id='content']/text()").extract()
-        content = '<br>'.join(content)
-        chapter_item = Chapter(bid=bid, cid=cid, content=content,
-                               title=title, create_time=datetime.now())
-        yield chapter_item
+        content = '<br><br>'.join(content)
+        content_item = Content(cid=cid, content=content, book_id=book_id)
+        yield content_item
