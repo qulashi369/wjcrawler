@@ -17,9 +17,16 @@ db_session = get_db_session(DB_URL)
 def index():
     return render_template('index.html')
 
+
 @app.route("/book")
 def book():
     return render_template('book.html')
+
+
+@app.route("/chapter")
+def chapters():
+    return render_template('chapters.html')
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
