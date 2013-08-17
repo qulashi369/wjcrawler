@@ -2,11 +2,17 @@
 
 import sys
 import os.path
+
 import tornado.wsgi
 import tornado.httpserver
+
 import app
 
-port = int(sys.argv[1])
+
+if len(sys.argv) != 1:
+    port = int(sys.argv[1])
+else:
+    port = 8000
 base_dir = os.path.split(sys.argv[0])
 sys.path.append(base_dir)
 
