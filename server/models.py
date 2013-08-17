@@ -30,7 +30,7 @@ class Book(Base):
 
 class Chapter(Base):
     __tablename__ = 'chapter'
-    id = Column(types.Integer, primarg_key=True)
+    id = Column(types.Integer, primary_key=True)
     book_id = Column(types.Integer)
     title = Column(types.String(length=128))
     content = Column(types.Text)
@@ -48,7 +48,7 @@ class Chapter(Base):
 
 class Category(Base):
     __tablename__ = 'category'
-    id = Column(types.Integer, primarg_key=True)
+    id = Column(types.Integer, primary_key=True)
     name = Column(types.String(length=32))
 
     def __init__(self, name):
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     from sqlalchemy import DDL
 
     def init_tables():
-        from db import get_db
+        from libs.db import get_db
         from config import DB_URL
         _db = get_db(DB_URL)
         Base.metadata.create_all(_db)
