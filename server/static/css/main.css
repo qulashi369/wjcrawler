@@ -1,0 +1,60 @@
+/*reset*/
+html{font: 12px "微软雅黑","宋体","arial","Verdana";color:#000;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:text-top}sub{vertical-align:text-bottom}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit}input,textarea,select{*font-size:100%}legend{color:#000}a{text-decoration: none;}
+.clear {clear: both;display: block;overflow: hidden;visibility: hidden;width: 0;height: 0;}
+.clearfix:after {visibility: hidden;display: block;font-size: 0;content: " ";clear: both;height: 0;}
+* html .clearfix             { zoom: 1; } /* IE6 */
+*:first-child+html .clearfix { zoom: 1; } /* IE7 */
+
+a:link {color:#262626}
+a:visited, a:focus {color: #000;}
+
+.mb10 {margin-bottom:10px;}
+.mb30 {margin-bottom:30px;}
+.mb3 {margin-bottom:3px;}
+.dis_b {display:block;}
+.btn {display:inline-block;zoom:1;*display:inline;text-align:center;}
+.btn38 {height:18px;width:88px;padding:10px;}
+.btn32 {height:32px;width:304px;line-height:32px;}
+
+body{background-color:#f9faf8}
+.wrapper {width:960px;margin: 0 auto;}
+.header {height:53px;padding-top:35px;border-bottom:solid #38B100 2px}
+.title {font-size:32px;color:#38B100;}
+
+.main {padding-top:30px}
+
+.list_col li {float: none;display: inline-block;zoom: 1;vertical-align: top;}
+.list_col .last {margin-right:0;}
+.list_col6 {font-size: 0;}
+.list_col6 li {width:120px;height:200px;margin-right:48px;margin-bottom:18px;}
+.list_col6 li .info {margin-top:10px; display: block;color: #666;margin-bottom: 3px;}
+.list_col6 li .info .title {font: 16px "SimHei";color:#000;margin-bottom:5px;line-height: 20px;}
+.list_col6 li .info .author {font: 14px "SimSun";}
+
+.main .list_all {margin-bottom:100px;}
+.main .list_all .list_bar {background-color:#C5E4B7; height:36px;font:18px/36px "SimHei";padding-left:10px;color:#38B100}
+.main .list_all .list_container li {height:36px;line-height:36px;font-size:14px;padding-left:10px;border-bottom:solid #E4E5E3 1px;}
+.main .list_all .list_container li:hover {background-color:#EDF8E8;}
+.main .list_all .list_container li .b_name{width:360px;float:left;}
+.main .list_all .list_container li .b_name a{color:#262626}
+.main .list_all .list_container li .b_name span {color:#bbb}
+.main .list_all .list_container li .c_name {width:380px;float:left;}
+.main .list_all .list_container li .a_name {width:210px;float:left;}
+
+.main .book_info {height:200px;margin-bottom:48px;}
+.main .book_info .cover {float:left; width:150px;height:200px;font-size:0px;margin-right:32px;}
+.main .book_info .infos {float:left; width:298px;height:165px;padding-top:35px;}
+.main .book_info .infos h2 {display:inline-block;zoom:1;*display:inline;font-size:24px;margin-right:10px;vertical-align: middle;}
+.main .book_info .infos .status {display:inline-block;zoom:1;*display:inline;padding:3px;background-color:#A2A2A2;color:#fff;}
+.main .book_info .infos .new {background-color:#D28028;color:#fff;margin-right:20px;font-size:16px;}
+.main .book_info .infos .start {background-color:#76825B;color:#fff;font-size:16px;}
+.main .book_info .infos .latest {font-size:14px;}
+.main .book_info .desc {padding:20px;height:120px;width:440px;float:left;background-color: #E6F0DE}
+.main .book_info .desc p {font-size:16px;line-height:20px;}
+.main .c_list ol li {float:left;margin-right:21px; text-align:center;margin-bottom:12px;}
+.main .c_list ol .last {margin-right:0px;}
+.main .c_list ol li a{background-color:#f5faf4;border:solid #A6Db8F 1px;line-height:12px;line-height:32px;}
+.main .c_list ol li a:hover {background-color:#E6F0DE;}
+.main .c_list ol li a span {color:#5E8C3E;}
+.main .c_list .more {text-align:center; font-size:14px; margin:10px auto 20px auto;}
+.main .c_list .more a {color:#D28028}

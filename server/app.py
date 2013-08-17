@@ -15,7 +15,11 @@ db_session = get_db_session(DB_URL)
 
 @app.route("/")
 def index():
-    return render_template('index.html', name=u'小伙伴')
+    return render_template('index.html')
+
+@app.route("/book")
+def book():
+    return render_template('book.html')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
