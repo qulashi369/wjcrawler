@@ -13,12 +13,14 @@ db_session = get_db_session(DB_URL)
 @app.route("/")
 def index():
     # TODO 要新增一个表来放首页的推荐信息
-    books = db_session.query(Book).limit(12)
+    books = db_session.query(Book).all()
+    recommend_books = books[:12]
     return render_template('index.html',**locals())
 
 
 @app.route("/book/<id>")
 def book(id):
+    #book = db_session.query(Book)
     return render_template('book.html')
 
 
