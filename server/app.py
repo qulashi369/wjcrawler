@@ -1,25 +1,24 @@
 #coding: utf8
 
-from flask import Flask
-from flask.ext.mako import MakoTemplates
-from flask.ext.mako import render_template
+from flask import Flask, render_template
 
 from config import DB_URL
+from models import Book, Chapter, Category
 from libs.db import get_db_session
 
-app = Flask(__name__)
-mako = MakoTemplates(app)
-
+app = Flask(__name__, template_folder='templates')
 db_session = get_db_session(DB_URL)
 
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    # TODO 要新增一个表来放首页的推荐信息
+    books = db_session.query(Book).limit(12)
+    return render_template('index.html',**locals())
 
 
-@app.route("/book")
-def book():
+@app.route("/book/<id>")
+def book(id):
     return render_template('book.html')
 
 

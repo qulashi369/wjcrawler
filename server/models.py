@@ -5,7 +5,11 @@ from datetime import datetime
 from sqlalchemy import types, Column
 from sqlalchemy.ext.declarative import declarative_base
 
+from config import DB_URL
+from libs.db import get_db_session
+
 Base = declarative_base()
+db_session = get_db_session(DB_URL)
 
 
 class Book(Base):
@@ -24,8 +28,20 @@ class Book(Base):
         self.category_id = category_id
         self.create_time = datetime.now()
 
+    @property
+    def category(self):
+        category = db_session.query(Category).filter_by(id=self.category_id).one()
+        return category
+
+    @property
+    def latest_chapter(self):
+        chapters = db_session.query(Chapter).filter_by(book_id=self.id)
+        chapter = chapters.order_by(Chapter.id.desc()).first()
+        return chapter
+
+
     def __repr__(self):
-        return '<Book(%r, %r)>' % (self.title, self.author)
+        return '<Book(%s, %s)>' % (self.title.encode('utf8'), self.author.encode('utf8'))
 
 
 class Chapter(Base):

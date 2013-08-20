@@ -19,23 +19,26 @@ a:visited, a:focus {color: #000;}
 /*base*/
 .mb10 {margin-bottom:10px;}
 .mb30 {margin-bottom:30px;}
+.mb50 {margin-bottom:50px;}
 .mb3 {margin-bottom:3px;}
 .dis_b {display:block;}
 .btn {display:inline-block;zoom:1;*display:inline;text-align:center;}
 .btn38 {height:18px;width:88px;padding:10px;}
 .btn32 {height:32px;width:304px;line-height:32px;}
+.btn40 {height: 40px;width: 40px;line-height: 20px;padding: 2px;}
 .hide {display:none}
 
 /*pages*/
 .reading {background-color:#dce5db;}
-.reading .wrapper {background-color:#f6fbf5;height:100%;padding:0 60px;width:600px;overflow-y: auto;}
+.reading .wrapper {background-color:#f6fbf5;height:100%;padding:0 60px;width:600px;}
 .header {height:53px;padding-top:35px;border-bottom:solid #38B100 2px}
 .header .title {font-size:32px;color:#38B100;}
 
-.list_col li {float: none;display: inline-block;zoom: 1;vertical-align: top;}
+.list_col li {float: left;display: inline-block;zoom: 1;vertical-align: top;}
 .list_col .last {margin-right:0;}
 .list_col6 {font-size: 0;}
 .list_col6 li {width:120px;height:200px;margin-right:48px;margin-bottom:18px;}
+
 .list_col6 li .info {margin-top:10px; display: block;color: #666;margin-bottom: 3px;}
 .list_col6 li .info .title {font: 16px "SimHei";color:#000;margin-bottom:5px;line-height: 20px;}
 .list_col6 li .info .author {font: 14px "SimSun";}
@@ -77,6 +80,16 @@ a:visited, a:focus {color: #000;}
 .reading .chapters .list ol li{float: left;width: 260px;padding: 0 50px 0 10px;border-bottom:solid #C5E4B7 1px;height:36px;line-height:36px;font-size:14px;color:#54cf68; zoom:1;}
 .reading .chapters .list ol .rt {padding:0 10px}
 .reading .chapters .list ol li a{color:#262626}
+.reading .rb_btn {position: fixed;margin-left: 670px;background-color: #A3BB99;color:#fff;font-size: 15px;}
+
+.reading .last_chapter a {bottom: 154px;line-height:40px;font-size:13px;}
+.reading .next_chapter a {bottom: 102px;line-height:40px;font-size:13px;}
+.reading .view_chapters a {bottom: 50px;line-height:40px;}
+.reading .back_reading a {bottom: 50px;}
+.reading .back_reading a:hover,.reading .view_chapters a:hover,.reading .next_chapter a:hover,.reading .last_chapter a:hover {background-color:#74A95E}
+
+.reading .main h2 {font-size:24px;margin-bottom:20px;}
+.reading .main .content p {font-size:16px;line-height:1.8;}
 
 /* scroll */
 .dumascroll {}        /*只需对需要渲染滚动条的div设置该class即可,div要固定高度，超出部分设置隐藏，显示纵向滚动条。*/
@@ -88,3 +101,4 @@ a:visited, a:focus {color: #000;}
 .dumascroll_handle,.dumascroll_handle_a { width:100%; background-repeat:repeat-y; }
 .dumascroll_handle { background-position:-28px 0; }
 .dumascroll_handle_a { background-position:-56px 0; }
+
