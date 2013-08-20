@@ -1,4 +1,5 @@
 #coding: utf8
+import time
 
 from flask import Flask, render_template
 
@@ -13,8 +14,11 @@ db_session = get_db_session(DB_URL)
 @app.route("/")
 def index():
     # TODO 要新增一个表来放首页的推荐信息
+    print time.time()
     books = db_session.query(Book).all()
+    print time.time()
     recommend_books = books[:12]
+    print time.time()
     return render_template('index.html',**locals())
 
 
