@@ -52,10 +52,9 @@
                           <a title="{{book.title}}" href="/book/{{book.id}}" target="_blank">{{book.title}}</a>
                       </div>
                       <div class="c_name">
-                          {#<a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{book.latest_chapter.title}}
+                          <a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{book.latest_chapter.title}}
 ">
                               {{ book.latest_chapter.title|truncate(20, True) }}
-                          #}
                           </a>
                       </div>
                       <div class="a_name">
