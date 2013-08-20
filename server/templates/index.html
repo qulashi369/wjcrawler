@@ -24,7 +24,7 @@
               {% endif %}
               <div class="cover">
                   <a href="/book/{{book.id}}" target="_blank" title="{{book.title}}">
-                      <img src="/media/pics/{{book.id}}.jpg" alt="{{book.title}}" width="98px" height="128px">
+                      <img src="/media/covers/{{book.id}}.jpg" alt="{{book.title}}" width="98px" height="128px">
                   </a>
               </div>
               <div class="info">
@@ -52,7 +52,7 @@
                           <a title="{{book.title}}" href="/book/{{book.id}}" target="_blank">{{book.title}}</a>
                       </div>
                       <div class="c_name">
-                          <a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{ book.latest_chapter.title }}
+                          <a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{book.latest_chapter.title}}
 ">
                               {{ book.latest_chapter.title|truncate(20, True) }}
                           </a>
