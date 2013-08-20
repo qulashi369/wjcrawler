@@ -21,6 +21,11 @@ def index():
 @app.route("/book/<id>")
 def book(id):
     book = db_session.query(Book).filter_by(id=id).first()
+    chapters = db_session.query(Chapter).filter_by(book_id=id)
+    first_twelve_chapters = chapters.limit(12)
+    last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
+    last_six_chapters.reverse()
+    chapter_count = chapters.count()
     return render_template('book.html', **locals())
 
 
