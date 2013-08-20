@@ -20,8 +20,8 @@ def index():
 
 @app.route("/book/<id>")
 def book(id):
-    #book = db_session.query(Book)
-    return render_template('book.html')
+    book = db_session.query(Book).filter_by(id=id).first()
+    return render_template('book.html', **locals())
 
 
 @app.route("/chapter")
