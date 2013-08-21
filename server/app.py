@@ -1,7 +1,7 @@
 #coding: utf8
 import time
 
-from flask import Flask, render_template
+from flask import Flask, render_template, g
 
 from config import DB_URL
 from models import Book, Chapter, Category
@@ -9,6 +9,17 @@ from libs.db import get_db_session
 
 app = Flask(__name__, template_folder='templates')
 db_session = get_db_session(DB_URL)
+
+
+@app.before_request
+def before_request():
+    g.start_time = time.time()
+
+
+@app.teardown_request
+def teardown_request(exception=None):
+    diff = time.time() - g.start_time
+    app.logger.debug('Response Time: %s ms' % diff)
 
 
 @app.route("/")
