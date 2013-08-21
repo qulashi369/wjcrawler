@@ -21,7 +21,7 @@ def before_request():
 def teardown_request(exception=None):
     if app.debug:
         diff = time.time() - g.start_time
-        app.logger.debug('Response Time: %s ms' % diff * 1000)
+        app.logger.debug('Response Time: %f ms' % float(diff*1000))
 
 
 @app.route("/")
