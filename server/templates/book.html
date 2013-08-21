@@ -41,13 +41,13 @@
         <div class="c_list">
           <div class="clearfix">
             <ol class="c_desc">
-            {% for chapter in last_twelve_chapters %}
+            {% for chapter in first_twelve_chapters %}
                 {% if loop.index is divisibleby 3 %}  
                 <li class="last">
                 {% else %}
                 <li>
                 {% endif %}
-                <a class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}"><span>{{chapter_count - loop.index0}}·</span>{{chapter.title|truncate(20, True) }}</a>
+                <a class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}"><span>{{loop.index}}·</span>{{chapter.title|truncate(20, True) }}</a>
               </li>
             {% endfor %}
             </ol>
@@ -55,13 +55,13 @@
           <div class="more"><a href="#">「查看所有章节」</a></div>
           <div class="clearfix">
             <ol class="c_asc">
-                {% for chapter in first_six_chapters %}
+                {% for chapter in last_six_chapters %}
                     {% if loop.index is divisibleby 3 %}  
                     <li class="last">
                     {% else %}
                     <li>
                     {% endif %}
-                    <a class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}"><span>{{6-loop.index0}}·</span>{{chapter.title|truncate(20, True) }}</a>
+                    <a class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}"><span>{{chapter_count - 6 + loop.index}}·</span>{{chapter.title|truncate(20, True) }}</a>
 
                   </li>
                 {% endfor %}

@@ -13,13 +13,15 @@ db_session = get_db_session(DB_URL)
 
 @app.before_request
 def before_request():
-    g.start_time = time.time()
+    if app.debug:
+        g.start_time = time.time()
 
 
 @app.teardown_request
 def teardown_request(exception=None):
-    diff = time.time() - g.start_time
-    app.logger.debug('Response Time: %s ms' % diff)
+    if app.debug:
+        diff = time.time() - g.start_time
+        app.logger.debug('Response Time: %s ms' % diff)
 
 
 @app.route("/")
@@ -34,9 +36,9 @@ def index():
 def book(id):
     book = db_session.query(Book).filter_by(id=id).first()
     chapters = db_session.query(Chapter).filter_by(book_id=id)
-    last_twelve_chapters = chapters.order_by(Chapter.id.desc()).limit(12)
-    first_six_chapters = chapters.limit(6).all()
-    first_six_chapters.reverse()
+    first_twelve_chapters = chapters.limit(12)
+    last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
+    last_six_chapters.reverse()
     chapter_count = chapters.count()
     return render_template('book.html', **locals())
 
