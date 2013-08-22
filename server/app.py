@@ -54,7 +54,6 @@ def chapters(book_id):
 def content(book_id, chapter_id):
     book = db_session.query(Book).filter_by(id=book_id).first()
     chapter = db_session.query(Chapter).filter_by(id=chapter_id, book_id=book_id).first()
-    print chapter.title, chapter.content
     return render_template('content.html', **locals())
 
 if __name__ == "__main__":
