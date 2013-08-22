@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 _db = None
 _session = None
 
-_POOL_SIZE = 20
+_POOL_SIZE = 5
 _POOL_RECYCLE = 3600
 
 
