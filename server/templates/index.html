@@ -23,13 +23,13 @@
               <li>
               {% endif %}
               <div class="cover">
-                  <a href="/book/{{book.id}}" target="_blank" title="{{book.title}}">
+                  <a href="/{{book.id}}" target="_blank" title="{{book.title}}">
                       <img src="http://yiwanshu.com/media/covers/{{book.id}}.jpg" alt="{{book.title}}" width="98px" height="128px">
                   </a>
               </div>
               <div class="info">
                 <div class="title">
-                    <a href="/book/{{book.id}}" title="{{book.title}}" target="_blank">{{book.title}}</a>
+                    <a href="/{{book.id}}" title="{{book.title}}" target="_blank">{{book.title}}</a>
                 </div>
                 <div class="author">{{book.author}}</div>
               </div>              
@@ -48,11 +48,10 @@
                   <li>
                       <div class="b_name">
                           <span>{{book.category.name}}|</span>
-                          <a title="{{book.title}}" href="/book/{{book.id}}" target="_blank">{{book.title}}</a>
+                          <a title="{{book.title}}" href="/{{book.id}}" target="_blank">{{book.title}}</a>
                       </div>
                       <div class="c_name">
-                          <a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{book.latest_chapter.title}}
-">
+                          <a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{book.latest_chapter.title}}">
                               {{ book.latest_chapter.title|truncate(20, True) }}
                           </a>
                       </div>

@@ -32,7 +32,7 @@ def index():
     return render_template('index.html',**locals())
 
 
-@app.route("/book/<id>")
+@app.route("/<int:id>")
 def book(id):
     book = db_session.query(Book).filter_by(id=id).first()
     chapters = db_session.query(Chapter).filter_by(book_id=id)
@@ -43,9 +43,11 @@ def book(id):
     return render_template('book.html', **locals())
 
 
-@app.route("/chapter")
-def chapters():
-    return render_template('chapters.html')
+@app.route("/<int:book_id>/chapters")
+def chapters(book_id):
+    book = db_session.query(Book).filter_by(id=book_id).first()
+    chapters = db_session.query(Chapter.id, Chapter.title).filter_by(book_id=book_id)
+    return render_template('chapters.html', **locals())
 
 
 if __name__ == "__main__":
