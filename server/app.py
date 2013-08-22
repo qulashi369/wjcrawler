@@ -1,7 +1,9 @@
 #coding: utf8
 import time
+import os
 
 from flask import Flask, render_template, g
+from flask import send_from_directory
 
 from config import DB_URL
 from models import Book, Chapter, Category
@@ -55,6 +57,11 @@ def content(book_id, chapter_id):
     book = db_session.query(Book).filter_by(id=book_id).first()
     chapter = db_session.query(Chapter).filter_by(id=chapter_id, book_id=book_id).first()
     return render_template('content.html', **locals())
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
