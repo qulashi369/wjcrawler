@@ -46,9 +46,16 @@ def book(id):
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
     book = db_session.query(Book).filter_by(id=book_id).first()
-    chapters = db_session.query(Chapter.id, Chapter.title).filter_by(book_id=book_id)
+    chapters = db_session.query(Chapter.id, Chapter.title).filter_by(book_id=book_id).all()
     return render_template('chapters.html', **locals())
 
+
+@app.route("/<int:book_id>/<int:chapter_id>")
+def content(book_id, chapter_id):
+    book = db_session.query(Book).filter_by(id=book_id).first()
+    chapter = db_session.query(Chapter).filter_by(id=chapter_id, book_id=book_id).first()
+    print chapter.title, chapter.content
+    return render_template('content.html', **locals())
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
