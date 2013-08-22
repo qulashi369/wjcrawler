@@ -2,10 +2,14 @@
 
 from datetime import datetime
 
-from sqlalchemy import types, Column
+from sqlalchemy import types, Column, Index
 from sqlalchemy.ext.declarative import declarative_base
 
+from config import DB_URL
+from libs.db import get_db_session
+
 Base = declarative_base()
+db_session = get_db_session(DB_URL)
 
 
 class Book(Base):
@@ -24,8 +28,20 @@ class Book(Base):
         self.category_id = category_id
         self.create_time = datetime.now()
 
+    @property
+    def category(self):
+        category = db_session.query(Category).filter_by(id=self.category_id).one()
+        return category
+
+    @property
+    def latest_chapter(self):
+        # FIXME 这里有性能问题
+        chapters = db_session.query(Chapter.id, Chapter.title).filter_by(book_id=self.id)
+        chapter = chapters.order_by(Chapter.id.desc()).first()
+        return chapter
+
     def __repr__(self):
-        return '<Book(%r, %r)>' % (self.title, self.author)
+        return '<Book(%s, %s)>' % (self.title.encode('utf8'), self.author.encode('utf8'))
 
 
 class Chapter(Base):
@@ -44,6 +60,10 @@ class Chapter(Base):
 
     def __repr__(self):
         return '<Chapter(%r, %r)' % (self.title, self.book_id)
+
+
+# 为book_id 加索引
+Index('chapter_book_id', Chapter.book_id)
 
 
 class Category(Base):
