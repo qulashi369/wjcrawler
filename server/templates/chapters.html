@@ -15,60 +15,33 @@
     <div class="wrapper dumascroll">
       <div class="chapters ">
         <div class="info">
-          <div class="title mb3"><span>《蛮荒记》</span></div>
-          <div class="author"><span>我吃西红柿</span></div>
+            <div class="title mb3"><span>《{{book.title}}》</span></div>
+            <div class="author"><span>{{book.author}}</span></div>
         </div>
         <div class="list">
           <div class="bar"><span>目录</span></div>
-          <div class="clearfix">
+          <div class="clearfix mb50">
             <ol>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
-              <li><span>1·<a href="#">写在新书之前</a></span></li>
-              <li class="rt">2·<a href="#">尼玛哟我在乱编题目</a></li>
-              <li><span>3·<a href="#">这是神马东西</a></span></li>
-              <li class="rt"><span>4·<a href="#">这是目录呀</a></span></li>
+                {% for chapter in chapters %}
+                  {% if loop.index is divisibleby 2 %}  
+                  <li>
+                  {% else %}
+                  <li class="rt">
+                  {% endif %}
+                      <span>{{loop.index}}·
+                          <a href="/{{book_id}}/{{chapter.id}}" title="{{chapter.title}}">
+                              {{chapter.title|truncate(16, True) }}
+                          </a>
+                      </span>
+                  </li>
+                {% endfor %}
             </ol>
           </div>
         </div>
+        <div class="back_reading">
+            <a class="rb_btn btn btn40" href="/{{book_id}}">返回书页</a>  
+        </div>
       </div>
-      <div class="main hide">
-      </div>
-      
     </div>
   </body>
 </html>

@@ -120,7 +120,7 @@ duma.BeautifyScrollBar.prototype = {
         var e = e || window.event,eDir;        //设置滚轮事件,e.wheelDelta与e.detail分别兼容IE、W3C，根据返回值的正负来判断滚动方向
         if(e.wheelDelta) { eDir = e.wheelDelta/120; }
         else if(e.detail) { eDir = -e.detail/3; }
-        eDir > 0 ? this.area.scrollTop -= 20 : this.area.scrollTop += 20;    //步长设80像素比较接近window滚动条的滚动速度
+        eDir > 0 ? this.area.scrollTop -= 30 : this.area.scrollTop += 30;    //步长设80像素比较接近window滚动条的滚动速度
         if(this.area.scrollTop > 0 && this.area.scrollTop < this.area.scrollHeight - this.area.offsetHeight){ duma.stopEvent(e); }
         this.setBarPos();
     },

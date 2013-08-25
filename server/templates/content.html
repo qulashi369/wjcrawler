@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>一碗书-{{book.title}}-体验最爽的免费小说网站|将夜|蛮荒记|求魔|武动乾坤</title>
+    <meta name="keywords" content="小说,言情小说,穿越小说,免费小说,小说下载,好看的小说,最新章节">
+    <meta name="description" content="一碗书小说网,最好的免费小说阅读网站">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script type="text/javascript" src="/static/js/scroll.js"></script>
+    <!--[if lte IE 8]>
+      <style>.reading .chapters .list ol li{padding: 0 30px 0 10px;}</style>
+    <![endif]-->
+  </head>
+  <body class="reading">
+    <div class="wrapper dumascroll">
+      <div class="main">
+          <h2>{{chapter.title}}</h2>
+        <div class="content mb50"> 
+           <p>
+           {{chapter.content|safe}}
+          </p>
+        </div>
+        <div class="last_chapter">
+          <a class="rb_btn btn btn40" href="">上一章</a>  
+        </div>
+        <div class="next_chapter">
+          <a class="rb_btn btn btn40" href="">下一章</a>  
+        </div>
+        <div class="view_chapters">
+          <a class="rb_btn btn btn40" href="">目录</a>  
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
