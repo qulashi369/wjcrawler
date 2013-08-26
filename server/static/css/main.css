@@ -61,7 +61,7 @@ a:visited, a:focus {color: #000;}
 .main .book_info .infos .new {background-color:#D28028;color:#fff;margin-right:20px;font-size:16px;}
 .main .book_info .infos .start {background-color:#76825B;color:#fff;font-size:16px;}
 .main .book_info .infos .latest {font-size:14px;}
-.main .book_info .desc {padding:20px;width:440px;float:left;background-color: #E6F0DE}
+.main .book_info .desc {padding:20px;width:440px;float:left;background-color: #E6F0DE; max-height: 160px;}
 .main .book_info .desc p {font-size:16px;line-height:20px;}
 .main .c_list ol li {float:left;margin-right:21px; text-align:center;margin-bottom:12px;}
 .main .c_list ol .last {margin-right:0px;}
