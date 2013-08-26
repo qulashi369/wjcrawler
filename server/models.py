@@ -3,12 +3,14 @@
 from datetime import datetime
 
 from sqlalchemy import types, Column, Index
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 
 from config import DB_URL
 from libs.db import get_db_session
 
 Base = declarative_base()
+
 db_session = get_db_session(DB_URL)
 
 
@@ -57,6 +59,25 @@ class Chapter(Base):
         self.title = title
         self.content = content
         self.create_tile = datetime.now()
+
+    def next(self):
+        chapters = db_session.query(Chapter.id, Chapter.book_id)
+        try:
+            chapter = chapters.filter(Chapter.book_id==self.book_id,
+                                      Chapter.id>self.id).limit(1).one()
+        except NoResultFound:
+            return None
+        return chapter
+
+    def previous(self):
+        chapters = db_session.query(Chapter.id, Chapter.book_id).order_by(Chapter.id.desc())
+        try:
+            chapter = chapters.filter(Chapter.book_id==self.book_id,
+                                      Chapter.id<self.id).limit(1).one()
+        except NoResultFound:
+            return None
+        return chapter
+
 
     def __repr__(self):
         return '<Chapter(%r, %r)' % (self.title, self.book_id)
