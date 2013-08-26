@@ -6,11 +6,14 @@ from flask import Flask, render_template, g
 from flask import send_from_directory
 
 from config import DB_URL
-from models import Book, Chapter, Category
+from models import Book, Chapter
 from libs.db import get_db_session
 
 app = Flask(__name__, template_folder='templates')
-db_session = get_db_session(DB_URL)
+
+
+def db_session():
+    return get_db_session(DB_URL)
 
 
 @app.before_request
@@ -29,15 +32,15 @@ def teardown_request(exception=None):
 @app.route("/")
 def index():
     # TODO 要新增一个表来放首页的推荐信息
-    books = db_session.query(Book).all()
+    books = db_session().query(Book).all()
     recommend_books = books[:12]
-    return render_template('index.html',**locals())
+    return render_template('index.html', **locals())
 
 
 @app.route("/<int:id>")
 def book(id):
-    book = db_session.query(Book).filter_by(id=id).first()
-    chapters = db_session.query(Chapter).filter_by(book_id=id)
+    book = db_session().query(Book).filter_by(id=id).first()
+    chapters = db_session().query(Chapter).filter_by(book_id=id)
     first_twelve_chapters = chapters.limit(12)
     last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
     last_six_chapters.reverse()
@@ -47,16 +50,19 @@ def book(id):
 
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
-    book = db_session.query(Book).filter_by(id=book_id).first()
-    chapters = db_session.query(Chapter.id, Chapter.title).filter_by(book_id=book_id).all()
+    book = db_session().query(Book).filter_by(id=book_id).first()
+    chapters = db_session().query(Chapter.id,
+                                  Chapter.title).filter_by(book_id=book_id).all()
     return render_template('chapters.html', **locals())
 
 
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
-    book = db_session.query(Book).filter_by(id=book_id).first()
-    chapter = db_session.query(Chapter).filter_by(id=chapter_id, book_id=book_id).first()
+    book = db_session().query(Book).filter_by(id=book_id).first()
+    chapter = db_session().query(Chapter).filter_by(id=chapter_id,
+                                                    book_id=book_id).first()
     return render_template('content.html', **locals())
+
 
 @app.route('/favicon.ico')
 def favicon():
