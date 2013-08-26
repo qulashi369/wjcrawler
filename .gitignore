@@ -1,6 +1,6 @@
 *.py[cod]
 *.swp
-server/config.py
+*local*.py
 
 # C extensions
 *.so
