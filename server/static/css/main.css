@@ -30,7 +30,7 @@ a:visited, a:focus {color: #000;}
 
 /*pages*/
 .reading {background-color:#dce5db;}
-.reading .wrapper {background-color:#f6fbf5;height:100%;padding:0 60px;width:600px;}
+.reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:600px;}
 .header {height:53px;padding-top:35px;border-bottom:solid #38B100 2px}
 .header .title {font-size:32px;color:#38B100;}
 
@@ -61,7 +61,7 @@ a:visited, a:focus {color: #000;}
 .main .book_info .infos .new {background-color:#D28028;color:#fff;margin-right:20px;font-size:16px;}
 .main .book_info .infos .start {background-color:#76825B;color:#fff;font-size:16px;}
 .main .book_info .infos .latest {font-size:14px;}
-.main .book_info .desc {padding:20px;width:440px;float:left;background-color: #E6F0DE}
+.main .book_info .desc {padding:20px;width:440px;float:left;background-color: #E6F0DE; max-height: 160px;}
 .main .book_info .desc p {font-size:16px;line-height:20px;}
 .main .c_list ol li {float:left;margin-right:21px; text-align:center;margin-bottom:12px;}
 .main .c_list ol .last {margin-right:0px;}
@@ -72,7 +72,7 @@ a:visited, a:focus {color: #000;}
 .main .c_list .more a {color:#D28028}
 
 
-.reading .chapters {padding-top:70px;}
+.reading .chapters {height:100%;padding-top: 60px; }
 .reading .chapters .info {margin-bottom:56px;}
 .reading .chapters .info .title{text-align:center;font-size:24px;color:#262626;}
 .reading .chapters .info .author{text-align:center;font-size:14px;color:#404040;}

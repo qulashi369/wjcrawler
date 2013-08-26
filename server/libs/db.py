@@ -1,10 +1,9 @@
 # coding: utf8
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
 
 _db = None
-_session = None
 
 _POOL_SIZE = 5
 _POOL_RECYCLE = 3600
@@ -20,12 +19,9 @@ def get_db(db_url, debug=False):
 
 
 def get_db_session(database_uri):
-    global _session
     global _db
     if not _db or str(_db.url) != database_uri:
         _db = get_db(database_uri)
-    if _session and _session.bind == _db:
-        return _session
-    Session = sessionmaker(bind=_db)
-    _session = Session()
-    return _session
+    db_session = scoped_session(sessionmaker(bind=_db, autocommit=False,
+                                             autoflush=False))
+    return db_session
