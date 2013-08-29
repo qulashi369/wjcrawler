@@ -5,15 +5,10 @@ import os
 from flask import Flask, render_template, g
 from flask import send_from_directory
 
-from config import DB_URL
 from models import Book, Chapter
-from libs.db import get_db_session
+from database import db_session
 
 app = Flask(__name__, template_folder='templates')
-
-
-def db_session():
-    return get_db_session(DB_URL)
 
 
 @app.before_request
@@ -29,18 +24,23 @@ def teardown_request(exception=None):
         app.logger.debug('Response Time: %f ms' % float(diff*1000))
 
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+
+
 @app.route("/")
 def index():
     # TODO 要新增一个表来放首页的推荐信息
-    books = db_session().query(Book).all()
+    books = Book.query.all()
     recommend_books = books[:12]
     return render_template('index.html', **locals())
 
 
 @app.route("/<int:id>")
 def book(id):
-    book = db_session().query(Book).filter_by(id=id).first()
-    chapters = db_session().query(Chapter).filter_by(book_id=id)
+    book = Book.query.filter_by(id=id).first()
+    chapters = Chapter.query.filter_by(book_id=id)
     first_twelve_chapters = chapters.limit(12)
     last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
     last_six_chapters.reverse()
@@ -50,24 +50,27 @@ def book(id):
 
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
-    book = db_session().query(Book).filter_by(id=book_id).first()
-    chapters = db_session().query(Chapter.id,
-                                  Chapter.title).filter_by(book_id=book_id).all()
+    book = Book.query.filter_by(id=book_id).first()
+    chapters = db_session.query(Chapter.id,
+                                Chapter.title
+                                ).filter_by(book_id=book_id).all()
     return render_template('chapters.html', **locals())
 
 
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
-    book = db_session().query(Book).filter_by(id=book_id).first()
-    chapter = db_session().query(Chapter).filter_by(id=chapter_id,
-                                                    book_id=book_id).first()
+    book = Book.query.filter_by(id=book_id).first()
+    chapter = Chapter.query.filter_by(id=chapter_id,
+                                      book_id=book_id
+                                      ).first()
     return render_template('content.html', **locals())
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    static_dir = os.path.join(app.root_path, 'static')
+    return send_from_directory(static_dir, 'favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
