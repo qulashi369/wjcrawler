@@ -16,7 +16,7 @@ logging.basicConfig(
 
 def init():
     conn = MySQLdb.connect(host='localhost', user='crawler', passwd='crawlerpwd',
-                           db='xiaoshuo_test', port=3306, charset='utf8')
+                           db='xiaoshuo', port=3306, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
     return conn, cur, client.xiaoshuo
@@ -35,7 +35,6 @@ def book(conn, cur, mdb):
         for k in ["title", "author", "description", "category"]:
             b[k] = b[k].encode('utf-8')
 
-        print qcatesql.format(**b)
         #查询当前的书的category是否存在.不存在插入新category
         if 0 == cur.execute(qcatesql.format(**b)):
             cur.execute(icatesql.format(**b))
