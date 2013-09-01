@@ -1,4 +1,4 @@
-#coding: utf8
+# coding: utf8
 
 import urllib
 from datetime import datetime
@@ -10,7 +10,7 @@ from scrapy.http import Request
 
 from crawler.items import Book, Chapter, Content
 from crawler.pipelines import get_db_book, get_db_chapter, get_db_content
-from books import books
+from books import books as pybooks
 
 _book_title_xpath = "//div[@class='book_news_style_text2']/h1/text()"
 _book_info_xpath = "//div[@class='book_news_style_text2']/h2/text()"
@@ -28,6 +28,7 @@ class BookSpider(BaseSpider):
     search_url = r'http://www.hao123.se/modules/article/search.php?'
 
     def start_requests(self):
+        books = pybooks
         for book in books:
             name = book.decode("utf-8").encode("gb2312", "ignore")
             encode_name = urllib.quote(name)
@@ -44,7 +45,7 @@ class BookSpider(BaseSpider):
             result = hxs.select(_search_result_xpath).extract()
             if len(result):
                 url = result[0]
-                url = 'http://www.hao123.se'+url
+                url = 'http://www.hao123.se' + url
                 yield Request(url=url, callback=self.parse_book)
             else:
                 log.msg("No book result in  %s" % response.url,
