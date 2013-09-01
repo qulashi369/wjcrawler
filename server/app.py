@@ -32,35 +32,43 @@ def teardown_request(exception=None):
 @app.route("/")
 def index():
     # TODO 要新增一个表来放首页的推荐信息
-    books = db_session().query(Book).all()
+    session = db_session()
+    books = session.query(Book).all()
+    session.close()
     recommend_books = books[:12]
     return render_template('index.html', **locals())
 
 
 @app.route("/<int:id>")
 def book(id):
-    book = db_session().query(Book).filter_by(id=id).first()
-    chapters = db_session().query(Chapter).filter_by(book_id=id)
+    session = db_session()
+    book = session.query(Book).filter_by(id=id).first()
+    chapters = session.query(Chapter).filter_by(book_id=id)
     first_twelve_chapters = chapters.limit(12)
     last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
     last_six_chapters.reverse()
     chapter_count = chapters.count()
+    session.close()
     return render_template('book.html', **locals())
 
 
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
-    book = db_session().query(Book).filter_by(id=book_id).first()
-    chapters = db_session().query(Chapter.id,
+    session = db_session()
+    book = session.query(Book).filter_by(id=book_id).first()
+    chapters = session.query(Chapter.id,
                                   Chapter.title).filter_by(book_id=book_id).all()
+    session.close()
     return render_template('chapters.html', **locals())
 
 
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
-    book = db_session().query(Book).filter_by(id=book_id).first()
-    chapter = db_session().query(Chapter).filter_by(id=chapter_id,
+    session = db_session()
+    book = session.query(Book).filter_by(id=book_id).first()
+    chapter = session.query(Chapter).filter_by(id=chapter_id,
                                                     book_id=book_id).first()
+    session.close()
     return render_template('content.html', **locals())
 
 
