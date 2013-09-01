@@ -25,11 +25,11 @@ class ProxyPipeline(object):
         #profiling the proxy
         #detect_service_url = 'http://xxx.xxx.xxx.xxx:pppp/apps/proxydetect.php'
         detect_service_url = 'http://lvyaojia.sinaapp.com/a.php'
-        local_ip           = '124.205.66.195'
+        local_ip           = '192.81.135.66'
         proxy_  = str('http://%s:%s' % (str(item['address']), str(item['port'])))
         proxies = {'http':proxy_}
         begin_time = time.time()
-        timeout = 3
+        timeout = 5
         socket.setdefaulttimeout(timeout)
         try:
             data  = urllib.urlopen(detect_service_url, proxies=proxies).read()
