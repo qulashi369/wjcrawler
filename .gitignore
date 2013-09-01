@@ -1,6 +1,7 @@
 *.py[cod]
 *.swp
 *local*.py
+proxies.txt
 
 # C extensions
 *.so
