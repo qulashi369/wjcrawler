@@ -46,6 +46,7 @@ def book(id):
     last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
     last_six_chapters.reverse()
     chapter_count = chapters.count()
+    session.close()
     return render_template('book.html', **locals())
 
 

@@ -20,14 +20,14 @@
           </p>
         </div>
         <div class="last_chapter">
-            {% if chapter.previous() %}
+            {% if chapter and chapter.previous() %}
                 <a class="rb_btn btn btn40" href="/{{chapter.previous().book_id}}/{{chapter.previous().id}}">上一章</a>  
             {% else %}
                 <a class="rb_btn btn btn40" href="#">上一章</a>  
             {% endif %}
         </div>
         <div class="next_chapter">
-            {% if chapter.next() %}
+            {% if chapter and chapter.next() %}
               <a class="rb_btn btn btn40" href="/{{chapter.next().book_id}}/{{chapter.next().id}}">下一章</a>  
             {% else %}
               <a class="rb_btn btn btn40" href="#">下一章</a>  

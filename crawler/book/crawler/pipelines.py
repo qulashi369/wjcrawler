@@ -1,4 +1,4 @@
-#coding:utf8
+# coding:utf8
 
 from scrapy.http import Request
 from scrapy.exceptions import DropItem
@@ -29,6 +29,7 @@ def get_db_chapter():
         db_chapter = db.Chapter
     return db_chapter
 
+
 def get_db_content():
     global db_content
     if not db_content:
@@ -44,17 +45,19 @@ class BookPipeline(object):
         self.Book = get_db_book()
 
     def process_item(self, item, spider):
-        author = item['author'].encode('utf8').replace('作者:', '')
-        category = item['category'].encode('utf8').replace('所属:', '')
-        title = item['title'].encode('utf8').replace('《', '').replace('》', '')
-        self.Book.insert(dict(bid=item['bid'],
-                              title=title,
-                              author=author,
-                              category=category,
-                              source=item['source'],
-                              image_path=item['image_path'],
-                              description=item['description'],
-                              create_time=item['create_time']))
+
+        if spider.name == "book":
+            author = item['author'].encode('utf8').replace('作者:', '')
+            category = item['category'].encode('utf8').replace('所属:', '')
+            title = item['title'].encode('utf8').replace('《', '').replace('》', '')
+            self.Book.insert(dict(bid=item['bid'],
+                                  title=title,
+                                  author=author,
+                                  category=category,
+                                  source=item['source'],
+                                  image_path=item['image_path'],
+                                  description=item['description'],
+                                  create_time=item['create_time']))
 
 
 class MyImagePipeline(ImagesPipeline):
@@ -81,12 +84,13 @@ class ChapterPipeline(object):
         self.Chapter = get_db_chapter()
 
     def process_item(self, item, spider):
-        if self.is_in_db(item):
-            raise DropItem("Duplicate item found: %s" % item)
+        if spider.name == "chapter":
+            if self.is_in_db(item):
+                raise DropItem("Duplicate item found: %s" % item)
 
-        self.Chapter.insert(dict(title=item['title'], url=item['url'],
-                                 book_id=item['book_id'], cid=item['cid']))
-        return item
+            self.Chapter.insert(dict(title=item['title'], url=item['url'],
+                                     book_id=item['book_id'], cid=item['cid']))
+            return item
 
     def is_in_db(self, item):
         url = str(item['url'])
@@ -100,7 +104,7 @@ class ContentPipeline(object):
         self.Content = get_db_content()
 
     def process_item(self, item, spider):
-        self.Content.insert(dict(cid=item['cid'], content=item['content'],
-                                 book_id=item['book_id']))
-        return item
-
+        if spider.name == "content":
+            self.Content.insert(dict(cid=item['cid'], content=item['content'],
+                                     book_id=item['book_id']))
+            return item
