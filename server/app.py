@@ -9,6 +9,7 @@ from models import Book, Chapter
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
+app.config.from_object('server.config')
 
 
 @app.before_request
@@ -71,6 +72,11 @@ def favicon():
     static_dir = os.path.join(app.root_path, 'static')
     return send_from_directory(static_dir, 'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/test_raise')
+def test_raise():
+    raise
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=8000)
