@@ -1,15 +1,37 @@
 #coding: utf8
 import time
 import os
+import logging
+from logging import Formatter, getLogger
+from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, abort
 from flask import send_from_directory
 
 from models import Book, Chapter
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
-app.config.from_object('server.config')
+app.config.from_object('config')
+
+# 设置logger
+
+loggers = [app.logger, getLogger('sqlalchemy'),
+           getLogger('Tornado')]
+file_handler = RotatingFileHandler(
+    app.config['LOG'],
+    maxBytes=500000,
+    backupCount=5
+)
+
+file_handler.setLevel(app.config['LOG_LEVEL'])
+file_handler.setFormatter(Formatter(
+    '%(asctime)s %(levelname)s: %(message)s '
+    '[in %(pathname)s:%(lineno)d]'
+))
+
+for logger in loggers:
+    logger.addHandler(file_handler)
 
 
 @app.before_request
@@ -46,7 +68,6 @@ def book(id):
     last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
     last_six_chapters.reverse()
     chapter_count = chapters.count()
-    session.close()
     return render_template('book.html', **locals())
 
 
@@ -75,9 +96,18 @@ def favicon():
                                mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/test_raise')
-def test_raise():
-    raise
+@app.errorhandler(500)
+def internal_error(exception):
+    app.logger.exception(exception)
+    return render_template('500.html'), 500
+
+
+@app.errorhandler(404)
+def not_found_error(exception):
+    app.logger.debug(exception)
+    return render_template('404.html'), 404
+
+
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, port=8000)
+    app.run(host='0.0.0.0', port=8000)

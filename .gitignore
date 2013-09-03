@@ -49,3 +49,4 @@ nosetests.xml
 
 db
 local_config.py
+log
