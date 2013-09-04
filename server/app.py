@@ -2,8 +2,9 @@
 import time
 import os
 
-from flask import Flask, render_template, g
-from flask import send_from_directory
+from flask import (Flask, render_template, g, url_for, send_from_directory
+                   session, flash)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import DB_URL
 from models import Book, Chapter
@@ -70,6 +71,51 @@ def content(book_id, chapter_id):
                                                     book_id=book_id).first()
     session.close()
     return render_template('content.html', **locals())
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    # http://flask.pocoo.org/snippets/54/
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if not (username and password):
+            username_password_empty_error = True
+        elif not User.login(username, password)):
+            login_error = True
+        else:
+            session['username'] = username
+            redirect(url_for('user', username=username))
+
+    return render_template('login.html', **locals())
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if not User.check_username(username):
+            username_invalid_error = True
+        elif User.has_username(username):
+            username_exists_error = True
+        else:
+            User.register(username, password)
+            session['username'] = username
+            redirect(url_for('user', username=username))
+
+    return render_template('register.html', **locals())
+
+
+@app.route("/user/<username>")
+def user(username):
+    # NOTE  暂时无法查看他人页面
+    if not session.get('username') == username:
+        flash('请先登录帐号')
+        redirect(url_for('login'))
+    else:
+        user = User.get(username)
+    return render_template('user.html', **locals())
 
 
 @app.route('/favicon.ico')
