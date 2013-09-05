@@ -3,15 +3,11 @@
 from datetime import datetime
 
 from sqlalchemy import types, Column, Index
+from sqlalchemy.sql import exists
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.ext.declarative import declarative_base
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from config import DB_URL
-from libs.db import get_db_session
-
-Base = declarative_base()
-
-db_session = get_db_session(DB_URL)
+from database import db_session, Base
 
 
 class Book(Base):
@@ -32,18 +28,20 @@ class Book(Base):
 
     @property
     def category(self):
-        category = db_session.query(Category).filter_by(id=self.category_id).one()
+        category = Category.query.filter_by(id=self.category_id).one()
         return category
 
     @property
     def latest_chapter(self):
         # FIXME 这里有性能问题
-        chapters = db_session.query(Chapter.id, Chapter.title).filter_by(book_id=self.id)
+        chapters = db_session.query(Chapter.id, Chapter.title
+                                    ).filter_by(book_id=self.id)
         chapter = chapters.order_by(Chapter.id.desc()).first()
         return chapter
 
     def __repr__(self):
-        return '<Book(%s, %s)>' % (self.title.encode('utf8'), self.author.encode('utf8'))
+        return '<Book(%s, %s)>' % (self.title.encode('utf8'),
+                                   self.author.encode('utf8'))
 
 
 class Chapter(Base):
@@ -63,28 +61,26 @@ class Chapter(Base):
     def next(self):
         chapters = db_session.query(Chapter.id, Chapter.book_id)
         try:
-            chapter = chapters.filter(Chapter.book_id==self.book_id,
-                                      Chapter.id>self.id).limit(1).one()
+            chapter = chapters.filter(Chapter.book_id == self.book_id,
+                                      Chapter.id > self.id
+                                      ).limit(1).one()
         except NoResultFound:
             return None
         return chapter
 
     def previous(self):
-        chapters = db_session.query(Chapter.id, Chapter.book_id).order_by(Chapter.id.desc())
+        chapters = db_session.query(Chapter.id, Chapter.book_id
+                                    ).order_by(Chapter.id.desc())
         try:
-            chapter = chapters.filter(Chapter.book_id==self.book_id,
-                                      Chapter.id<self.id).limit(1).one()
+            chapter = chapters.filter(Chapter.book_id == self.book_id,
+                                      Chapter.id < self.id
+                                      ).limit(1).one()
         except NoResultFound:
             return None
         return chapter
 
-
     def __repr__(self):
         return '<Chapter(%r, %r)' % (self.title, self.book_id)
-
-
-# 为book_id 加索引
-Index('chapter_book_id', Chapter.book_id)
 
 
 class Category(Base):
@@ -99,25 +95,55 @@ class Category(Base):
         return '<Category(%r, %r)>' % (self.id, self.name)
 
 
-if __name__ == '__main__':
-    '''创建所以表，只需要运行一次！'''
-    from sqlalchemy import event
-    from sqlalchemy import DDL
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(types.Integer, primary_key=True)
+    username = Column(types.String(length=32), unique=True)
+    password = Column(types.String(length=64))
 
-    def init_tables():
-        from libs.db import get_db
-        from config import DB_URL
-        _db = get_db(DB_URL)
-        Base.metadata.create_all(_db)
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
-    event.listen(
-        Book.__table__,
-        "after_create",
-        DDL("ALTER TABLE %(table)s AUTO_INCREMENT = 10001;")
-    )
-    event.listen(
-        Chapter.__table__,
-        "after_create",
-        DDL("ALTER TABLE %(table)s AUTO_INCREMENT = 10001;")
-    )
-    init_tables()
+    @classmethod
+    def add(cls, username, password):
+        # NOTE 此处password为加密后的密码hash
+        user = cls(username, password)
+        db_session.add(user)
+        db_session.commit()
+
+    @classmethod
+    def get(cls, username):
+        user = cls.query.filter_by(username=username).scalar()
+        return user
+
+    @classmethod
+    def login(cls, username, password):
+        user = cls.get(username)
+        if user:
+            return check_password_hash(user.password, password)
+        return False
+
+    @classmethod
+    def check_username(cls, username):
+        # TODO 检测user name 是否合法
+        return True
+
+    @classmethod
+    def is_username_exists(cls, username):
+        return db_session.query(
+            exists().where(cls.username == username)
+        ).scalar()
+
+    @classmethod
+    def register(cls, username, password):
+        pw_hash = generate_password_hash(password)
+        cls.add(username, pw_hash)
+
+
+    def __repr__(self):
+        return '<User(%r, %r)>' % (self.id, self.username)
+
+
+Index('chapter_book_id', Chapter.book_id)
+Index('username', User.username)
