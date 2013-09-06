@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    {% block head %}
+        <meta charset="utf-8">
+        <title>{% block title %}{% endblock %} —— 一碗书小说网 干净、清爽、无弹窗</title>
+        <meta name="keywords" content="{% block keywords %}小说,言情小说,穿越小说,免费小说,小说下载,无弹窗,最新章节{% endblock keywords %}">
+        <meta name="description" content="{% block description %}一碗书小说网,最好的免费小说阅读网站 {% endblock description %}">
+
+        {% block head_css %} 
+            <link rel="stylesheet" href="/static/css/main.css">
+        {% endblock head_css%}
+
+        {% block head_js %}
+        {% endblock head_js %}
+    {% endblock head %}
+  </head>
+  <body>
+    {% block body%}
+        <div class="wrapper">
+            <div class="header">
+                {% block header %}
+                    <h1 class="title"><a href="/">一碗书</a></h1>  
+                    <span class="login_reg">
+                        {%if session['username'] %}
+                            <a href="{{url_for('user', username=session['username'])}}">{{session['username']}}</a>
+                            <span>|</span>
+                            <a href="{{url_for('logout')}}">退出</a>
+                        {% else%}
+                            <a href="{{url_for('login')}}">登录</a>
+                            <span>|</span>
+                            <a href="{{url_for('register')}}">注册</a>
+                        {% endif%}
+                    </span>
+                {% endblock header%}
+            </div>
+            <div class="main">
+                {% block main %} 
+                {% endblock main %}
+            </div>
+        </div>
+
+    {% endblock body %}
+    {% block body_js %}
+        <script type="text/javascript">
+          var _hmt = _hmt || [];
+          (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?f66c392d4a0b7dac7a131ba69e57cce5";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+          })();
+
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-43467268-1', 'yiwanshu.com');
+          ga('send', 'pageview');
+        </script>
+    {% endblock body_js %}
+
+  </body>
+</html>

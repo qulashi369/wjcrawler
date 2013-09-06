@@ -1,60 +1,41 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <title>一碗书-体验最爽的免费小说网站|将夜|蛮荒记|求魔|武动乾坤</title>
-    <meta name="keywords" content="小说,言情小说,穿越小说,免费小说,小说下载,好看的小说,最新章节">
-    <meta name="description" content="一碗书小说网,最好的免费小说阅读网站">
-    <link rel="stylesheet" href="/static/css/main.css">
+{% extends "base.html" %}
+
+{% block title %}用户登录 —— 一碗书-体验最爽的免费小说网站|将夜|蛮荒记|求魔|武动乾坤{% endblock %}
+
+{% block head_js %}
     <script src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
     <script src="/static/js/main.js"></script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="header">
-        <h1 class="title ">一碗书</h1>  
-        <span class="login_reg">
-			{%if session['username'] %}
-				<a href="{{url_for('user', username=session['username'])}}">{{session['username']}}</a><span>|</span><a href="{{url_for('logout')}}">退出</a>
-			{% else%}
-          		<a href="{{url_for('login')}}">登录</a><span>|</span><a href="{{url_for('register')}}">注册</a>
-			{% endif%}
-        </span>
-      </div>  
-      <div class="main">
-        <div class="lr_form"> 
-          <h2>登录一碗书，看一碗书。</h2>
-          <form id="login_form" action="{{url_for("login")}}" method="post">
-            <p>
-              <label for="username">用户名</label>
-              <input id="username" type="text" name="username">
-              <span class="error">
-              	{%if empty_username_error%}
-				  	用户名不能为空
-				  {%endif%}
-             	 {%if login_error%}
-				  	用户名密码不匹配
-				  {%endif%}
-              </span>
-            </p>
-            <p>
-              <label for="password">密码</label>
-              <input id="password" type="password" name="password">
-              <span class="error">
-              	 {%if empty_password_error%}
-				  	密码不能为空
-				  {%endif%}
-              </span>
-            </p>
-            <p>
-            	<label>&nbsp;</label>
-            	<a class="btn btn274" id="login_submit" href="javascript:void();">登录</a>	
-            </p>
-          </form>
-        </div>
-      </div>
-    </div>
-  </body>
-</html>
-      
- 
+{% endblock head_js%}
+
+{% block main%}
+<div class="lr_form"> 
+  <h2>登录一碗书，看一碗书。</h2>
+  <form id="login_form" action="{{url_for("login")}}" method="post">
+    <p>
+      <label for="username">用户名</label>
+      <input id="username" type="text" name="username">
+      <span class="error">
+      {%if empty_username_error%}
+        用户名不能为空
+      {%endif%}
+      {%if login_error%}
+        用户名密码不匹配
+      {%endif%}
+      </span>
+    </p>
+    <p>
+      <label for="password">密码</label>
+      <input id="password" type="password" name="password">
+      <span class="error">
+      {%if empty_password_error%}
+          密码不能为空
+      {%endif%}
+      </span>
+    </p>
+    <p>
+        <label>&nbsp;</label>
+        <a class="btn btn274" id="login_submit" href="javascript:void();">登录</a>	
+    </p>
+  </form>
+</div>
+{% endblock main%}
