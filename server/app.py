@@ -3,7 +3,7 @@ import time
 import os
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
-                   session, flash, request, redirect)
+                   session, flash, request, redirect, make_response)
 
 from models import Book, Chapter, User
 from database import db_session
@@ -38,10 +38,10 @@ def index():
     return render_template('index.html', **locals())
 
 
-@app.route("/<int:id>")
-def book(id):
-    book = Book.query.filter_by(id=id).first()
-    chapters = Chapter.query.filter_by(book_id=id)
+@app.route("/<int:book_id>")
+def book(book_id):
+    book = Book.get(book_id)
+    chapters = Chapter.query.filter_by(book_id=book_id)
     first_twelve_chapters = chapters.limit(12)
     last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
     last_six_chapters.reverse()
@@ -51,20 +51,30 @@ def book(id):
 
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
-    book = Book.query.filter_by(id=book_id).first()
-    chapters = db_session.query(Chapter.id,
-                                Chapter.title
+    book = Book.get(book_id)
+    chapters = db_session.query(Chapter.id, Chapter.title
                                 ).filter_by(book_id=book_id).all()
     return render_template('chapters.html', **locals())
 
 
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
-    book = Book.query.filter_by(id=book_id).first()
-    chapter = Chapter.query.filter_by(
-        id=chapter_id, book_id=book_id
-    ).first()
-    return render_template('content.html', **locals())
+    # NOTE read/set cookies for recent reading
+    recent_reading = request.cookies.get('recent_reading')
+    if recent_reading:
+        recent_book_ids = [int(bid) for bid in recent_reading.split(',')
+                           if int(bid) != book_id]
+        recent_book_ids.insert(0, book_id)
+        book_ids = recent_book_ids[:10]
+    else:
+        book_ids = [book_id]
+
+    book = Book.get(book_id)
+    chapter = Chapter.get(chapter_id, book_id)
+
+    resp = make_response(render_template('content.html', **locals()))
+    resp.set_cookie('recent_reading', ','.join([str(bid) for bid in book_ids]))
+    return resp
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -101,7 +111,7 @@ def register():
             empty_password_error = True
         elif not User.check_username(username):
             username_invalid_error = True
-        elif User.is_username_exists(username):
+        elif User.is_exists(username):
             username_exists_error = True
         else:
             User.register(username, password)
