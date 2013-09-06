@@ -1,5 +1,6 @@
 # coding: utf8
 
+import re
 from datetime import datetime
 
 from sqlalchemy import types, Column, Index
@@ -33,11 +34,24 @@ class Book(Base):
 
     @property
     def latest_chapter(self):
-        # FIXME 这里有性能问题
         chapters = db_session.query(Chapter.id, Chapter.title
                                     ).filter_by(book_id=self.id)
         chapter = chapters.order_by(Chapter.id.desc()).first()
         return chapter
+
+    @classmethod
+    def get(cls, book_id):
+        book = cls.query.filter_by(id=book_id).scalar()
+        return book
+
+    @classmethod
+    def gets(cls, book_ids):
+        result = []
+        for book_id in book_ids:
+            book = cls.get(book_id)
+            if book:
+                result.append(book)
+        return result
 
     def __repr__(self):
         return '<Book(%s, %s)>' % (self.title.encode('utf8'),
@@ -57,6 +71,11 @@ class Chapter(Base):
         self.title = title
         self.content = content
         self.create_tile = datetime.now()
+
+    @classmethod
+    def get(cls, chapter_id, book_id):
+        chapter = cls.query.filter_by(id=chapter_id, book_id=book_id).scalar()
+        return chapter
 
     def next(self):
         chapters = db_session.query(Chapter.id, Chapter.book_id)
@@ -104,6 +123,7 @@ class User(Base):
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.create_time = datetime.now()
 
     @classmethod
     def add(cls, username, password):
@@ -126,11 +146,11 @@ class User(Base):
 
     @classmethod
     def check_username(cls, username):
-        # TODO 检测user name 是否合法
-        return True
+        p = re.compile('^\w+$')
+        return True if p.match(username) else False
 
     @classmethod
-    def is_username_exists(cls, username):
+    def is_exists(cls, username):
         return db_session.query(
             exists().where(cls.username == username)
         ).scalar()
@@ -139,7 +159,6 @@ class User(Base):
     def register(cls, username, password):
         pw_hash = generate_password_hash(password)
         cls.add(username, pw_hash)
-
 
     def __repr__(self):
         return '<User(%r, %r)>' % (self.id, self.username)
