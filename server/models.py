@@ -3,7 +3,9 @@
 from datetime import datetime
 
 from sqlalchemy import types, Column, Index
+from sqlalchemy.sql import exists
 from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
 
@@ -93,5 +95,55 @@ class Category(Base):
         return '<Category(%r, %r)>' % (self.id, self.name)
 
 
-# 为book_id 加索引
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(types.Integer, primary_key=True)
+    username = Column(types.String(length=32), unique=True)
+    password = Column(types.String(length=64))
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    @classmethod
+    def add(cls, username, password):
+        # NOTE 此处password为加密后的密码hash
+        user = cls(username, password)
+        db_session.add(user)
+        db_session.commit()
+
+    @classmethod
+    def get(cls, username):
+        user = cls.query.filter_by(username=username).scalar()
+        return user
+
+    @classmethod
+    def login(cls, username, password):
+        user = cls.get(username)
+        if user:
+            return check_password_hash(user.password, password)
+        return False
+
+    @classmethod
+    def check_username(cls, username):
+        # TODO 检测user name 是否合法
+        return True
+
+    @classmethod
+    def is_username_exists(cls, username):
+        return db_session.query(
+            exists().where(cls.username == username)
+        ).scalar()
+
+    @classmethod
+    def register(cls, username, password):
+        pw_hash = generate_password_hash(password)
+        cls.add(username, pw_hash)
+
+
+    def __repr__(self):
+        return '<User(%r, %r)>' % (self.id, self.username)
+
+
 Index('chapter_book_id', Chapter.book_id)
+Index('username', User.username)
