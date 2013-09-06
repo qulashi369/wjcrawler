@@ -1,37 +1,15 @@
 #coding: utf8
 import time
 import os
-import logging
-from logging import Formatter, getLogger
-from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, g, abort
-from flask import send_from_directory
+from flask import (Flask, render_template, g, url_for, send_from_directory,
+                   session, flash, request, redirect)
 
-from models import Book, Chapter
+from models import Book, Chapter, User
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
 app.config.from_object('config')
-
-# 设置logger
-
-loggers = [app.logger, getLogger('sqlalchemy'),
-           getLogger('Tornado')]
-file_handler = RotatingFileHandler(
-    app.config['LOG'],
-    maxBytes=500000,
-    backupCount=5
-)
-
-file_handler.setLevel(app.config['LOG_LEVEL'])
-file_handler.setFormatter(Formatter(
-    '%(asctime)s %(levelname)s: %(message)s '
-    '[in %(pathname)s:%(lineno)d]'
-))
-
-for logger in loggers:
-    logger.addHandler(file_handler)
 
 
 @app.before_request
@@ -83,10 +61,70 @@ def chapters(book_id):
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
     book = Book.query.filter_by(id=book_id).first()
-    chapter = Chapter.query.filter_by(id=chapter_id,
-                                      book_id=book_id
-                                      ).first()
+    chapter = Chapter.query.filter_by(
+        id=chapter_id, book_id=book_id
+    ).first()
     return render_template('content.html', **locals())
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if session.get('username'):
+        return redirect(url_for('user', username=session.get('username')))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if not username:
+            empty_username_error = True
+        elif not password:
+            empty_password_error = True
+        elif not User.login(username, password):
+            login_error = True
+        else:
+            session['username'] = username
+            return redirect(url_for('user', username=username))
+    return render_template('login.html', **locals())
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if session.get('username'):
+        return redirect(url_for('user', username=session.get('username')))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if not username:
+            empty_username_error = True
+        elif not password:
+            empty_password_error = True
+        elif not User.check_username(username):
+            username_invalid_error = True
+        elif User.is_username_exists(username):
+            username_exists_error = True
+        else:
+            User.register(username, password)
+            session['username'] = username
+            return redirect(url_for('user', username=username))
+    return render_template('register.html', **locals())
+
+
+@app.route("/logout")
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index'))
+
+
+@app.route("/user/<username>")
+def user(username):
+    # NOTE  暂时无法查看他人页面
+    if not session.get('username') == username:
+        flash('请先登录帐号')
+        return redirect(url_for('login'))
+    else:
+        user = User.get(username)
+    return render_template('user.html', **locals())
 
 
 @app.route('/favicon.ico')
@@ -106,7 +144,6 @@ def internal_error(exception):
 def not_found_error(exception):
     app.logger.debug(exception)
     return render_template('404.html'), 404
-
 
 
 if __name__ == "__main__":

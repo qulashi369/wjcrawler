@@ -26,13 +26,20 @@ a:visited, a:focus {color: #000;}
 .btn38 {height:18px;width:88px;padding:10px;}
 .btn32 {height:32px;width:304px;line-height:32px;}
 .btn40 {height: 40px;width: 40px;line-height: 20px;padding: 2px;}
+.btn274 {height:40px;width:274px;line-height:40px;}
 .hide {display:none}
+
+
+.header_r {font-size:14px}
 
 /*pages*/
 .reading {background-color:#dce5db;}
 .reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:600px;}
-.header {height:53px;padding-top:35px;border-bottom:solid #38B100 2px}
-.header .title {font-size:32px;color:#38B100;}
+.header {height:43px;padding-top:45px;border-bottom:solid #C16333 2px;position:relative;}
+
+.header .title {font-size:32px;color:#C16333;display:inline-block;zoom:1;*display:inline;position:absolute;bottom:5px;}
+.header .login_reg {font-size:14px;position:absolute;bottom:5px;right:0px;}
+.header .login_reg span{margin:0 8px;}
 
 .list_col li {float: left;display: inline-block;zoom: 1;vertical-align: top;}
 .list_col .last {margin-right:0;}
@@ -77,7 +84,7 @@ a:visited, a:focus {color: #000;}
 .reading .chapters .info .title{text-align:center;font-size:24px;color:#262626;}
 .reading .chapters .info .author{text-align:center;font-size:14px;color:#404040;}
 .reading .chapters .list .bar {text-align:center;background-color:#C5E4B7;font-size:18px;color:#009121;height:34px;line-height:34px;}
-.reading .chapters .list ol li{float: left;width: 260px;padding: 0 50px 0 10px;border-bottom:solid #C5E4B7 1px;height:36px;line-height:36px;font-size:14px;color:#54cf68; zoom:1;}
+.reading .chapters .list ol li{float: left;width: 260px;padding: 0 50px 0 10px;border-bottom:solid #C5E4B7 1px;height:36px;line-height:36px;font-size:14px;color:#aaaaaa; zoom:1;}
 .reading .chapters .list ol .rt {padding:0 10px}
 .reading .chapters .list ol li a{color:#262626}
 .reading .rb_btn {position: fixed;margin-left: 670px;background-color: #A3BB99;color:#fff;font-size: 15px;}
@@ -102,3 +109,12 @@ a:visited, a:focus {color: #000;}
 .dumascroll_handle { background-position:-28px 0; }
 .dumascroll_handle_a { background-position:-56px 0; }
 
+
+/* login\register*/
+.main .lr_form {width:474px;margin:0 auto;padding-top:40px;}
+.main .lr_form h2{text-align: center;font-size: 24px;margin-bottom:40px;}
+.main .lr_form form p {height: 40px;margin-bottom: 25px;}
+.main .lr_form form p label {float: left; width: 15%; text-align:right;padding-right:26px;font-size:14px;line-height:40px;}
+.main .lr_form form p input {height: 36px;width: 260px;font-size: 25px;padding-left: 10px;}
+.main .lr_form form p .error {color:red; line-height:40px;display:inline-block;zoom:1;*display:inline;vertical-align: top;}
+.main .lr_form form p #reg_submit, .main .lr_form form p #login_submit{color:#fff;background-color:#C16333;font-size:18px;}

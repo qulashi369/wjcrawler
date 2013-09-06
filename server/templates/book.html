@@ -11,6 +11,13 @@
     <div class="wrapper">
       <div class="header">
           <h1 class="title">一碗书 </h1>  
+          <span class="login_reg">
+			{%if session['username'] %}
+				<a href="{{url_for('user', username=session['username'])}}">{{session['username']}}</a><span>|</span><a href="{{url_for('logout')}}">退出</a>
+			{% else%}
+          		<a href="{{url_for('login')}}">登录</a><span>|</span><a href="{{url_for('register')}}">注册</a>
+			{% endif%}
+        </span>
       </div>  
       <div class="main">
         <div class="book_info">
