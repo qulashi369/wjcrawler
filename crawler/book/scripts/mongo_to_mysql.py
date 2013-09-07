@@ -5,14 +5,21 @@ import MySQLdb
 import pymongo
 import logging
 import shutil
+from logging import FileHandler
+import time
 
 
-logging.basicConfig(
-    filename="/var/log/test.txt",
-    level=logging.DEBUG,
-    filemode='w+',
-    format='%(asctime)s - %(levelname)s: %(message)s')
-
+book_handler = FileHandler("/home/yj/b_%s" % time.strftime("%Y%m%d%H%M", time.localtime()), "a+")
+chapter_handler = FileHandler("/home/yj/c_%s" % time.strftime("%Y%m%d%H%M", time.localtime()), "a+")
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+book_handler.setFormatter(formatter)
+book_handler.setLevel(logging.INFO)
+chapter_handler.setFormatter(formatter)
+chapter_handler.setLevel(logging.INFO)
+book_logger = logging.getLogger("book")
+book_logger.addHandler(book_handler)
+chapter_logger = logging.getLogger("chapter")
+chapter_logger.addHandler(chapter_handler)
 
 def init():
     conn = MySQLdb.connect(host='localhost', user='crawler', passwd='crawlerpwd',
@@ -52,6 +59,9 @@ def book(conn, cur, mdb):
             cur.execute(ibooksql.format(**b))
             conn.commit()
             curbid = cur.lastrowid
+            book_logger.info("新书: %s --- 作者: %s" % (b['title'], b['author']))
+            chapter_logger.info("新书: %s --- 作者: %s" % (b['title'], b['author']))
+
         else:
             curbid = cur.fetchone()[0]  # 插入后的bookid
 
@@ -59,18 +69,16 @@ def book(conn, cur, mdb):
         if len(b['image_path']):
             syncpics(b['image_path'][0], str(curbid)+'.jpg')
 
-        #chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'])
+        chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
 
 
-def chapter(conn, cur, mdb, tmpbid, curbid, create_time):
+def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
     sql = '''INSERT INTO chapter(book_id, title, content, create_time)VALUES (%s, %s, %s, %s);'''
 
     for ch in mdb.Chapter.find({"book_id": tmpbid}):
         ch['create_time'] = create_time
-        # ch['title'] = ch['title'].encode("utf-8")
         ch['curbid'] = curbid
         for cont in mdb.Content.find({"cid": ch['cid'], 'book_id': tmpbid}):
-            # ch['content'] = cont["content"].encode('utf-8')
             logging.debug(str(cont['cid']) + '-' + str(cont['book_id']))
             #查询当前章节是否存在
             num = cur.execute(
@@ -78,6 +86,7 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time):
             if num == 0:
                 cur.execute(sql, (ch['curbid'], ch['title'], cont['content'], ch['create_time']))
                 conn.commit()
+                chapter_logger.info("新章节: %s --- 书名: %s" % (ch['title'].encode('utf-8'), btitle))
 
 #修改图片的名字
 def syncpics(prefn, curfn):
@@ -89,6 +98,5 @@ def syncpics(prefn, curfn):
 if __name__ == "__main__":
     conn, cur, mdb = init()
     book(conn, cur, mdb)
-    # chapter(conn, cur, mdb)
     cur.close()
     conn.close()

@@ -6,11 +6,12 @@ BOT_NAME = 'crawler'
 
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
-#ITEM_PIPELINES = [#'crawler.pipelines.MyImagePipeline',
+#ITEM_PIPELINES = ['crawler.pipelines.MyImagePipeline',
 #                  'crawler.pipelines.BookPipeline',
 #                  'crawler.pipelines.ChapterPipeline',
 #                  'crawler.pipelines.ContentPipeline']
-
+#
+#ITEM_PIPELINES = ['crawler.pipelines.MyImagePipeline','crawler.pipelines.BookPipeline']
 #ITEM_PIPELINES = ['crawler.pipelines.ChapterPipeline']
 ITEM_PIPELINES = ['crawler.pipelines.ContentPipeline']
 
