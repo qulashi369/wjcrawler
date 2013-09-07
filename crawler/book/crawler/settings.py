@@ -6,13 +6,13 @@ BOT_NAME = 'crawler'
 
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
-ITEM_PIPELINES = ['crawler.pipelines.MyImagePipeline',
-                  'crawler.pipelines.BookPipeline',
-                  'crawler.pipelines.ChapterPipeline',
-                  'crawler.pipelines.ContentPipeline']
+#ITEM_PIPELINES = [#'crawler.pipelines.MyImagePipeline',
+#                  'crawler.pipelines.BookPipeline',
+#                  'crawler.pipelines.ChapterPipeline',
+#                  'crawler.pipelines.ContentPipeline']
 
-# ITEM_PIPELINES = ['crawler.pipelines.ChapterPipeline']
-# ITEM_PIPELINES = ['crawler.pipelines.ContentPipeline']
+#ITEM_PIPELINES = ['crawler.pipelines.ChapterPipeline']
+ITEM_PIPELINES = ['crawler.pipelines.ContentPipeline']
 
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,7 +40,7 @@ DEFAULT_REQUEST_HEADERS = {
 # mongodb setting
 MONGO_SERVER = 'localhost'
 MONGO_PORT = 27017
-MONGO_DB_NAME = 'xiaoshuo'
+MONGO_DB_NAME = 'xiaoshuo1'
 
 
 DOWNLOADER_MIDDLEWARES = {
