@@ -19,7 +19,7 @@ def init():
                            db='xiaoshuo', port=3306, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
-    return conn, cur, client.xiaoshuo
+    return conn, cur, client.xiaoshuo1
 
 
 def book(conn, cur, mdb):
@@ -40,7 +40,6 @@ def book(conn, cur, mdb):
             cur.execute(icatesql.format(**b))
             conn.commit()
             cid = cur.lastrowid
-
         else:
             cid = cur.fetchone()[0]
 
@@ -53,17 +52,14 @@ def book(conn, cur, mdb):
             cur.execute(ibooksql.format(**b))
             conn.commit()
             curbid = cur.lastrowid
-
         else:
             curbid = cur.fetchone()[0]  # 插入后的bookid
 
-        # tmpbid = b['bid']  # 之前的bookid
-
         # 更改图片名字
-        # if len(b['image_path']):
-        #    syncpics(b['image_path'][0], str(curbid)+'.jpg')
+        if len(b['image_path']):
+            syncpics(b['image_path'][0], str(curbid)+'.jpg')
 
-        chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'])
+        #chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'])
 
 
 def chapter(conn, cur, mdb, tmpbid, curbid, create_time):
@@ -79,11 +75,9 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time):
             #查询当前章节是否存在
             num = cur.execute(
                 "select id from chapter where book_id=%s and title=%s", (curbid, ch['title']))
-
             if num == 0:
                 cur.execute(sql, (ch['curbid'], ch['title'], cont['content'], ch['create_time']))
                 conn.commit()
-
 
 #修改图片的名字
 def syncpics(prefn, curfn):

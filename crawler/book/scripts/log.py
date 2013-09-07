@@ -1,7 +1,7 @@
 import logging
 import logging.config
 
-logging.config.fileConfig("scripts/log.conf")
+logging.config.fileConfig("/srv/salt/code/wyzq/server/scripts/log.conf")
 logger = logging.getLogger("Tornado")
 
 if __name__ == "__main__":
