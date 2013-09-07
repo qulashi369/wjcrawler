@@ -2,6 +2,7 @@
 *.swp
 *local*.py
 proxies.txt
+*.log
 
 # C extensions
 *.so
