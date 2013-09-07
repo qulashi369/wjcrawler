@@ -47,7 +47,6 @@ def book(conn, cur, mdb):
             cur.execute(icatesql.format(**b))
             conn.commit()
             cid = cur.lastrowid
-
         else:
             cid = cur.fetchone()[0]
 
@@ -66,11 +65,9 @@ def book(conn, cur, mdb):
         else:
             curbid = cur.fetchone()[0]  # 插入后的bookid
 
-        # tmpbid = b['bid']  # 之前的bookid
-
         # 更改图片名字
-        # if len(b['image_path']):
-        #    syncpics(b['image_path'][0], str(curbid)+'.jpg')
+        if len(b['image_path']):
+            syncpics(b['image_path'][0], str(curbid)+'.jpg')
 
         chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
 
@@ -86,12 +83,10 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
             #查询当前章节是否存在
             num = cur.execute(
                 "select id from chapter where book_id=%s and title=%s", (curbid, ch['title']))
-
             if num == 0:
                 cur.execute(sql, (ch['curbid'], ch['title'], cont['content'], ch['create_time']))
                 conn.commit()
                 chapter_logger.info("新章节: %s --- 书名: %s" % (ch['title'].encode('utf-8'), btitle))
-
 
 #修改图片的名字
 def syncpics(prefn, curfn):
@@ -101,9 +96,7 @@ def syncpics(prefn, curfn):
 
 
 if __name__ == "__main__":
-    #conn, cur, mdb = init()
-    #book(conn, cur, mdb)
-    #cur.close()
-    #conn.close()
-    book_logger.info("test")
-    chapter_logger.info("test")
+    conn, cur, mdb = init()
+    book(conn, cur, mdb)
+    cur.close()
+    conn.close()
