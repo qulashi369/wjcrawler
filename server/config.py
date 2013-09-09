@@ -19,7 +19,7 @@ print is_production()
 print os.environ.get('PRODUCTION_ENV')
 
 if is_production():
-    DATABASE_URL = 'mysql://crawler:crawlerpwd@localhost:3306/xiaoshuo?charset=utf8'
+    DATABASE_URL = 'mysql://crawler:crawlerpwd@localhost:3306/xiaoshuo_bak?charset=utf8'
 else:
     DEBUG = True
     TESTING = True
