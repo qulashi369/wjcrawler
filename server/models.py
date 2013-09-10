@@ -119,6 +119,7 @@ class User(Base):
     id = Column(types.Integer, primary_key=True)
     username = Column(types.String(length=32), unique=True)
     password = Column(types.String(length=64))
+    create_time = Column(types.DateTime)
 
     def __init__(self, username, password):
         self.username = username
