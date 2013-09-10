@@ -32,8 +32,8 @@ def shutdown_session(exception=None):
 
 def recent_reading(request):
     recent_reading = request.cookies.get('recent_reading')
+    recent_book_chapters = []
     if recent_reading:
-        recent_book_chapters = []
         for bid_cid in recent_reading.split(','):
             bid, cid = [int(id) for id in bid_cid.split(':', 1)]
             recent_book_chapters.append((Book.get(bid), Chapter.get(cid, bid)))
