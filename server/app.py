@@ -1,4 +1,4 @@
-#coding: utf8
+# coding: utf8
 import time
 import os
 
@@ -22,12 +22,26 @@ def before_request():
 def teardown_request(exception=None):
     if app.debug:
         diff = time.time() - g.start_time
-        app.logger.debug('Response Time: %f ms' % float(diff*1000))
+        app.logger.debug('Response Time: %f ms' % float(diff * 1000))
 
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+
+def recent_reading(request):
+    recent_reading = request.cookies.get('recent_reading')
+    if recent_reading:
+        recent_book_chapters = []
+        for bid_cid in recent_reading.split(','):
+            bid, cid = [int(id) for id in bid_cid.split(':', 1)]
+            recent_book_chapters.append((Book.get(bid), Chapter.get(cid, bid)))
+        recent_book_chapters = recent_book_chapters[:10]
+    return recent_book_chapters
+
+
+app.jinja_env.globals.update(recent_reading=recent_reading)
 
 
 @app.route("/")
@@ -60,20 +74,26 @@ def chapters(book_id):
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
     # NOTE read/set cookies for recent reading
-    recent_reading = request.cookies.get('recent_reading')
-    if recent_reading:
-        recent_book_ids = [int(bid) for bid in recent_reading.split(',')
-                           if int(bid) != book_id]
-        recent_book_ids.insert(0, book_id)
-        book_ids = recent_book_ids[:10]
-    else:
-        book_ids = [book_id]
-
     book = Book.get(book_id)
     chapter = Chapter.get(chapter_id, book_id)
 
+    recent_reading = request.cookies.get('recent_reading')
+    rec_book_chapters = []
+    if recent_reading:
+        for bid_cid in recent_reading.split(','):
+            bid, cid = [int(id) for id in bid_cid.split(':', 1)]
+            if not bid == book_id:
+                rec_book_chapters.append(
+                    (Book.get(bid), Chapter.get(cid, bid))
+                )
+
+    rec_book_chapters.insert(0, (book, chapter))
+    rec_book_chapters = rec_book_chapters[:10]
+
     resp = make_response(render_template('content.html', **locals()))
-    resp.set_cookie('recent_reading', ','.join([str(bid) for bid in book_ids]))
+    recent_reading_str = ','.join(['%s:%s' % (book.id, chapter.id)
+                         for book, chapter in rec_book_chapters])
+    resp.set_cookie('recent_reading', recent_reading_str)
     return resp
 
 
@@ -81,7 +101,6 @@ def content(book_id, chapter_id):
 def login():
     if session.get('username'):
         return redirect(url_for('user', username=session.get('username')))
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -101,7 +120,6 @@ def login():
 def register():
     if session.get('username'):
         return redirect(url_for('user', username=session.get('username')))
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')

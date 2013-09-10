@@ -9,14 +9,16 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 /*global*/
 html{font: 12px "微软雅黑","宋体","arial","Verdana";color:#000;}
 html, body {height: 100%;}
-body{background-color:#f9faf8;}
-a:link {color:#262626}
+body{background-color:#fcfcfb;}
+a:link {color:#544943}
 a:visited, a:focus {color: #000;}
 .main {padding-top:30px}
 .wrapper {width:960px;margin: 0 auto;}
 
 
 /*base*/
+.pr {position:relative}
+.fr {float:right}
 .mb10 {margin-bottom:10px;}
 .mb30 {margin-bottom:30px;}
 .mb50 {margin-bottom:50px;}
@@ -35,11 +37,18 @@ a:visited, a:focus {color: #000;}
 /*pages*/
 .reading {background-color:#dce5db;height:100%}
 .reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:600px;height:100%}
-.header {height:43px;padding-top:45px;border-bottom:solid #C16333 2px;position:relative;}
+.header {border-bottom:solid #C16333 2px;}
+.header .title_lr{height:43px;padding-top:45px;}
 
 .header .title {font-size:32px;color:#C16333;display:inline-block;zoom:1;*display:inline;position:absolute;bottom:5px;}
-.header .login_reg {font-size:14px;position:absolute;bottom:5px;right:0px;}
-.header .login_reg span{margin:0 8px;}
+.header .login_reg{font-size:14px;position:absolute;bottom:5px;right:0px;}
+.header .login_reg span{margin:0 5px;}
+.header .recent {font-size: 14px; text-align: right;}
+.header .recent #header_rec { position: absolute; right: 95px; width: 260px;top: -21px;}
+
+.header .recent #header_rec ul {text-align:left;border:solid #bd6a3e 1px; background-color:#fff;top:6px;position:relative;padding:0 15px;padding-bottom:20px;display:none;}
+.header .recent #header_rec ul li {border-bottom:solid #a8a8a8 1px;padding:10px 0;}
+.header .recent #header_rec a {color:#bd6a3e;}
 
 .list_col li {float: left;display: inline-block;zoom: 1;vertical-align: top;}
 .list_col .last {margin-right:0;}
@@ -107,3 +116,4 @@ a:visited, a:focus {color: #000;}
 .main .lr_form form p input {height: 36px;width: 260px;font-size: 25px;padding-left: 10px;}
 .main .lr_form form p .error {color:red; line-height:40px;display:inline-block;zoom:1;*display:inline;vertical-align: top;}
 .main .lr_form form p #reg_submit, .main .lr_form form p #login_submit{color:#fff;background-color:#C16333;font-size:18px;}
+

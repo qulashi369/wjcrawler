@@ -12,6 +12,8 @@
         {% endblock head_css%}
 
         {% block head_js %}
+            <script src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+            <script src="/static/js/main.js"></script>
         {% endblock head_js %}
     {% endblock head %}
   </head>
@@ -20,8 +22,9 @@
         <div class="wrapper">
             <div class="header">
                 {% block header %}
+                  <div class="pr title_lr">
                     <h1 class="title"><a href="/">一碗书</a></h1>  
-                    <span class="login_reg">
+                    <div class="login_reg">
                         {%if session['username'] %}
                             <a href="{{url_for('user', username=session['username'])}}">{{session['username']}}</a>
                             <span>|</span>
@@ -31,7 +34,23 @@
                             <span>|</span>
                             <a href="{{url_for('register')}}">注册</a>
                         {% endif%}
-                    </span>
+                    </div>
+                  </div>
+                  <div class="recent pr">
+                      <ul id="header_rec">
+                          {% for rec_book, rec_chapter in recent_reading(request) %}
+                          {% if loop.index == 1%}
+                          <li id="header_rec_link"><span>最近看过：<a href="{{url_for('book', book_id=rec_book.id)}}">{{rec_book.title}}</a></span></li>
+                          <ul>
+                          {% endif %}
+                          <li>
+                          <a href="{{url_for('book', book_id=rec_book.id)}}">{{rec_book.title}}</a>
+                          <a class="fr" href="{{url_for('content',book_id=rec_book.id, chapter_id=rec_chapter.id)}}" title="{{rec_chapter.title}}">接着读</a>
+                          </li>
+                          {% endfor %}
+                          </ul>
+                      </ul>
+                  </div>
                 {% endblock header%}
             </div>
             <div class="main">

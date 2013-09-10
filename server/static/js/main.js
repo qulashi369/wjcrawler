@@ -78,9 +78,36 @@ jQuery(document).ready(function($) {
 			$('#login_form').submit();
 		}
 	});
+	
+	
+  $("#header_rec_link span").hover(
+	function(){$(this).css( 'cursor', 'pointer' );showHover(this);},
+    function(){hideHover(this);}
+  );
+	
+  $("#header_rec ul").hover(
+	function(){showHover(this);},
+    function(){hideHover(this);}
+  );
+	
+	
 });
 
-
+function showHover(el)
+{
+    clearTimeout( $(el).parents('ul').find("ul").data('timeout') );
+    $(el).parents('ul').find("ul").slideDown(100);
+}
+function hideHover(el)
+{
+    clearTimeout( $(el).parents('ul').find("ul").data('timeout') );
+    
+    $(el).parents('ul').find("ul")
+        .data('timeout', setTimeout(function(){
+           $(el).parents('ul').find("ul").slideUp(100);
+        },100));
+    
+}
 	
 
 
