@@ -1,83 +1,80 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <title>一碗书-体验最爽的免费小说网站|{{ book.title}}|将夜|蛮荒记|求魔|武动乾坤</title>
-    <meta name="keywords" content="小说,言情小说,穿越小说,免费小说,小说下载,好看的小说,最新章节">
-    <meta name="description" content="一碗书小说网,最好的免费小说阅读网站">
-    <link rel="stylesheet" href="/static/css/main.css">
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="header">
-          <h1 class="title">一碗书 </h1>  
-          <span class="login_reg">
-			{%if session['username'] %}
-				<a href="{{url_for('user', username=session['username'])}}">{{session['username']}}</a><span>|</span><a href="{{url_for('logout')}}">退出</a>
-			{% else%}
-          		<a href="{{url_for('login')}}">登录</a><span>|</span><a href="{{url_for('register')}}">注册</a>
-			{% endif%}
-        </span>
-      </div>  
-      <div class="main">
-        <div class="book_info">
-          <div class="cover">
-              <a href="#" title="{{book.title}}">
-                  <img src="http://yiwanshu.com/media/covers/{{book.id}}.jpg" alt="{{book.title}}" width="150" height="200">
-              </a>
-          </div>
-          <div class="infos">
-            <div class="mb10">
-                <h2>{{book.title}}</h2>
-              <span class="status">连载中</span>
-            </div>
-            <span class="dis_b mb3">作者: <a href="#">{{book.author}}</a></span>
-            <span class="dis_b mb30">分类: <a href="#">{{book.category.name}}</a></span>
-            <div class="mb10">
-              <a class="btn btn38 new" href="#">看最新</a>
-              <a class="btn btn38 start" href="#">开始阅读</a>
-            </div>
-            <span class="latest">最新章节：<a href="/{{book.id}}/{{book.latest_chapter.id}}">{{book.latest_chapter.title|truncate(35, True) }}</a></span>
-          </div>
-          <div class="desc">
-            <p>
-                {{book.description|truncate(210, True)}}
-            </p>
-          </div>
+{% extends "base.html" %}
+
+{% block title %}
+    {{book.title}}最新章节-{{book.author}} 
+{% endblock title %}
+
+
+{% block keywords %} 
+    {{book.title}},{{book.title}}最新章节,{{book.title}}全文阅读,{{book.title}}无弹窗,{{book.author}},{{book.author}}最新作品
+{% endblock keywords %}
+
+{% block description %}
+《{{book.title}}》是{{book.author}}倾力打造的一部神作，一碗书小说网完整收录《{{book.title}}》最新章节，更新及时、页面清爽无弹窗、访问迅速，尽情享受《{{book.title}}》的文字快感。一碗书小说网,最好的免费小说阅读网站
+{% endblock description %}
+
+{% block main %}      
+    <div class="book_info">
+      <div class="cover">
+          <a href="#" title="{{book.title}}">
+              <img src="http://yiwanshu.com/media/covers/{{book.id}}.jpg" alt="{{book.title}}" width="150" height="200">
+          </a>
+      </div>
+      <div class="infos">
+        <div class="mb10">
+            <h2>{{book.title}}</h2>
+          <span class="status">连载中</span>
         </div>
-        <div class="c_list">
-          <div class="clearfix">
-            <ol class="c_desc">
-            {% for chapter in first_twelve_chapters %}
+        <span class="dis_b mb3">作者: <a href="#">{{book.author}}</a></span>
+        <span class="dis_b mb30">分类: <a href="#">{{book.category.name}}</a></span>
+        <div class="mb10">
+          <form id="fav_form" action="{{url_for("fav", book_id=book.id)}}" method="post">
+              {% if not is_faved %}
+                <input id="fav_action" name="action" type="hidden" value="fav">
+                <a class="btn btn38 fav" id="fav" href="javascript:void()">收藏</a>
+              {% else %}
+                <input name="action" type="hidden" value="unfav">
+                <a class="btn btn38 fav" id="fav" href="javascript:void()">取消收藏</a>
+              {% endif %}
+              <a class="btn btn38 start" href="#">开始阅读</a>
+          </form>
+        </div>
+        <span class="latest">最新章节：<a href="/{{book.id}}/{{book.latest_chapter.id}}">{{book.latest_chapter.title|truncate(35, True) }}</a></span>
+      </div>
+      <div class="desc">
+        <p>
+            {{book.description|truncate(210, True)}}
+        </p>
+      </div>
+    </div>
+    <div class="c_list">
+      <div class="clearfix">
+        <ol class="c_desc">
+        {% for chapter in last_twelve_chapters %}
+            {% if loop.index is divisibleby 3 %}  
+            <li class="last">
+            {% else %}
+            <li>
+            {% endif %}
+            <a class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}">{{chapter.title|truncate(20, True) }}</a>
+          </li>
+        {% endfor %}
+        </ol>
+      </div>
+      <div class="more"><a href="/{{book.id}}/chapters">「查看所有章节」</a></div>
+      <div class="clearfix">
+        <ol class="c_asc">
+            {% for chapter in first_six_chapters %}
                 {% if loop.index is divisibleby 3 %}  
                 <li class="last">
                 {% else %}
                 <li>
                 {% endif %}
-                <a class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}"><span>{{loop.index}}·</span>{{chapter.title|truncate(20, True) }}</a>
+                <a class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}">{{ chapter.title|truncate(20, True) }}</a>
               </li>
             {% endfor %}
-            </ol>
-          </div>
-          <div class="more"><a href="/{{book.id}}/chapters">「查看所有章节」</a></div>
-          <div class="clearfix">
-            <ol class="c_asc">
-                {% for chapter in last_six_chapters %}
-                    {% if loop.index is divisibleby 3 %}  
-                    <li class="last">
-                    {% else %}
-                    <li>
-                    {% endif %}
-                    <a class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}"><span>{{chapter_count - 6 + loop.index}}·</span>{{chapter.title|truncate(20, True) }}</a>
-
-                  </li>
-                {% endfor %}
-              <li>
-            </ol>
-          </div>
-        </div>
+          <li>
+        </ol>
       </div>
     </div>
-  </body>
-</html>
-      
+{% endblock main%}

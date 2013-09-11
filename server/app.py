@@ -1,11 +1,11 @@
-#coding: utf8
+# coding: utf8
 import time
 import os
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
-                   session, flash, request, redirect)
+                   session, flash, request, redirect, make_response, jsonify)
 
-from models import Book, Chapter, User
+from models import Book, Chapter, User, Favourite
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
@@ -22,12 +22,26 @@ def before_request():
 def teardown_request(exception=None):
     if app.debug:
         diff = time.time() - g.start_time
-        app.logger.debug('Response Time: %f ms' % float(diff*1000))
+        app.logger.debug('Response Time: %f ms' % float(diff * 1000))
 
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+
+def recent_reading(request):
+    recent_reading = request.cookies.get('recent_reading')
+    recent_book_chapters = []
+    if recent_reading:
+        for bid_cid in recent_reading.split(','):
+            bid, cid = [int(id) for id in bid_cid.split(':', 1)]
+            recent_book_chapters.append((Book.get(bid), Chapter.get(cid, bid)))
+        recent_book_chapters = recent_book_chapters[:10]
+    return recent_book_chapters
+
+
+app.jinja_env.globals.update(recent_reading=recent_reading)
 
 
 @app.route("/")
@@ -38,43 +52,68 @@ def index():
     return render_template('index.html', **locals())
 
 
-@app.route("/<int:id>")
-def book(id):
-    book = Book.query.filter_by(id=id).first()
-    chapters = Chapter.query.filter_by(book_id=id)
-    first_twelve_chapters = chapters.limit(12)
-    last_six_chapters = chapters.order_by(Chapter.id.desc()).limit(6).all()
-    last_six_chapters.reverse()
-    chapter_count = chapters.count()
+@app.route("/<int:book_id>")
+def book(book_id):
+    username = session.get('username')
+    is_faved = False
+    if username:
+        user = User.get(username)
+        is_faved = Favourite.is_faved(user.id, book_id)
+
+    book = Book.get(book_id)
+    chapters = Chapter.query.filter_by(book_id=book_id)
+    last_twelve_chapters = chapters.order_by(Chapter.id.desc()).limit(12)
+    first_six_chapters = chapters.limit(6).all()
+    first_six_chapters.reverse()
     return render_template('book.html', **locals())
 
 
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
-    book = Book.query.filter_by(id=book_id).first()
-    chapters = db_session.query(Chapter.id,
-                                Chapter.title
-                                ).filter_by(book_id=book_id).all()
+    book = Book.get(book_id)
+    chapters = db_session.query(
+        Chapter.id,
+        Chapter.title
+    ).filter_by(
+        book_id=book_id
+    ).all()
     return render_template('chapters.html', **locals())
 
 
 @app.route("/<int:book_id>/<int:chapter_id>")
 def content(book_id, chapter_id):
-    book = Book.query.filter_by(id=book_id).first()
-    chapter = Chapter.query.filter_by(
-        id=chapter_id, book_id=book_id
-    ).first()
-    return render_template('content.html', **locals())
+    book = Book.get(book_id)
+    chapter = Chapter.get(chapter_id, book_id)
+
+    # NOTE read/set cookies for recent reading
+    recent_reading = request.cookies.get('recent_reading')
+    rec_book_chapters = []
+    if recent_reading:
+        for bid_cid in recent_reading.split(','):
+            bid, cid = [int(id) for id in bid_cid.split(':', 1)]
+            if not bid == book_id:
+                rec_book_chapters.append(
+                    (Book.get(bid), Chapter.get(cid, bid))
+                )
+    rec_book_chapters.insert(0, (book, chapter))
+    rec_book_chapters = rec_book_chapters[:10]
+
+    resp = make_response(render_template('content.html', **locals()))
+    recent_reading_str = ','.join(['%s:%s' % (book.id, chapter.id)
+                         for book, chapter in rec_book_chapters])
+    resp.set_cookie('recent_reading', recent_reading_str)
+    return resp
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    target = request.values.get('target', '')
     if session.get('username'):
         return redirect(url_for('user', username=session.get('username')))
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        target = request.form.get('target')
         if not username:
             empty_username_error = True
         elif not password:
@@ -83,6 +122,8 @@ def login():
             login_error = True
         else:
             session['username'] = username
+            if target:
+                return redirect(target)
             return redirect(url_for('user', username=username))
     return render_template('login.html', **locals())
 
@@ -91,7 +132,6 @@ def login():
 def register():
     if session.get('username'):
         return redirect(url_for('user', username=session.get('username')))
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -101,7 +141,7 @@ def register():
             empty_password_error = True
         elif not User.check_username(username):
             username_invalid_error = True
-        elif User.is_username_exists(username):
+        elif User.is_exists(username):
             username_exists_error = True
         else:
             User.register(username, password)
@@ -116,15 +156,41 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route("/user", defaults={'username': None})
 @app.route("/user/<username>")
 def user(username):
-    # NOTE  暂时无法查看他人页面
-    if not session.get('username') == username:
-        flash('请先登录帐号')
+    logined_username = session.get('username')
+    if not logined_username:
+        flash(u'请先登录帐号', 'error')
         return redirect(url_for('login'))
+    elif username and not (username == logined_username):
+        return '无法查看他人主页'
+    else:
+        user = User.get(logined_username)
+        favs = user.get_favs()
+        favs_count = len(favs)
+        return render_template('user.html', **locals())
+
+
+@app.route("/fav/<int:book_id>/", methods=['POST'])
+def fav(book_id):
+    username = session.get('username')
+    if not username:
+        flash(u'请先登录帐号，再收藏小说', 'error')
+        return (
+            redirect(url_for('login', target=url_for('book', book_id=book_id)))
+        )
     else:
         user = User.get(username)
-    return render_template('user.html', **locals())
+        action = request.form.get('action', 'fav')
+        refer = request.form.get('refer', '')
+        if action == 'fav':
+            Favourite.add(user.id, book_id)
+        else:
+            Favourite.remove(user.id, book_id)
+        if refer == 'user_page':
+            return redirect(url_for('user', username=username))
+        return redirect(url_for('book', book_id=book_id))
 
 
 @app.route('/favicon.ico')

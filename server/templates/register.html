@@ -1,65 +1,44 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <title>一碗书-体验最爽的免费小说网站|将夜|蛮荒记|求魔|武动乾坤</title>
-    <meta name="keywords" content="小说,言情小说,穿越小说,免费小说,小说下载,好看的小说,最新章节">
-    <meta name="description" content="一碗书小说网,最好的免费小说阅读网站">
-    <link rel="stylesheet" href="/static/css/main.css">
-    <script src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
-    <script src="/static/js/main.js"></script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="header">
-        <h1 class="title ">一碗书</h1>  
-        <span class="login_reg">
-          <a href="{{url_for('login')}}">登录</a><span>|</span><a href="{{url_for('register')}}">注册</a>
-        </span>
-      </div>  
-      <div class="main">
-        <div class="lr_form"> 
-          <h2>注册一碗书，天天一碗书。</h2>
-          <form id="reg_form" action="{{url_for('register')}}" method="post">
-            <p>
-              <label for="username">用户名</label>
-              <input id="username" type="text" name="username">
-              <span class="error">
-				  {%if empty_username_error%}
-				  	用户名不能为空
-				  {%endif%}
-				  {%if username_invalid_error%}
-				  	仅允许字母与数字
-				  {%endif%}
-             	 {%if username_exists_error%}
-				  	该用户名已存在
-				  {%endif%}
-              </span>
-            </p>
-            <p>
-              <label for="password">密码</label>
-              <input id="password" type="password" name="password">
-              <span class="error">
-              	  {%if empty_password_error%}
-				  	密码不能为空
-				  {%endif%}
-              </span>
-            </p>
-            <p>
-              <label for="re_password">确认密码</label>
-              <input id="re_password" type="password">
-              <span class="error"></span>
-            </p>
-            <p>
-            	<label>&nbsp;</label>
-            	<a class="btn btn274" id="reg_submit" href="javascript:void();">注册</a>	
-            </p>
-            
-          </form>
-        </div>
-      </div>
-    </div>
-  </body>
-</html>
-      
- 
+{% extends "base.html" %}
+
+{% block title %}用户注册 —— 一碗书-体验最爽的免费小说网站|将夜|蛮荒记|求魔|武动乾坤{% endblock %}
+
+{% block main%}
+<div class="lr_form"> 
+  <h2>注册一碗书，天天一碗书。</h2>
+  <form id="reg_form" action="{{url_for('register')}}" method="post">
+    <p>
+      <label for="username">用户名</label>
+      <input id="username" type="text" name="username">
+      <span class="error">
+          {%if empty_username_error%}
+            用户名不能为空
+          {%endif%}
+          {%if username_invalid_error%}
+            仅允许字母与数字
+          {%endif%}
+         {%if username_exists_error%}
+            该用户名已存在
+          {%endif%}
+      </span>
+    </p>
+    <p>
+      <label for="password">密码</label>
+      <input id="password" type="password" name="password">
+      <span class="error">
+          {%if empty_password_error%}
+            密码不能为空
+          {%endif%}
+      </span>
+    </p>
+    <p>
+      <label for="re_password">确认密码</label>
+      <input id="re_password" type="password">
+      <span class="error"></span>
+    </p>
+    <p>
+        <label>&nbsp;</label>
+        <a class="btn btn274" id="reg_submit" href="javascript:void();">注册</a>	
+    </p>
+  </form>
+</div>
+{% endblock main%}
