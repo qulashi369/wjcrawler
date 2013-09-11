@@ -132,6 +132,7 @@ class User(Base):
         user = cls(username, password)
         db_session.add(user)
         db_session.commit()
+        return user.id
 
     @classmethod
     def get(cls, username):
@@ -159,11 +160,62 @@ class User(Base):
     @classmethod
     def register(cls, username, password):
         pw_hash = generate_password_hash(password)
-        cls.add(username, pw_hash)
+        return cls.add(username, pw_hash)
+
+    def get_favs(self):
+        favs = Favourite.gets(self.id)
+        return favs
 
     def __repr__(self):
         return '<User(%r, %r)>' % (self.id, self.username)
 
 
+class Favourite(Base):
+    __tablename__ = 'favourite'
+    id = Column(types.Integer, primary_key=True)
+    uid = Column(types.Integer)
+    bid = Column(types.Integer)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, uid, bid):
+        self.uid = uid
+        self.bid = bid
+        self.create_time = datetime.now()
+
+    def get_book(self):
+        return Book.get(self.bid)
+
+    @classmethod
+    def get(cls, uid, bid):
+        return cls.query.filter_by(uid=uid, bid=bid).scalar()
+
+    @classmethod
+    def gets(cls, uid):
+        return cls.query.filter_by(uid=uid).all()
+
+    @classmethod
+    def add(cls, uid, bid):
+        fav = cls(uid, bid)
+        db_session.add(fav)
+        db_session.commit()
+
+    @classmethod
+    def remove(cls, uid, bid):
+        fav = cls.get(uid, bid)
+        db_session.delete(fav)
+        db_session.commit()
+
+    @classmethod
+    def get_bids(cls, uid):
+        bids = db_session.query(Favourite.bid).filter_by(uid=uid).all()
+        return [bid[0] for bid in bids]
+
+    @classmethod
+    def is_faved(cls, uid, bid):
+        return db_session.query(
+            exists().where(cls.uid == uid).where(cls.bid == bid)
+        ).scalar()
+
 Index('chapter_book_id', Chapter.book_id)
 Index('username', User.username)
+Index('favourite', Favourite.uid, Favourite.bid, unique=True)

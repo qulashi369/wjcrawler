@@ -79,6 +79,10 @@ jQuery(document).ready(function($) {
 		}
 	});
 	
+	$('#fav').click(function(){
+		$('#fav_form').submit();
+	});
+	
 	
   $("#header_rec_link span").hover(
 	function(){$(this).css( 'cursor', 'pointer' );showHover(this);},

@@ -10,8 +10,7 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input
 html{font: 12px "微软雅黑","宋体","arial","Verdana";color:#000;}
 html, body {height: 100%;}
 body{background-color:#fcfcfb;}
-a:link {color:#544943}
-a:visited, a:focus {color: #000;}
+a:link, a:visited, a:focus {color: #544943;}
 .main {padding-top:30px}
 .wrapper {width:960px;margin: 0 auto;}
 
@@ -74,7 +73,7 @@ a:visited, a:focus {color: #000;}
 .main .book_info .infos {float:left; width:298px;height:165px;padding-top:35px;}
 .main .book_info .infos h2 {display:inline-block;zoom:1;*display:inline;font-size:24px;margin-right:10px;vertical-align: middle;}
 .main .book_info .infos .status {display:inline-block;zoom:1;*display:inline;padding:3px;background-color:#A2A2A2;color:#fff;}
-.main .book_info .infos .new {background-color:#D28028;color:#fff;margin-right:20px;font-size:16px;}
+.main .book_info .infos .fav {background-color:#D28028;color:#fff;margin-right:20px;font-size:16px;}
 .main .book_info .infos .start {background-color:#76825B;color:#fff;font-size:16px;}
 .main .book_info .infos .latest {font-size:14px;}
 .main .book_info .desc {padding:20px;width:440px;float:left;background-color: #E6F0DE; max-height: 160px;}
@@ -110,6 +109,7 @@ a:visited, a:focus {color: #000;}
 
 /* login\register*/
 .main .lr_form {width:474px;margin:0 auto;padding-top:40px;}
+.main .lr_form .hint{text-align: center; margin-bottom: 10px; font-size: 14px; color: red;}
 .main .lr_form h2{text-align: center;font-size: 24px;margin-bottom:40px;}
 .main .lr_form form p {height: 40px;margin-bottom: 25px;}
 .main .lr_form form p label {float: left; width: 15%; text-align:right;padding-right:26px;font-size:14px;line-height:40px;}
@@ -117,3 +117,24 @@ a:visited, a:focus {color: #000;}
 .main .lr_form form p .error {color:red; line-height:40px;display:inline-block;zoom:1;*display:inline;vertical-align: top;}
 .main .lr_form form p #reg_submit, .main .lr_form form p #login_submit{color:#fff;background-color:#C16333;font-size:18px;}
 
+.profile{margin-bottom:40px;}
+.profile .pic {float:left;margin-right:20px;}
+.profile .info {float:left;line-height:180%}
+.profile .extract {float:right;text-align:right;}
+.profile .info .name {font-size:16px;font-weight:bold;}
+.profile .info .account {margin-top:10px;}
+.profile .info .account .setting{margin-right:10px;}
+.profile .extract p {text-indent:-12px;font-size:18px;margin-top:10px;}
+.profile .extract .source a{font-size:14px;color:#bd6a3e;}
+.bookshelf {width:590px;float:left}
+.bookshelf h3{font-size:18px;margin-bottom:6px;}
+.bookshelf .favs {margin-bottom:40px;}
+.bookshelf .favs li{height:115px;border-bottom:solid #e3ddd8 1px;padding-top:14px;}
+.bookshelf .favs li .cover {float:left;margin-right:15px;}
+.bookshelf .favs li .info {float:left;line-height:200%;}
+.bookshelf .favs li .info .title {font-size:16px;}
+.bookshelf .favs li .info .author {font-size:14px;}
+.right_sidebar {float:right}
+.right_sidebar .blank{width:300px;height:120px;background-color:#F5F5F5;line-height:120px;text-align:center;font-size:18px;}
+.right_sidebar .tell {text-align:right;margin-top:10px;}
+.right_sidebar .tell a {color:#C16333}

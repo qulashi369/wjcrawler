@@ -28,8 +28,16 @@
         <span class="dis_b mb3">作者: <a href="#">{{book.author}}</a></span>
         <span class="dis_b mb30">分类: <a href="#">{{book.category.name}}</a></span>
         <div class="mb10">
-          <a class="btn btn38 new" href="#">看最新</a>
-          <a class="btn btn38 start" href="#">开始阅读</a>
+          <form id="fav_form" action="{{url_for("fav", book_id=book.id)}}" method="post">
+              {% if not is_faved %}
+                <input id="fav_action" name="action" type="hidden" value="fav">
+                <a class="btn btn38 fav" id="fav" href="javascript:void()">收藏</a>
+              {% else %}
+                <input name="action" type="hidden" value="unfav">
+                <a class="btn btn38 fav" id="fav" href="javascript:void()">取消收藏</a>
+              {% endif %}
+              <a class="btn btn38 start" href="#">开始阅读</a>
+          </form>
         </div>
         <span class="latest">最新章节：<a href="/{{book.id}}/{{book.latest_chapter.id}}">{{book.latest_chapter.title|truncate(35, True) }}</a></span>
       </div>
@@ -42,13 +50,13 @@
     <div class="c_list">
       <div class="clearfix">
         <ol class="c_desc">
-        {% for chapter in first_twelve_chapters %}
+        {% for chapter in last_twelve_chapters %}
             {% if loop.index is divisibleby 3 %}  
             <li class="last">
             {% else %}
             <li>
             {% endif %}
-            <a class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}"><span>{{loop.index}}·</span>{{chapter.title|truncate(20, True) }}</a>
+            <a class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}">{{chapter.title|truncate(20, True) }}</a>
           </li>
         {% endfor %}
         </ol>
@@ -56,14 +64,13 @@
       <div class="more"><a href="/{{book.id}}/chapters">「查看所有章节」</a></div>
       <div class="clearfix">
         <ol class="c_asc">
-            {% for chapter in last_six_chapters %}
+            {% for chapter in first_six_chapters %}
                 {% if loop.index is divisibleby 3 %}  
                 <li class="last">
                 {% else %}
                 <li>
                 {% endif %}
-                <a class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}"><span>{{chapter_count - 6 + loop.index}}·</span>{{chapter.title|truncate(20, True) }}</a>
-
+                <a class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}">{{ chapter.title|truncate(20, True) }}</a>
               </li>
             {% endfor %}
           <li>
