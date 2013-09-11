@@ -35,7 +35,7 @@ a:visited, a:focus {color: #000;}
 .header_r {font-size:14px}
 
 /*pages*/
-.reading {background-color:#dce5db;height:100%}
+.reading {background-color:#dce5db;overflow:auto;min-height:100%;}
 .reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:600px;height:100%}
 .header {border-bottom:solid #C16333 2px;}
 .header .title_lr{height:43px;padding-top:45px;}
