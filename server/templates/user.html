@@ -38,7 +38,7 @@
 	         <div class="info">
 	             <span class="title"><a href="/{{ fav.get_book().id}}" target="_blank">{{ fav.get_book().title}}</a></span><br>
 	             <span class="author"><a href="#">{{ fav.get_book().author }}</a></span><br>
-	             <span class="latest"><a href="{{ fav.get_book().id}}/{{fav.get_book().latest_chapter.id}}" target="_blank">最新章节：{{fav.get_book().latest_chapter.title}}</a></span>
+	             <span class="latest"><a href="/{{ fav.get_book().id}}/{{fav.get_book().latest_chapter.id}}" target="_blank">最新章节：{{fav.get_book().latest_chapter.title}}</a></span>
 	             
 	             <form id="fav_form" action="{{url_for("fav", book_id=fav.get_book().id)}}" method="post">
                         <input name="action" type="hidden" value="unfav">
