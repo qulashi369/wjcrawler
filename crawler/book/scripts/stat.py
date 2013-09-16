@@ -3,7 +3,7 @@
 def stat():
     import pymongo
     connection=pymongo.Connection('localhost',27017)
-    db = connection.xiaoshuo1
+    db = connection.xiaoshuo2
     for b in db.Book.find():
         chapter_count = db.Chapter.find({"book_id":b['bid']}).count()
         content_count = db.Content.find({"book_id":b['bid']}).count()

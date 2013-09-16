@@ -25,10 +25,10 @@ chapter_logger.addHandler(chapter_handler)
 
 def init():
     conn = MySQLdb.connect(host='localhost', user='crawler', passwd='crawlerpwd',
-                           db='xiaoshuo_bak', port=3306, charset='utf8')
+                           db='xiaoshuo', port=3306, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
-    return conn, cur, client.xiaoshuo1
+    return conn, cur, client.xiaoshuo2
 
 
 def book(conn, cur, mdb):
@@ -71,7 +71,7 @@ def book(conn, cur, mdb):
         if len(b['image_path']):
             syncpics(b['image_path'][0], str(curbid)+'.jpg')
 
-        #chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
+        chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
 
 
 def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):

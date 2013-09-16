@@ -1,0 +1,1 @@
+mysqldump -h localhost -u root -p --add-drop-database --add-drop-table xiaoshuo>/data/mysql/v3_85.sql

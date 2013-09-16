@@ -7,7 +7,7 @@
 
 def load():
     bs = open("books.txt", "r")
-    return (b for i, b in enumerate(bs) if i <250)
+    return (b for i, b in enumerate(bs) if i>400 and i <500)
 
 books = load()
 
