@@ -1,1 +1,0 @@
-mysqldump -h localhost -u root -p --add-drop-database --add-drop-table xiaoshuo_bak>/data/mysql/v2_57.sql
