@@ -9,16 +9,18 @@ from logging import FileHandler
 import time
 
 
-book_handler = FileHandler("/home/yj/b_%s" % time.strftime("%Y%m%d%H%M", time.localtime()), "a+")
-chapter_handler = FileHandler("/home/yj/c_%s" % time.strftime("%Y%m%d%H%M", time.localtime()), "a+")
+book_handler = FileHandler("/home/yj/b_%s" % time.strftime("%Y%m%d", time.localtime()), "a+")
+chapter_handler = FileHandler("/home/yj/c_%s" % time.strftime("%Y%m%d", time.localtime()), "a+")
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 book_handler.setFormatter(formatter)
 book_handler.setLevel(logging.INFO)
 chapter_handler.setFormatter(formatter)
 chapter_handler.setLevel(logging.INFO)
 book_logger = logging.getLogger("book")
+book_logger.setLevel(logging.DEBUG)
 book_logger.addHandler(book_handler)
 chapter_logger = logging.getLogger("chapter")
+chapter_logger.setLevel(logging.DEBUG)
 chapter_logger.addHandler(chapter_handler)
 
 def init():
@@ -26,7 +28,7 @@ def init():
                            db='xiaoshuo', port=3306, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
-    return conn, cur, client.xiaoshuo1
+    return conn, cur, client.xiaoshuo2
 
 
 def book(conn, cur, mdb):
@@ -90,8 +92,10 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
 
 #修改图片的名字
 def syncpics(prefn, curfn):
-    pfp = "/srv/salt/code/wyzq/crawler/book/pics/"
-    cfp = "/var/www/img/covers/"
+    print prefn, curfn
+    pfp = "/home/yj/wyzq/crawler/book/pics/"
+    #cfp = "/var/www/img/covers/"
+    cfp = "/tmp/"
     shutil.copy(pfp + prefn, cfp + curfn)
 
 
@@ -100,3 +104,4 @@ if __name__ == "__main__":
     book(conn, cur, mdb)
     cur.close()
     conn.close()
+
