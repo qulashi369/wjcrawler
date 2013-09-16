@@ -1,1 +1,61 @@
-hello {{user.username}}
+{% extends "base.html" %}
+
+{% block title %}
+    {{user.username}} 
+{% endblock title %}
+
+
+{% block main %}      
+<div class="profile clearfix">
+	<div class="pic">
+		<a href="{{ url_for('user', username=user.username)}}">
+			<img src="/static/image/default_avatar.jpg" alt="{{user.username}}" width="80" height="80">
+		</a>	
+	</div>
+	<div class="info">
+		<span class="name">{{user.username}}</span><br>
+		<span class="join">{{user.create_time.date()}} 加入</span>
+		<div class="account">
+			<span class="setting"><a href="#">设置</a></span>
+			<span class="pwd_protect"><a href="#">帐号密保</a></span>	
+		</div>
+	</div>
+	<div class="extract">
+		<p>「桑桑少爷我今天喝醉了就不回来睡了你记得把锅上炖的剩鸡汤喝掉。」</p>
+		<p class="source"><a href="/10011">-《将夜》</a></p>
+	</div>
+</div>
+<div class="bookshelf">
+	<h3>我的书架（{{ favs_count }}）</h3>
+	<ul class="favs">
+        {% for fav in favs %}
+	    <li>
+	        <div class="cover">
+	            <a href="/{{ fav.get_book().id}}" target="_blank">
+	                <img src="http://yiwanshu.com/media/covers/{{ fav.get_book().id}}.jpg" alt="{{ fav.get_book().title}}" width="78" height="102">
+	            </a>
+	         </div>
+	         <div class="info">
+	             <span class="title"><a href="/{{ fav.get_book().id}}" target="_blank">{{ fav.get_book().title}}</a></span><br>
+	             <span class="author"><a href="#">{{ fav.get_book().author }}</a></span><br>
+	             <span class="latest"><a href="{{ fav.get_book().id}}/{{fav.get_book().latest_chapter.id}}" target="_blank">最新章节：{{fav.get_book().latest_chapter.title}}</a></span>
+	             
+	             <form id="fav_form" action="{{url_for("fav", book_id=fav.get_book().id)}}" method="post">
+                        <input name="action" type="hidden" value="unfav">
+                        <input name="refer" type="hidden" value="user_page">
+                        <span class="fav">{{ fav.create_time.date()}} 收藏 | <a id="fav" href="javascript:void()">取消收藏</a></span>
+                  </form>
+	             
+	             
+	         </div>
+	    </li>
+        {% endfor %}
+	</ul>
+</div>
+<div class="right_sidebar">
+    <div class="blank">
+        <p>更多功能，敬请期待</p>
+    </div>
+    <p class="tell"><a href="">告诉我们你还需要的功能</a></p>
+</div>
+{% endblock main%}

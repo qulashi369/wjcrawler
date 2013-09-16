@@ -15,8 +15,6 @@ PROPAGATE_EXCEPTIONS = True
 LOG = '/var/log/applog/app.log'
 LOG_LEVEL = logging.WARNING
 
-print is_production()
-print os.environ.get('PRODUCTION_ENV')
 
 if is_production():
     DATABASE_URL = 'mysql://crawler:crawlerpwd@localhost:3306/xiaoshuo_bak?charset=utf8'
