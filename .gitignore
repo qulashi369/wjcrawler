@@ -3,7 +3,8 @@
 *local*.py
 proxies.txt
 *.log
-
+*.jpg
+*.png
 # C extensions
 *.so
 
