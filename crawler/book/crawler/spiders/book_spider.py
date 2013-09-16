@@ -109,7 +109,7 @@ class ContentSpider(BaseSpider):
         self.Content = get_db_content()
 
     def start_requests(self):
-        for chapter in self.Chapter.find()[0:20000]:  # 左开右闭， [0:5): 0,1,2,3,4
+        for chapter in self.Chapter.find():  # 左开右闭， [0:5): 0,1,2,3,4
             cid = chapter.get('cid')
             book_id = chapter.get('book_id')
             if self.Content.find_one({"cid": cid, "book_id": book_id}):

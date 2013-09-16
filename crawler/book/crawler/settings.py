@@ -41,7 +41,7 @@ DEFAULT_REQUEST_HEADERS = {
 # mongodb setting
 MONGO_SERVER = 'localhost'
 MONGO_PORT = 27017
-MONGO_DB_NAME = 'xiaoshuo1'
+MONGO_DB_NAME = 'xiaoshuo3'
 
 
 DOWNLOADER_MIDDLEWARES = {
