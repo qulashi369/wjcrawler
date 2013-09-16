@@ -148,7 +148,10 @@ class User(Base):
 
     @classmethod
     def check_username(cls, username):
-        p = re.compile('^\w+$')
+        '''中英文数字下划线混合，4-16字节'''
+        if not 4 <= len(username.encode('gbk')) <= 16:
+            return False
+        p = re.compile(ur"^[\w\u4e00-\u9fa5]{2,16}$")
         return True if p.match(username) else False
 
     @classmethod

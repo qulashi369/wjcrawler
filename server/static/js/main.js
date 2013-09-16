@@ -32,11 +32,14 @@ jQuery(document).ready(function($) {
 			return false;
 		}
 		if (!check_username(username)){
-			$("#username").next('.error').html('仅允许字母与数字')
+			$("#username").next('.error').html('4-16字节，仅允许中英文数字')
 			invalid = true
 		}else{
 			$("#username").next('.error').html('')
 			invalid = false
+		}
+    if (invalid){
+			return false;
 		}
 		if (password != re_password){
 			$("#re_password").next('.error').html('密码不匹配')
@@ -116,7 +119,21 @@ function hideHover(el)
 
 
 function check_username(str){
-	var result=str.match(/^[a-zA-Z0-9]+$/); 
+  if (4 > getByteLen(str) || getByteLen(str) > 16){
+    return false;
+  }
+	var result=str.match(/^[\w\u4e00-\u9fa5]{2,16}$/); 
 	if(result==null) return false; 
 	return true; 
+}
+
+ function getByteLen(val) {
+    var len = 0;
+    for (var i = 0; i < val.length; i++) {
+        if (val[i].match(/[^\x00-\xff]/ig) != null) //全角
+            len += 2;
+        else
+            len += 1;
+    }
+    return len;
 }
