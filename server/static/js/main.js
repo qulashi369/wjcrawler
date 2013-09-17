@@ -96,8 +96,21 @@ jQuery(document).ready(function($) {
 	function(){showHover(this);},
     function(){hideHover(this);}
   );
-	
-	
+
+  $("#no_last_c").click(
+    function(){
+        alert('已经是第一章啦...');
+   });
+
+  $("#no_next_c").click(
+    function(){
+        alert('没有下一章啦...');
+  });
+  
+  //禁止右键, 禁止选中
+  $("#content_p").bind("contextmenu",function(){return false;});  
+  $("#content_p").bind("selectstart",function(){return false;});  
+
 });
 
 function showHover(el)

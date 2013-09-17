@@ -25,7 +25,11 @@
             else if (e.which == 191){
                 var url = $("#chapters_btn").attr('href');
             }
-            else {
+            else if (e.which == 17){
+                alert('不许复制哟~');
+                return false;
+            }
+            else{
                 return
             }
             window.location.href=url;
@@ -51,14 +55,14 @@
             {% if chapter and chapter.previous() %}
                 <a id="last_c_btn" class="rb_btn btn btn40" href="/{{chapter.previous().book_id}}/{{chapter.previous().id}}">上一章</a>  
             {% else %}
-                <a id="last_c_btn" class="rb_btn btn btn40" href="#">上一章</a>  
+                <a id="no_last_c" class="rb_btn btn btn40" href="#">上一章</a>  
             {% endif %}
         </div>
         <div class="next_chapter">
             {% if chapter and chapter.next() %}
               <a id="next_c_btn" class="rb_btn btn btn40" href="/{{chapter.next().book_id}}/{{chapter.next().id}}">下一章</a>  
             {% else %}
-              <a id="next_c_btn" class="rb_btn btn btn40" href="#">下一章</a>  
+              <a id="no_next_c" class="rb_btn btn btn40" href="#">下一章</a>  
             {% endif %}
         </div>
         <div class="view_chapters">
