@@ -23,10 +23,10 @@
             <div class="header">
                 {% block header %}
                   <div class="pr title_lr">
-                    <h1 class="title"><a href="/">一碗书</a></h1>  
+                    <h1 class="title"><a href="/"><img src="/static/image/logo.png" /></a></h1>  
                     <div class="login_reg">
-                        {%if session['username'] %}
-                            <a href="{{url_for('user', username=session['username'])}}">{{session['username']}}</a>
+                        {%if session['uid'] %}
+                            <a href="{{url_for('user', uid=session['uid'])}}">{{session['username']}}</a>
                             <span>|</span>
                             <a href="{{url_for('logout')}}">退出</a>
                         {% else%}

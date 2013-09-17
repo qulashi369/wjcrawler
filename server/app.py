@@ -3,7 +3,7 @@ import time
 import os
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
-                   session, flash, request, redirect, make_response, jsonify)
+                   session, flash, request, redirect, make_response)
 
 from models import Book, Chapter, User, Favourite
 from database import db_session
@@ -54,10 +54,10 @@ def index():
 
 @app.route("/<int:book_id>")
 def book(book_id):
-    username = session.get('username')
+    uid = session.get('uid')
     is_faved = False
-    if username:
-        user = User.get(username)
+    if uid:
+        user = User.get_by_uid(uid)
         is_faved = Favourite.is_faved(user.id, book_id)
 
     book = Book.get(book_id)
@@ -108,8 +108,8 @@ def content(book_id, chapter_id):
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     target = request.values.get('target', '')
-    if session.get('username'):
-        return redirect(url_for('user', username=session.get('username')))
+    if session.get('uid'):
+        return redirect(url_for('uid', uid=session.get('uid')))
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -118,20 +118,23 @@ def login():
             empty_username_error = True
         elif not password:
             empty_password_error = True
-        elif not User.login(username, password):
-            login_error = True
         else:
-            session['username'] = username
-            if target:
-                return redirect(target)
-            return redirect(url_for('user', username=username))
+            user = User.login(username, password)
+            if not user:
+                login_error = True
+            else:
+                session['uid'] = user.id
+                session['username'] = user.username
+                if target:
+                    return redirect(target)
+                return redirect(url_for('user', uid=user.id))
     return render_template('login.html', **locals())
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    if session.get('username'):
-        return redirect(url_for('user', username=session.get('username')))
+    if session.get('uid'):
+        return redirect(url_for('user', uid=session.get('uid')))
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -144,29 +147,31 @@ def register():
         elif User.is_exists(username):
             username_exists_error = True
         else:
-            User.register(username, password)
-            session['username'] = username
-            return redirect(url_for('user', username=username))
+            user = User.register(username, password)
+            session['uid'] = user.id
+            session['username'] = user.username
+            return redirect(url_for('user', uid=user.id))
     return render_template('register.html', **locals())
 
 
 @app.route("/logout")
 def logout():
+    session.pop('uid', None)
     session.pop('username', None)
     return redirect(url_for('index'))
 
 
-@app.route("/user", defaults={'username': None})
-@app.route("/user/<username>")
-def user(username):
-    logined_username = session.get('username')
-    if not logined_username:
+@app.route("/user", defaults={'uid': None})
+@app.route("/user/<int:uid>")
+def user(uid):
+    logined_uid = int(session.get('uid'))
+    if not logined_uid:
         flash(u'请先登录帐号', 'error')
         return redirect(url_for('login'))
-    elif username and not (username == logined_username):
+    elif uid and not (uid == logined_uid):
         return '无法查看他人主页'
     else:
-        user = User.get(logined_username)
+        user = User.get_by_uid(logined_uid)
         favs = user.get_favs()
         favs_count = len(favs)
         return render_template('user.html', **locals())
@@ -174,14 +179,14 @@ def user(username):
 
 @app.route("/fav/<int:book_id>/", methods=['POST'])
 def fav(book_id):
-    username = session.get('username')
-    if not username:
+    uid = session.get('uid')
+    if not uid:
         flash(u'请先登录帐号，再收藏小说', 'error')
         return (
             redirect(url_for('login', target=url_for('book', book_id=book_id)))
         )
     else:
-        user = User.get(username)
+        user = User.get_by_uid(uid)
         action = request.form.get('action', 'fav')
         refer = request.form.get('refer', '')
         if action == 'fav':
@@ -189,7 +194,7 @@ def fav(book_id):
         else:
             Favourite.remove(user.id, book_id)
         if refer == 'user_page':
-            return redirect(url_for('user', username=username))
+            return redirect(url_for('user', uid=uid))
         return redirect(url_for('book', book_id=book_id))
 
 

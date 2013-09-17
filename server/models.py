@@ -33,6 +33,13 @@ class Book(Base):
         return category
 
     @property
+    def first_chapter(self):
+        chapters = db_session.query(Chapter.id, Chapter.title
+                                    ).filter_by(book_id=self.id)
+        chapter = chapters.first()
+        return chapter
+
+    @property
     def latest_chapter(self):
         chapters = db_session.query(Chapter.id, Chapter.title
                                     ).filter_by(book_id=self.id)
@@ -132,7 +139,7 @@ class User(Base):
         user = cls(username, password)
         db_session.add(user)
         db_session.commit()
-        return user.id
+        return user
 
     @classmethod
     def get(cls, username):
@@ -140,11 +147,16 @@ class User(Base):
         return user
 
     @classmethod
+    def get_by_uid(cls, uid):
+        user = cls.query.filter_by(id=uid).scalar()
+        return user
+
+    @classmethod
     def login(cls, username, password):
         user = cls.get(username)
-        if user:
-            return check_password_hash(user.password, password)
-        return False
+        if user and check_password_hash(user.password, password):
+            return user
+        return None
 
     @classmethod
     def check_username(cls, username):
