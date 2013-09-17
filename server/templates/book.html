@@ -36,7 +36,7 @@
                 <input name="action" type="hidden" value="unfav">
                 <a class="btn btn38 fav" id="fav" href="javascript:void()">取消收藏</a>
               {% endif %}
-              <a class="btn btn38 start" href="#">开始阅读</a>
+              <a class="btn btn38 start" href="/{{book.id}}/{{book.first_chapter.id}}">开始阅读</a>
           </form>
         </div>
         <span class="latest">最新章节：<a href="/{{book.id}}/{{book.latest_chapter.id}}">{{book.latest_chapter.title|truncate(35, True) }}</a></span>
