@@ -31,21 +31,21 @@ a:link, a:visited, a:focus {color: #544943;}
 .hide {display:none}
 
 
-.header_r {font-size:14px}
+
 
 /*pages*/
 .reading {background-color:#dce5db;overflow:auto;min-height:100%;}
 .reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:600px;height:100%}
 .header {border-bottom:solid #C16333 2px;}
 .header .title_lr{height:43px;padding-top:45px;}
-
-.header .title {font-size:32px;color:#C16333;display:inline-block;zoom:1;*display:inline;position:absolute;bottom:5px;}
-.header .login_reg{font-size:14px;position:absolute;bottom:5px;right:0px;}
+.header .title {font-size:32px;color:#C16333;display:inline-block;zoom:1;*display:inline;margin-top:5px;}
+.header_r {font-size:14px;margin-top:20px;}
+.header .login_reg{font-size:14px;}
 .header .login_reg span{margin:0 5px;}
-.header .recent {font-size: 14px; text-align: right;}
-.header .recent #header_rec { position: absolute; right: 95px; width: 260px;top: -21px;}
+.header .recent {font-size: 14px;width: 260px;text-align: right;margin-right:20px;}
+.header .recent #header_rec {position: relative;}
 
-.header .recent #header_rec ul {text-align:left;border:solid #bd6a3e 1px; background-color:#fff;top:6px;position:relative;padding:0 15px;padding-bottom:20px;display:none;}
+.header .recent #header_rec ul {text-align:left;border:solid #bd6a3e 1px; background-color:#fff;position:absolute;padding:0 15px;padding-bottom:20px;display:none;width: 230px;top:24px;}
 .header .recent #header_rec ul li {border-bottom:solid #a8a8a8 1px;padding:10px 0;}
 .header .recent #header_rec a {color:#bd6a3e;}
 
