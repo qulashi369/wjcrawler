@@ -126,17 +126,20 @@ class User(Base):
     id = Column(types.Integer, primary_key=True)
     username = Column(types.String(length=32), unique=True)
     password = Column(types.String(length=64))
+    type = Column(types.String(length=8))
+    email = Column(types.String(length=64))
     create_time = Column(types.DateTime)
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, type='1'):
         self.username = username
         self.password = password
+        self.type = type
         self.create_time = datetime.now()
 
     @classmethod
-    def add(cls, username, password):
+    def add(cls, username, password, type='1'):
         # NOTE 此处password为加密后的密码hash
-        user = cls(username, password)
+        user = cls(username, password, type)
         db_session.add(user)
         db_session.commit()
         return user
@@ -183,6 +186,48 @@ class User(Base):
 
     def __repr__(self):
         return '<User(%r, %r)>' % (self.id, self.username)
+
+
+class Sentence(Base):
+    __tablename__ = 'sentence'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer)
+    text = Column(types.Text)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, text):
+        self.bid = bid
+        self.text = text
+        self.create_time = datetime.now()
+
+    @classmethod
+    def add(cls, bid, text):
+        sentence = cls(bid, text)
+        db_session.add(sentence)
+        db_session.commit()
+        return sentence
+
+
+class Recommend(Base):
+    __tablename__ = 'recommend'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer)
+    reason = Column(types.Text)
+    type = Column(types.String(length=8))
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, reason='', type=''):
+        self.bid = bid
+        self.reason = reason
+        self.type = type
+        self.create_time = datetime.now()
+
+    @classmethod
+    def add(cls, bid, reason='', type=''):
+        recommend = cls(bid, reason, type)
+        db_session.add(recommend)
+        db_session.commit()
+        return recommend
 
 
 class Favourite(Base):
