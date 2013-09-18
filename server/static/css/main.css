@@ -11,8 +11,8 @@ html{font: 12px "微软雅黑","宋体","arial","Verdana";color:#000;}
 html, body {height: 100%;}
 body{background-color:#fcfcfb;}
 a:link, a:visited, a:focus {color: #544943;}
-.main {padding-top:30px}
-.wrapper {width:960px;margin: 0 auto;}
+.main {padding-top:30px;padding-bottom: 90px;}
+.wrapper {width:960px;margin: 0 auto;min-height: 100%;height: auto !important;height: 100%;}
 
 
 /*base*/
@@ -49,6 +49,13 @@ a:link, a:visited, a:focus {color: #544943;}
 .header .recent #header_rec ul li {border-bottom:solid #a8a8a8 1px;padding:10px 0;}
 .header .recent #header_rec a {color:#bd6a3e;}
 
+#ft{position: relative;margin-top: -61px;height: 60px;clear:both;border-top: 1px solid #cecece;background: #f8f8f8;}
+.ft_ct{width: 960px;margin: 0 auto;line-height: 30px;}
+.ft_ct_cpr{float: left;color:#898989;}
+.ft_ct_link{float: right;}
+.ft_ct_link li{float: left;margin-left: 20px;color:#898989}
+.ft_ct_link li a{color:#7491C8;}
+
 .list_col li {float: left;display: inline-block;zoom: 1;vertical-align: top;}
 .list_col .last {margin-right:0;}
 .list_col6 {font-size: 0;}
@@ -58,7 +65,7 @@ a:link, a:visited, a:focus {color: #544943;}
 .list_col6 li .info .title {font: 16px "SimHei";color:#000;margin-bottom:5px;line-height: 20px;}
 .list_col6 li .info .author {font: 14px "SimSun";}
 
-.main .list_all {margin-bottom:100px;}
+.main .list_all {margin-bottom:50px;}
 .main .list_all .list_bar {background-color:#C5E4B7; height:36px;font:18px/36px "SimHei";padding-left:10px;color:#38B100}
 .main .list_all .list_container li {height:36px;line-height:36px;font-size:14px;padding-left:10px;border-bottom:solid #E4E5E3 1px;}
 .main .list_all .list_container li:hover {background-color:#EDF8E8;}
