@@ -19,12 +19,12 @@
             
             if (e.which == 38) {
                 var y = $(window).scrollTop();
-                $('html, body').animate({scrollTop:y-350}, 250); 
+                $('html, body').stop(true, true).animate({scrollTop:y-400}, 220); 
                 return
             }
             else if (e.which == 40) {
                 var y = $(window).scrollTop();
-                $('html, body').animate({scrollTop:y+350}, 250); 
+                $('html, body').stop(true, true).animate({scrollTop:y+400}, 220); 
                 return
             }
             else if (e.which == 37) {
