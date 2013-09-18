@@ -46,11 +46,6 @@
     <div class="wrapper">
       <div class="main">
           <h2>{{chapter.title}}</h2>
-        <div class="content mb50"> 
-           <p>
-           {{chapter.content|safe}}
-          </p>
-        </div>
         <div class="last_chapter">
             {% if chapter and chapter.previous() %}
                 <a id="last_c_btn" class="rb_btn btn btn40" href="/{{chapter.previous().book_id}}/{{chapter.previous().id}}">上一章</a>  
@@ -67,6 +62,11 @@
         </div>
         <div class="view_chapters">
             <a id="chapters_btn" class="rb_btn btn btn40" href="/{{chapter.book_id}}/chapters">目录</a>  
+        </div>
+        <div class="content mb50"> 
+           <p>
+           {{chapter.content|safe}}
+          </p>
         </div>
       </div>
     </div>
