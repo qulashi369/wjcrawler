@@ -9,6 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
+from consts import (FROM_SITE, NORMAL)
 
 
 class Book(Base):
@@ -18,6 +19,7 @@ class Book(Base):
     author = Column(types.String(length=32))
     description = Column(types.Text)
     category_id = Column(types.Integer)
+    weight = Column(types.Integer, default=1)
     create_time = Column(types.DateTime)
 
     def __init__(self, title, author, description, category_id):
@@ -126,20 +128,22 @@ class User(Base):
     id = Column(types.Integer, primary_key=True)
     username = Column(types.String(length=32), unique=True)
     password = Column(types.String(length=64))
-    type = Column(types.String(length=8))
+    registration = Column(types.String(length=8), default=FROM_SITE)
     email = Column(types.String(length=64))
+    type = Column(types.Integer, default=NORMAL)
     create_time = Column(types.DateTime)
 
-    def __init__(self, username, password, type='1'):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.type = type
         self.create_time = datetime.now()
 
     @classmethod
-    def add(cls, username, password, type='1'):
+    def add(cls, username, password, **kwargs):
         # NOTE 此处password为加密后的密码hash
-        user = cls(username, password, type)
+        user = cls(username, password)
+        for k, v in kwargs.items():
+            user.k = v
         db_session.add(user)
         db_session.commit()
         return user
@@ -212,19 +216,19 @@ class Recommend(Base):
     __tablename__ = 'recommend'
     id = Column(types.Integer, primary_key=True)
     bid = Column(types.Integer)
-    reason = Column(types.Text)
-    type = Column(types.String(length=8))
+    reason = Column(types.Text, default='')
+    type = Column(types.String(length=8))  # 该推荐类别，可能不止显示在首页
     create_time = Column(types.DateTime)
 
-    def __init__(self, bid, reason='', type=''):
+    def __init__(self, bid):
         self.bid = bid
-        self.reason = reason
-        self.type = type
         self.create_time = datetime.now()
 
     @classmethod
-    def add(cls, bid, reason='', type=''):
-        recommend = cls(bid, reason, type)
+    def add(cls, bid, **kwargs):
+        recommend = cls(bid)
+        for k, v in kwargs:
+            recommend.k = v
         db_session.add(recommend)
         db_session.commit()
         return recommend
@@ -254,8 +258,10 @@ class Favourite(Base):
         return cls.query.filter_by(uid=uid).all()
 
     @classmethod
-    def add(cls, uid, bid):
+    def add(cls, uid, bid, **kwargs):
         fav = cls(uid, bid)
+        for k, v in kwargs:
+            fav.k = v
         db_session.add(fav)
         db_session.commit()
 
