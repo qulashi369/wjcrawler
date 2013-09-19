@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
-from consts import (FROM_SITE, NORMAL)
+from consts import (FROM_SITE, NORMAL, INPROGRESS)
 
 
 class Book(Base):
@@ -20,6 +20,7 @@ class Book(Base):
     description = Column(types.Text)
     category_id = Column(types.Integer)
     weight = Column(types.Integer, default=1)
+    status = Column(types.Integer, default=INPROGRESS)
     create_time = Column(types.DateTime)
 
     def __init__(self, title, author, description, category_id):
@@ -282,7 +283,8 @@ class Favourite(Base):
             exists().where(cls.uid == uid).where(cls.bid == bid)
         ).scalar()
 
-
+'''
+暂时不用
 class SourceSite(Base):
     __tablename__ = 'source_site'
     id = Column(types.Integer, primary_key=True)
@@ -296,19 +298,20 @@ class SourceSite(Base):
         self.name = name
         self.url = url
         self.create_time = datetime.now()
+'''
 
 
 class BookSource(Base):
     __tablename__ = 'book_source'
     id = Column(types.Integer, primary_key=True)
     bid = Column(types.Integer, nullable=False)
-    source_site_id = Column(types.Integer)
+    source_site = Column(types.String(length=32))
     source_url = Column(types.String(length=128), nullable=False)
     create_time = Column(types.DateTime)
 
-    def __init__(self, bid, source_site_id, source_url):
+    def __init__(self, bid, source_site, source_url):
         self.bid = bid
-        self.source_site_id = source_site_id
+        self.source_site = source_site
         self.source_url = source_url
         self.create_time = datetime.now()
 
