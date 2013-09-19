@@ -11,6 +11,7 @@ html{font: 12px "微软雅黑","宋体","arial","Verdana";color:#000;}
 html, body {height: 100%;}
 body{background-color:#fcfcfb;}
 a:link, a:visited, a:focus {color: #544943;}
+a:hover{color: #bd6a3e;}
 .main {padding-top:30px}
 .wrapper {width:960px;margin: 0 auto;}
 
