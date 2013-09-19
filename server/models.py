@@ -282,6 +282,73 @@ class Favourite(Base):
             exists().where(cls.uid == uid).where(cls.bid == bid)
         ).scalar()
 
+
+class SourceSite(Base):
+    __tablename__ = 'source_site'
+    id = Column(types.Integer, primary_key=True)
+    name = Column(types.String(length=32))
+    url = Column(types.String(length=256), default='')
+    chapter_rule = Column(types.String(length=128), default='')
+    content_rule = Column(types.String(length=128), default='')
+    create_time = Column(types.DateTime)
+
+    def __init__(self, name, url):
+        self.name = name
+        self.url = url
+        self.create_time = datetime.now()
+
+
+class BookSource(Base):
+    __tablename__ = 'book_source'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer, nullable=False)
+    source_site_id = Column(types.Integer)
+    source_url = Column(types.String(length=128), nullable=False)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, source_site_id, source_url):
+        self.bid = bid
+        self.source_site_id = source_site_id
+        self.source_url = source_url
+        self.create_time = datetime.now()
+
+
+class UpdateTask(Base):
+    __tablename__ = 'update_task'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer, nullable=False)
+    latest_chapter = Column(types.String(length=128), nullable=False)
+    source_url = Column(types.String(length=128), nullable=False)
+    chapter_rule = Column(types.String(length=128), nullable=False)
+    content_rule = Column(types.String(length=128), nullable=False)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, latest_chapter,
+                 source_url, chapter_rule, content_rule):
+        self.bid = bid
+        self.latest_chapter = latest_chapter
+        self.source_url = source_url
+        self.chapter_rule = chapter_rule
+        self.content_rule = content_rule
+        self.create_time = datetime.now()
+
+
+class UpdateLog(Base):
+    __tablename__ = 'update_log'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer, nullable=False)
+    update_chapter_ids = Column(types.String(length=256))
+    crawler_name = Column(types.String(length=64))
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, update_chapter_ids, crawler_name):
+        self.bid = bid
+        self.update_chapter_ids = update_chapter_ids
+        self.crawler_name = crawler_name
+        self.create_time = datetime.now()
+
+
 Index('chapter_book_id', Chapter.book_id)
 Index('username', User.username)
 Index('favourite', Favourite.uid, Favourite.bid, unique=True)
+Index('book_source_bid', BookSource.bid)
