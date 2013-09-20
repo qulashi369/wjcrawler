@@ -82,7 +82,7 @@ class Chapter(Base):
         self.book_id = book_id
         self.title = title
         self.content = content
-        self.create_tile = datetime.now()
+        self.create_time = datetime.now()
 
     @classmethod
     def add(cls, book_id, title, content):
@@ -428,21 +428,19 @@ class UpdateLog(Base):
     __tablename__ = 'update_log'
     id = Column(types.Integer, primary_key=True)
     bid = Column(types.Integer, nullable=False)
-    update_chapter_ids = Column(types.String(length=256))
+    cid = Column(types.Integer, nullable=False)
     crawler_name = Column(types.String(length=64))
     create_time = Column(types.DateTime)
 
-    def __init__(self, bid, update_chapter_ids, crawler_name):
+    def __init__(self, bid, cid, crawler_name):
         self.bid = bid
-        self.update_chapter_ids = update_chapter_ids
+        self.cid = cid
         self.crawler_name = crawler_name
         self.create_time = datetime.now()
 
     @classmethod
-    def add(cls, bid, cids, crawler):
-        if type(cids) == list:
-            cids = ','.join([str(id) for id in cids])
-        log = cls(bid, cids, crawler)
+    def add(cls, bid, cid, crawler):
+        log = cls(bid, cid, crawler)
         db_session.add(log)
         db_session.commit()
         return log

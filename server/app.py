@@ -37,7 +37,10 @@ def recent_reading(request):
     if recent_reading:
         for bid_cid in recent_reading.split(','):
             bid, cid = [int(id) for id in bid_cid.split(':', 1)]
-            recent_book_chapters.append((Book.get(bid), Chapter.get(cid, bid)))
+            book = Book.get(bid)
+            chapter = Chapter.get(cid, bid)
+            if (book and chapter):
+                recent_book_chapters.append((book, chapter))
         recent_book_chapters = recent_book_chapters[:10]
     return recent_book_chapters
 
@@ -232,20 +235,16 @@ def tasks():
 def update_book(bid):
     data = json.loads(request.data)
     assert data, 'no data...'
-    chapters = data.get('chapters')
+    chapter = data.get('chapter')
     crawler = data.get('crawler', '')
-    update_cids = []
-    for chapter in chapters:
-        title = chapter.get('title', '')
-        type = chapter.get('type', 'text')
-        if type == 'text':
-            content = ''.join(chapter.get('content', ''))
-        elif type == 'image':
-            # FIXME 内容为图片
-            content = ''
-        chapter = Chapter.add(bid, title, content)
-        update_cids.append(chapter.id)
-    log = UpdateLog.add(bid, update_cids, crawler)
+    title = chapter.get('title', '')
+    type = chapter.get('type', 'text')
+    if type == 'text':
+        content = chapter.get('content', '')
+    elif type == 'image':
+        content = ''
+    chapter = Chapter.add(bid, title, content)
+    log = UpdateLog.add(bid, chapter.id, crawler)
     return jsonify(status='success', log=log.id)
 
 
