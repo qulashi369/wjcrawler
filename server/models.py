@@ -329,9 +329,16 @@ class BookSource(Base):
 
     @classmethod
     def add(cls, bid, source_site, source_url):
-        book_source = cls(bid, source_site, source_url)
-        db_session.add(book_source)
-        db_session.commit()
+        is_exists = db_session.query(
+            exists().where(
+                cls.bid == bid
+            ).where(
+                cls.source_site == source_site)
+        ).scalar()
+        if not is_exists:
+            book_source = cls(bid, source_site, source_url)
+            db_session.add(book_source)
+            db_session.commit()
 
     @classmethod
     def get(cls, bid):
@@ -396,9 +403,9 @@ class UpdateTask(Base):
                     weight_3.append(task)
 
         # 处理权重
-        p_half = len(tasks)/2
-        p_third_one = len(tasks)/3
-        p_third_two = len(tasks)/3*2
+        p_half = len(tasks) / 2
+        p_third_one = len(tasks) / 3
+        p_third_two = len(tasks) / 3 * 2
         tasks[p_half:p_half] = weight_2
         tasks[p_third_one:p_third_one] = weight_3
         tasks[p_third_two:p_third_two] = weight_3
