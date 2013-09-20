@@ -227,7 +227,7 @@ def not_found_error(exception):
 def tasks():
     limit = int(request.args.get('limit', 20))
     tasks = UpdateTask.get_tasks(limit)
-    #UpdateTask.delete_tasks(tasks)
+    UpdateTask.delete_tasks(tasks)
     return jsonify(tasks=[task.serialize for task in tasks])
 
 
