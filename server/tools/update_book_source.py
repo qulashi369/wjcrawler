@@ -19,7 +19,7 @@ all_books = Book.gets()
 
 for book in all_books:
     title = book.title
-    bid = book.bid
+    bid = book.id
     for db in MONGO_DBS:
         book_table = client[db].Book
         book_in_mongo = book_table.find_one({"title": title})
