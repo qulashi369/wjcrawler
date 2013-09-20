@@ -55,7 +55,9 @@ class Book(Base):
         return book
 
     @classmethod
-    def gets(cls, book_ids):
+    def gets(cls, book_ids=[]):
+        if not book_ids:
+            return cls.query.all()
         result = []
         for book_id in book_ids:
             book = cls.get(book_id)
@@ -212,6 +214,9 @@ class Sentence(Base):
         db_session.commit()
         return sentence
 
+    def __repr__(self):
+        return '<Sentence(%r, %r, %r)>' % (self.id, self.bid, self.text)
+
 
 class Recommend(Base):
     __tablename__ = 'recommend'
@@ -233,6 +238,9 @@ class Recommend(Base):
         db_session.add(recommend)
         db_session.commit()
         return recommend
+
+    def __repr__(self):
+        return '<Recommend(%r, %r, %r)>' % (self.id, self.bid, self.reason)
 
 
 class Favourite(Base):
@@ -283,29 +291,15 @@ class Favourite(Base):
             exists().where(cls.uid == uid).where(cls.bid == bid)
         ).scalar()
 
-'''
-暂时不用, 先把 Source Site 的规则写在 client
-class SourceSite(Base):
-    __tablename__ = 'source_site'
-    id = Column(types.Integer, primary_key=True)
-    name = Column(types.String(length=32))
-    url = Column(types.String(length=256), default='')
-    chapter_rule = Column(types.String(length=128), default='')
-    content_rule = Column(types.String(length=128), default='')
-    create_time = Column(types.DateTime)
-
-    def __init__(self, name, url):
-        self.name = name
-        self.url = url
-        self.create_time = datetime.now()
-'''
+    def __repr__(self):
+        return '<Fav(%r, %r, %r)>' % (self.id, self.uid, self.bid)
 
 
 class BookSource(Base):
     __tablename__ = 'book_source'
     id = Column(types.Integer, primary_key=True)
     bid = Column(types.Integer, nullable=False)
-    source_site = Column(types.String(length=32))
+    source_site = Column(types.String(length=32), nullable=False)
     source_url = Column(types.String(length=128), nullable=False)
     create_time = Column(types.DateTime)
 
@@ -315,25 +309,72 @@ class BookSource(Base):
         self.source_url = source_url
         self.create_time = datetime.now()
 
+    @classmethod
+    def get(cls, bid):
+        book_source = cls.query.filter_by(bid=bid).scalar()
+        return book_source
+
+    def __repr__(self):
+        return (
+            '<BookSource(%r, %r, %r)>' % (self.id, self.bid, self.source_url)
+        )
+
 
 class UpdateTask(Base):
     __tablename__ = 'update_task'
     id = Column(types.Integer, primary_key=True)
     bid = Column(types.Integer, nullable=False)
     latest_chapter = Column(types.String(length=128), nullable=False)
+    source_site = Column(types.String(length=32))
     source_url = Column(types.String(length=128), nullable=False)
-    chapter_rule = Column(types.String(length=128), nullable=False)
-    content_rule = Column(types.String(length=128), nullable=False)
     create_time = Column(types.DateTime)
 
-    def __init__(self, bid, latest_chapter,
-                 source_url, chapter_rule, content_rule):
+    def __init__(self, bid, latest_chapter, source_site, source_url):
         self.bid = bid
         self.latest_chapter = latest_chapter
+        self.source_site = source_site
         self.source_url = source_url
-        self.chapter_rule = chapter_rule
-        self.content_rule = content_rule
         self.create_time = datetime.now()
+
+    @classmethod
+    def get(cls, id):
+        return cls.query.filter_by(id=id).scalar()
+
+    @classmethod
+    def delete(cls, id):
+        task = cls.get(id)
+        db_session.delete(task)
+        db_session.commit()
+
+    @classmethod
+    def is_no_tasks(cls):
+        count = cls.query.count()
+        return True if count == 0 else False
+
+    @classmethod
+    def assign_tasks(cls):
+        books = Book.gets()
+        tasks = []
+        for book in books:
+            book_source = BookSource.get(book.id)
+            if book_source is None:
+                print '%d has no book source info' % book.id
+                continue
+            task = cls(book.id, book.latest_chapter.title,
+                       book_source.source_site, book_source.source_url)
+            tasks.append(task)
+        db_session.add_all(tasks)
+        db_session.commit()
+
+    @classmethod
+    def get_tasks(cls, limit=20):
+        tasks = cls.query.limit(limit).all()
+        for task in tasks:
+            cls.delete(task.id)
+        return tasks
+
+    def __repr__(self):
+        return ('<UpdateTask(%r, %r)>' % (self.id, self.bid))
 
 
 class UpdateLog(Base):
@@ -350,8 +391,13 @@ class UpdateLog(Base):
         self.crawler_name = crawler_name
         self.create_time = datetime.now()
 
+    def __repr__(self):
+        return ('<UpdateLog(%r, %r, %r)>' % (self.id, self.bid,
+                                             self.update_chapter_ids))
+
 
 Index('chapter_book_id', Chapter.book_id)
 Index('username', User.username)
 Index('favourite', Favourite.uid, Favourite.bid, unique=True)
 Index('book_source_bid', BookSource.bid)
+Index('update_task_bid', UpdateTask.bid)
