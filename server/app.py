@@ -1,11 +1,12 @@
 # coding: utf8
 import time
 import os
+import json
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
-                   session, flash, request, redirect, make_response)
+                   session, flash, request, redirect, make_response, jsonify)
 
-from models import Book, Chapter, User, Favourite
+from models import Book, Chapter, User, Favourite, UpdateTask, UpdateLog
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
@@ -71,12 +72,7 @@ def book(book_id):
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
     book = Book.get(book_id)
-    chapters = db_session.query(
-        Chapter.id,
-        Chapter.title
-    ).filter_by(
-        book_id=book_id
-    ).all()
+    chapters = Chapter.get_id_titles(book.id)
     return render_template('chapters.html', **locals())
 
 
@@ -215,6 +211,42 @@ def internal_error(exception):
 def not_found_error(exception):
     app.logger.debug(exception)
     return render_template('404.html'), 404
+
+
+'''
+======================================
+            爬虫相关API
+======================================
+'''
+
+
+@app.route('/api/update/tasks')
+def tasks():
+    limit = int(request.args.get('limit', 20))
+    tasks = UpdateTask.get_tasks(limit)
+    #UpdateTask.delete_tasks(tasks)
+    return jsonify(tasks=[task.serialize for task in tasks])
+
+
+@app.route('/api/update/<int:bid>', methods=['POST'])
+def update_book(bid):
+    data = json.loads(request.data)
+    assert data, 'no data...'
+    chapters = data.get('chapters')
+    crawler = data.get('crawler', '')
+    update_cids = []
+    for chapter in chapters:
+        title = chapter.get('title', '')
+        type = chapter.get('type', 'text')
+        if type == 'text':
+            content = ''.join(chapter.get('content', ''))
+        elif type == 'image':
+            # FIXME 内容为图片
+            content = ''
+        chapter = Chapter.add(bid, title, content)
+        update_cids.append(chapter.id)
+    log = UpdateLog.add(bid, update_cids, crawler)
+    return jsonify(status='success', log=log.id)
 
 
 if __name__ == "__main__":

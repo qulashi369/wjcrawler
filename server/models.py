@@ -85,9 +85,26 @@ class Chapter(Base):
         self.create_tile = datetime.now()
 
     @classmethod
+    def add(cls, book_id, title, content):
+        chapter = cls(book_id, title, content)
+        db_session.add(chapter)
+        db_session.commit()
+        return chapter
+
+    @classmethod
     def get(cls, chapter_id, book_id):
         chapter = cls.query.filter_by(id=chapter_id, book_id=book_id).scalar()
         return chapter
+
+    @classmethod
+    def get_id_titles(cls, book_id):
+        chapters = db_session.query(
+            Chapter.id,
+            Chapter.title
+        ).filter_by(
+            book_id=book_id
+        ).all()
+        return chapters
 
     def next(self):
         chapters = db_session.query(Chapter.id, Chapter.book_id)
@@ -273,6 +290,7 @@ class Favourite(Base):
             fav.k = v
         db_session.add(fav)
         db_session.commit()
+        return fav
 
     @classmethod
     def remove(cls, uid, bid):
@@ -355,6 +373,8 @@ class UpdateTask(Base):
     def assign_tasks(cls):
         books = Book.gets()
         tasks = []
+        weight_2 = []
+        weight_3 = []
         for book in books:
             book_source = BookSource.get(book.id)
             if book_source is None:
@@ -363,15 +383,42 @@ class UpdateTask(Base):
             task = cls(book.id, book.latest_chapter.title,
                        book_source.source_site, book_source.source_url)
             tasks.append(task)
+            if book.weight != 1:
+                if book.weight == 2:
+                    weight_2.append(task)
+                elif book.weight == 3:
+                    weight_3.append(task)
+
+        # 处理权重
+        p_half = len(tasks)/2
+        p_third_one = len(tasks)/3
+        p_third_two = len(tasks)/3*2
+        tasks[p_half:p_half] = weight_2
+        tasks[p_third_one:p_third_one] = weight_3
+        tasks[p_third_two:p_third_two] = weight_3
+
         db_session.add_all(tasks)
         db_session.commit()
 
     @classmethod
-    def get_tasks(cls, limit=20):
+    def get_tasks(cls, limit):
         tasks = cls.query.limit(limit).all()
+        return tasks
+
+    @classmethod
+    def delete_tasks(cls, tasks):
         for task in tasks:
             cls.delete(task.id)
-        return tasks
+
+    @property
+    def serialize(self):
+        return {
+            'bid': self.bid,
+            'latest_chapter': self.latest_chapter,
+            'source_site': self.source_site,
+            'source_url': self.source_url,
+            'create_time': str(self.create_time),
+        }
 
     def __repr__(self):
         return ('<UpdateTask(%r, %r)>' % (self.id, self.bid))
@@ -390,6 +437,15 @@ class UpdateLog(Base):
         self.update_chapter_ids = update_chapter_ids
         self.crawler_name = crawler_name
         self.create_time = datetime.now()
+
+    @classmethod
+    def add(cls, bid, cids, crawler):
+        if type(cids) == list:
+            cids = ','.join([str(id) for id in cids])
+        log = cls(bid, cids, crawler)
+        db_session.add(log)
+        db_session.commit()
+        return log
 
     def __repr__(self):
         return ('<UpdateLog(%r, %r, %r)>' % (self.id, self.bid,
