@@ -284,7 +284,7 @@ class Favourite(Base):
         ).scalar()
 
 '''
-暂时不用
+暂时不用, 先把 Source Site 的规则写在 client
 class SourceSite(Base):
     __tablename__ = 'source_site'
     id = Column(types.Integer, primary_key=True)
