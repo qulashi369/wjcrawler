@@ -328,6 +328,12 @@ class BookSource(Base):
         self.create_time = datetime.now()
 
     @classmethod
+    def add(cls, bid, source_site, source_url):
+        book_source = cls(bid, source_site, source_url)
+        db_session.add(book_source)
+        db_session.commit()
+
+    @classmethod
     def get(cls, bid):
         book_source = cls.query.filter_by(bid=bid).scalar()
         return book_source
