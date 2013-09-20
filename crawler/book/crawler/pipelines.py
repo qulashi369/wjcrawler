@@ -45,7 +45,6 @@ class BookPipeline(object):
         self.Book = get_db_book()
 
     def process_item(self, item, spider):
-
         if spider.name == "book":
             author = item['author'].encode('utf8').replace('作者:', '')
             category = item['category'].encode('utf8').replace('所属:', '')

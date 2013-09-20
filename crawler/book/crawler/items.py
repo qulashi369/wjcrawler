@@ -12,7 +12,7 @@ class Book(Item):
     create_time = Field()
     category = Field()
     source = Field()
-    image_url = Field()
+    image_urls = Field()
     image_path = Field()
 
     def __str__(self):
@@ -28,6 +28,7 @@ class Chapter(Item):
 
     def __str__(self):
         return 'Chapter (title: %s)' % self['title'].encode('utf8')
+
 
 class Content(Item):
     '''章节内容'''
