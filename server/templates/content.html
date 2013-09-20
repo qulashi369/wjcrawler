@@ -11,34 +11,82 @@
 《{{book.title}}》是{{book.author}}倾力打造的一部神作，一碗书小说网完整收录《{{book.title}}》最新章节，更新及时、页面清爽无弹窗、访问迅速，尽情享受《{{book.title}}》的文字快感。一碗书小说网,最好的免费小说阅读网站
 {% endblock description %}
 
+{% block head_js %}
+{{super()}}
+    <script>
+    jQuery(document).ready(function($) {
+        $(document).keydown(function(e){
+            
+            if (e.which == 38) {
+                var y = $(window).scrollTop();
+                $('html, body').stop(true, true).animate({scrollTop:y-400}, 220); 
+                return
+            }
+            else if (e.which == 40) {
+                var y = $(window).scrollTop();
+                $('html, body').stop(true, true).animate({scrollTop:y+400}, 220); 
+                return
+            }
+            else if (e.which == 37) {
+                var url = $("#last_c_btn").attr('href');
+            }
+            else if (e.which == 39) {
+                var url = $("#next_c_btn").attr('href');
+            }
+            else if (e.which == 191){
+                var url = $("#chapters_btn").attr('href');
+            }
+            else if (e.which == 17){
+                alert('不许复制哟~');
+                return false;
+            }
+            else{
+                return
+            }
+            if (url){
+            window.location.href=url;
+            }
+        });
+    });
+    </script>
+    
+{% endblock head_js %}
+
+    
+
 {% block body%}
-  <div class="reading">
+  <div id="content_p" class="reading">
     <div class="wrapper">
       <div class="main">
           <h2>{{chapter.title}}</h2>
+        <div class="last_chapter">
+            {% if chapter and chapter.previous() %}
+                <a id="last_c_btn" class="rb_btn btn btn40" href="/{{chapter.previous().book_id}}/{{chapter.previous().id}}">上一章</a>  
+            {% else %}
+                <a id="no_last_c" class="rb_btn btn btn40" href="#">上一章</a>  
+            {% endif %}
+        </div>
+        <div class="next_chapter">
+            {% if chapter and chapter.next() %}
+              <a id="next_c_btn" class="rb_btn btn btn40" href="/{{chapter.next().book_id}}/{{chapter.next().id}}">下一章</a>  
+            {% else %}
+              <a id="no_next_c" class="rb_btn btn btn40" href="#">下一章</a>  
+            {% endif %}
+        </div>
+        <div class="view_chapters">
+            <a id="chapters_btn" class="rb_btn btn btn40" href="/{{chapter.book_id}}/chapters">目录</a>  
+        </div>
         <div class="content mb50"> 
            <p>
            {{chapter.content|safe}}
           </p>
         </div>
-        <div class="last_chapter">
-            {% if chapter and chapter.previous() %}
-                <a class="rb_btn btn btn40" href="/{{chapter.previous().book_id}}/{{chapter.previous().id}}">上一章</a>  
-            {% else %}
-                <a class="rb_btn btn btn40" href="#">上一章</a>  
-            {% endif %}
-        </div>
-        <div class="next_chapter">
-            {% if chapter and chapter.next() %}
-              <a class="rb_btn btn btn40" href="/{{chapter.next().book_id}}/{{chapter.next().id}}">下一章</a>  
-            {% else %}
-              <a class="rb_btn btn btn40" href="#">下一章</a>  
-            {% endif %}
-        </div>
-        <div class="view_chapters">
-            <a class="rb_btn btn btn40" href="/{{chapter.book_id}}/chapters">目录</a>  
-        </div>
       </div>
     </div>
   </div>
 {% endblock body%}
+
+{% block footer %}
+{# 目录页与阅读页不放 footer #}
+{% endblock footer%}
+
