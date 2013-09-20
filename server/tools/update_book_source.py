@@ -1,6 +1,10 @@
 # coding : utf8
 
+import os
+os.sys.path.append(os.getcwd())
+
 from pymongo import MongoClient
+
 from models import BookSource, Book
 
 
