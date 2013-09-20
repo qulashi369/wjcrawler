@@ -1,4 +1,6 @@
 # coding: utf8
+import os
+os.sys.path.append(os.getcwd())
 
 from models import UpdateTask
 
