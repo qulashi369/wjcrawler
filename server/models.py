@@ -9,6 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
+from consts import (FROM_SITE, NORMAL, INPROGRESS)
 
 
 class Book(Base):
@@ -18,6 +19,8 @@ class Book(Base):
     author = Column(types.String(length=32))
     description = Column(types.Text)
     category_id = Column(types.Integer)
+    weight = Column(types.Integer, default=1)
+    status = Column(types.Integer, default=INPROGRESS)
     create_time = Column(types.DateTime)
 
     def __init__(self, title, author, description, category_id):
@@ -31,6 +34,13 @@ class Book(Base):
     def category(self):
         category = Category.query.filter_by(id=self.category_id).one()
         return category
+
+    @property
+    def first_chapter(self):
+        chapters = db_session.query(Chapter.id, Chapter.title
+                                    ).filter_by(book_id=self.id)
+        chapter = chapters.first()
+        return chapter
 
     @property
     def latest_chapter(self):
@@ -119,6 +129,9 @@ class User(Base):
     id = Column(types.Integer, primary_key=True)
     username = Column(types.String(length=32), unique=True)
     password = Column(types.String(length=64))
+    registration = Column(types.String(length=8), default=FROM_SITE)
+    email = Column(types.String(length=64))
+    type = Column(types.Integer, default=NORMAL)
     create_time = Column(types.DateTime)
 
     def __init__(self, username, password):
@@ -127,12 +140,14 @@ class User(Base):
         self.create_time = datetime.now()
 
     @classmethod
-    def add(cls, username, password):
+    def add(cls, username, password, **kwargs):
         # NOTE 此处password为加密后的密码hash
         user = cls(username, password)
+        for k, v in kwargs.items():
+            user.k = v
         db_session.add(user)
         db_session.commit()
-        return user.id
+        return user
 
     @classmethod
     def get(cls, username):
@@ -140,15 +155,23 @@ class User(Base):
         return user
 
     @classmethod
+    def get_by_uid(cls, uid):
+        user = cls.query.filter_by(id=uid).scalar()
+        return user
+
+    @classmethod
     def login(cls, username, password):
         user = cls.get(username)
-        if user:
-            return check_password_hash(user.password, password)
-        return False
+        if user and check_password_hash(user.password, password):
+            return user
+        return None
 
     @classmethod
     def check_username(cls, username):
-        p = re.compile('^\w+$')
+        '''中英文数字下划线混合，4-16字节'''
+        if not 4 <= len(username.encode('gbk')) <= 16:
+            return False
+        p = re.compile(ur"^[\w\u4e00-\u9fa5]{2,16}$")
         return True if p.match(username) else False
 
     @classmethod
@@ -168,6 +191,48 @@ class User(Base):
 
     def __repr__(self):
         return '<User(%r, %r)>' % (self.id, self.username)
+
+
+class Sentence(Base):
+    __tablename__ = 'sentence'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer)
+    text = Column(types.Text)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, text):
+        self.bid = bid
+        self.text = text
+        self.create_time = datetime.now()
+
+    @classmethod
+    def add(cls, bid, text):
+        sentence = cls(bid, text)
+        db_session.add(sentence)
+        db_session.commit()
+        return sentence
+
+
+class Recommend(Base):
+    __tablename__ = 'recommend'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer)
+    reason = Column(types.Text, default='')
+    type = Column(types.String(length=8))  # 该推荐类别，可能不止显示在首页
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid):
+        self.bid = bid
+        self.create_time = datetime.now()
+
+    @classmethod
+    def add(cls, bid, **kwargs):
+        recommend = cls(bid)
+        for k, v in kwargs:
+            recommend.k = v
+        db_session.add(recommend)
+        db_session.commit()
+        return recommend
 
 
 class Favourite(Base):
@@ -194,8 +259,10 @@ class Favourite(Base):
         return cls.query.filter_by(uid=uid).all()
 
     @classmethod
-    def add(cls, uid, bid):
+    def add(cls, uid, bid, **kwargs):
         fav = cls(uid, bid)
+        for k, v in kwargs:
+            fav.k = v
         db_session.add(fav)
         db_session.commit()
 
@@ -216,6 +283,75 @@ class Favourite(Base):
             exists().where(cls.uid == uid).where(cls.bid == bid)
         ).scalar()
 
+'''
+暂时不用, 先把 Source Site 的规则写在 client
+class SourceSite(Base):
+    __tablename__ = 'source_site'
+    id = Column(types.Integer, primary_key=True)
+    name = Column(types.String(length=32))
+    url = Column(types.String(length=256), default='')
+    chapter_rule = Column(types.String(length=128), default='')
+    content_rule = Column(types.String(length=128), default='')
+    create_time = Column(types.DateTime)
+
+    def __init__(self, name, url):
+        self.name = name
+        self.url = url
+        self.create_time = datetime.now()
+'''
+
+
+class BookSource(Base):
+    __tablename__ = 'book_source'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer, nullable=False)
+    source_site = Column(types.String(length=32))
+    source_url = Column(types.String(length=128), nullable=False)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, source_site, source_url):
+        self.bid = bid
+        self.source_site = source_site
+        self.source_url = source_url
+        self.create_time = datetime.now()
+
+
+class UpdateTask(Base):
+    __tablename__ = 'update_task'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer, nullable=False)
+    latest_chapter = Column(types.String(length=128), nullable=False)
+    source_url = Column(types.String(length=128), nullable=False)
+    chapter_rule = Column(types.String(length=128), nullable=False)
+    content_rule = Column(types.String(length=128), nullable=False)
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, latest_chapter,
+                 source_url, chapter_rule, content_rule):
+        self.bid = bid
+        self.latest_chapter = latest_chapter
+        self.source_url = source_url
+        self.chapter_rule = chapter_rule
+        self.content_rule = content_rule
+        self.create_time = datetime.now()
+
+
+class UpdateLog(Base):
+    __tablename__ = 'update_log'
+    id = Column(types.Integer, primary_key=True)
+    bid = Column(types.Integer, nullable=False)
+    update_chapter_ids = Column(types.String(length=256))
+    crawler_name = Column(types.String(length=64))
+    create_time = Column(types.DateTime)
+
+    def __init__(self, bid, update_chapter_ids, crawler_name):
+        self.bid = bid
+        self.update_chapter_ids = update_chapter_ids
+        self.crawler_name = crawler_name
+        self.create_time = datetime.now()
+
+
 Index('chapter_book_id', Chapter.book_id)
 Index('username', User.username)
 Index('favourite', Favourite.uid, Favourite.bid, unique=True)
+Index('book_source_bid', BookSource.bid)
