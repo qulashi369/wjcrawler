@@ -10,12 +10,12 @@ from scrapy.http import Request
 import requests
 
 
-limit = 5
+limit = 3
 CRAWLER = 'xz'
 
 
 def get_tasks():
-    url = 'http://localhost:8000/api/update/tasks?limit=%d' % limit
+    url = 'http://yiwanshu.com:8000/api/update/tasks?limit=%d' % limit
     resp = requests.get(url)
     return resp.json().get('tasks')
 
@@ -42,7 +42,7 @@ def get_new_chapters(chapters, latest_chapter):
 
 
 def update(bid, content, title, crawler, type):
-    url = 'http://localhost:8000/api/update/%d' % int(bid)
+    url = 'http://yiwanshu.com:8000/api/update/%d' % int(bid)
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     data = dict(
         crawler=crawler,
@@ -71,57 +71,71 @@ class ChapterSpider(BaseSpider):
             source_site = book.get('source_site')
             latest_chapter = book.get('latest_chapter')
             url = book.get('source_url')
-            if source_site == 'fftxt.net':
-                callback = self.parse_fftxt
-            elif source_site == 'hao123.se':
-                callback = self.parse_hao123
             yield Request(
-                url=url, callback=callback,
-                meta={'bid': bid, 'latest_chapter': latest_chapter}
+                url=url, callback=self.parse_chapters,
+                meta={'bid': bid, 'latest_chapter': latest_chapter,
+                      'source_site': source_site}
             )
 
-    def parse_fftxt(self, response):
+    def parse_chapters(self, response):
         bid = response.meta['bid']
         latest_chapter = response.meta['latest_chapter']
+        source_site = response.meta['source_site']
 
         response.replace(
             body=response.body.decode('gbk', 'ignore').encode('utf-8')
         )
         hxs = HtmlXPathSelector(response)
-        selectors = hxs.select("//ul[@id='chapterlist']/li/a")
+
+        if source_site == 'fftxt.net':
+            selectors = hxs.select("//ul[@id='chapterlist']/li/a")
+        elif source_site == 'hao123.se':
+            selectors = hxs.select("//dl[@id='chapterlist']/dd/a")
+
         chapters = []
         for selector in selectors:
             title = selector.select('text()').extract()[0]
-            url = urljoin(response.url, selector.select('@href').extract()[0])
+            if source_site == 'fftxt.net':
+                url = urljoin(
+                    response.url, selector.select('@href').extract()[0]
+                )
+            elif source_site == 'hao123.se':
+                url = selector.select('@href').extract()[0]
             chapters.insert(0, (title, url))
         try:
             new_chapters = get_new_chapters(chapters, latest_chapter)
 
             chapter_requests = []
             for title, url in new_chapters:
-                chapter_requests.insert(0,
+                chapter_requests.insert(
+                    0,
                     Request(
-                        url=url, callback=self.parse_fftxt_content,
-                        meta={'bid': bid, 'title': title}
+                        url=url, callback=self.parse_content,
+                        meta={'bid': bid, 'title': title,
+                              'source_site': source_site}
                     )
                 )
             return chapter_requests
         except:
-            print 'Error: \n URL %s \n seems can not match chapter %s' % (
-                response.url, latest_chapter)
+            print 'Error: \n URL %s \n seems can not match book %s chapter %s' % (
+                response.url, str(bid), latest_chapter)
 
-    def parse_fftxt_content(self, response):
+    def parse_content(self, response):
         bid = response.meta['bid']
         title = response.meta['title']
+        source_site = response.meta['source_site']
+
         response.replace(
             body=response.body.decode('gbk', 'ignore').encode('utf-8')
         )
         hxs = HtmlXPathSelector(response)
-        content = hxs.select("//div[@class='novel_content']/text()").extract()
-        # content[0] : '一秒记住【非凡TXT下载】www.fftxt.net，为您提供精彩小说阅读。'
-        content = '<br><br>'.join(content[1:])
-        update(bid, content, title, CRAWLER, 'text')
 
-    def parse_hao123(self, response):
-        # TODO
-        pass
+        if source_site == 'fftxt.net':
+            # content[0] : '一秒记住【非凡TXT下载】www.fftxt.net，为您提供精彩小说阅读。'
+            content = hxs.select("//div[@class='novel_content']/text()").extract()
+            content = '<br><br>'.join(content[1:])
+        elif source_site == 'hao123.se':
+            content = hxs.select("//div[@id='content']/text()").extract()
+            content = '<br><br>'.join(content)
+
+        update(bid, content, title, CRAWLER, 'text')
