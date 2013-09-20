@@ -393,14 +393,15 @@ class UpdateTask(Base):
             if book_source is None:
                 print '%d has no book source info' % book.id
                 continue
-            task = cls(book.id, book.latest_chapter.title,
-                       book_source.source_site, book_source.source_url)
-            tasks.append(task)
-            if book.weight != 1:
-                if book.weight == 2:
-                    weight_2.append(task)
-                elif book.weight == 3:
-                    weight_3.append(task)
+            if book.lastest_chapter:
+                task = cls(book.id, book.latest_chapter.title,
+                           book_source.source_site, book_source.source_url)
+                tasks.append(task)
+                if book.weight != 1:
+                    if book.weight == 2:
+                        weight_2.append(task)
+                    elif book.weight == 3:
+                        weight_3.append(task)
 
         # 处理权重
         p_half = len(tasks) / 2
