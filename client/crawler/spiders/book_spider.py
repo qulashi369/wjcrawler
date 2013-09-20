@@ -36,7 +36,7 @@ def get_new_chapters(chapters, latest_chapter):
             break
         else:
             new_chapters.insert(0, (title, url))
-    if len(new_chapters) == len(chapters):
+    if len(new_chapters) == len(chapters) and len(new_chapters) != 0:
         raise
     return new_chapters
 
@@ -104,6 +104,9 @@ class ChapterSpider(BaseSpider):
             chapters.insert(0, (title, url))
         try:
             new_chapters = get_new_chapters(chapters, latest_chapter)
+            if len(new_chapters) == 0:
+                print 'book: %s has no update' % str(bid)
+                return
 
             chapter_requests = []
             for title, url in new_chapters:
