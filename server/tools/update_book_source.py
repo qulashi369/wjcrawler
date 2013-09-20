@@ -24,7 +24,7 @@ for book in all_books:
         book_table = client[db].Book
         book_in_mongo = book_table.find_one({"title": title})
         if book_in_mongo:
-            source_url = base_url % book_in_mongo.bid
+            source_url = base_url % book_in_mongo.get('bid')
             BookSource.add(bid, source_site, source_url)
         else:
             continue
