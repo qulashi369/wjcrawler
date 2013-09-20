@@ -5,7 +5,7 @@ os.sys.path.append(os.getcwd())
 from models import UpdateTask
 
 
-if __name__ == '__main__'():
+if __name__ == '__main__':
     '''
     Cronjob 2分钟跑一次:
     '''
