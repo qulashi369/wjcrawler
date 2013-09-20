@@ -393,7 +393,7 @@ class UpdateTask(Base):
             if book_source is None:
                 print '%d has no book source info' % book.id
                 continue
-            if book.lastest_chapter:
+            if book.latest_chapter:
                 task = cls(book.id, book.latest_chapter.title,
                            book_source.source_site, book_source.source_url)
                 tasks.append(task)
