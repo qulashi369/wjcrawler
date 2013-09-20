@@ -48,14 +48,12 @@ a:hover{color: #bd6a3e;}
 
 .header .recent #header_rec ul {text-align:left;border:solid #bd6a3e 1px; background-color:#fff;position:absolute;padding:0 15px;padding-bottom:20px;display:none;width: 230px;top:24px;}
 .header .recent #header_rec ul li {border-bottom:solid #a8a8a8 1px;padding:10px 0;}
-.header .recent #header_rec a {color:#bd6a3e;}
 
 #ft{position: relative;margin-top: -61px;height: 60px;clear:both;border-top: 1px solid #cecece;background: #f8f8f8;}
 .ft_ct{width: 960px;margin: 0 auto;line-height: 30px;}
 .ft_ct_cpr{float: left;color:#898989;}
 .ft_ct_link{float: right;}
 .ft_ct_link li{float: left;margin-left: 20px;color:#898989}
-.ft_ct_link li a{color:#7491C8;}
 
 .list_col li {float: left;display: inline-block;zoom: 1;vertical-align: top;}
 .list_col .last {margin-right:0;}
@@ -71,7 +69,6 @@ a:hover{color: #bd6a3e;}
 .main .list_all .list_container li {height:36px;line-height:36px;font-size:14px;padding-left:10px;border-bottom:solid #E4E5E3 1px;}
 .main .list_all .list_container li:hover {background-color:#EDF8E8;}
 .main .list_all .list_container li .b_name{width:360px;float:left;}
-.main .list_all .list_container li .b_name a{color:#262626}
 .main .list_all .list_container li .b_name span {color:#bbb}
 .main .list_all .list_container li .c_name {width:380px;float:left;}
 .main .list_all .list_container li .a_name {width:210px;float:left;}
@@ -92,7 +89,6 @@ a:hover{color: #bd6a3e;}
 .main .c_list ol li a:hover {background-color:#E6F0DE;}
 .main .c_list ol li a span {color:#5E8C3E;}
 .main .c_list .more {text-align:center; font-size:14px; margin:10px auto 20px auto;}
-.main .c_list .more a {color:#D28028}
 
 
 .reading .chapters {height:100%;padding-top: 60px; }
@@ -102,7 +98,6 @@ a:hover{color: #bd6a3e;}
 .reading .chapters .list .bar {text-align:center;background-color:#C5E4B7;font-size:18px;color:#009121;height:34px;line-height:34px;}
 .reading .chapters .list ol li{float: left;width: 260px;padding: 0 50px 0 10px;border-bottom:solid #C5E4B7 1px;height:36px;line-height:36px;font-size:14px;color:#aaaaaa; zoom:1;}
 .reading .chapters .list ol .rt {padding:0 10px}
-.reading .chapters .list ol li a{color:#262626}
 .reading .rb_btn {position: fixed;margin-left: 670px;background-color: #A3BB99;color:#fff;font-size: 15px;}
 
 .reading .last_chapter a {bottom: 154px;line-height:40px;font-size:13px;}
@@ -133,7 +128,6 @@ a:hover{color: #bd6a3e;}
 .profile .info .account {margin-top:10px;}
 .profile .info .account .setting{margin-right:10px;}
 .profile .extract p {text-indent:-12px;font-size:18px;margin-top:10px;}
-.profile .extract .source a{font-size:14px;color:#bd6a3e;}
 .bookshelf {width:590px;float:left}
 .bookshelf h3{font-size:18px;margin-bottom:6px;}
 .bookshelf .favs {margin-bottom:40px;}
@@ -145,4 +139,3 @@ a:hover{color: #bd6a3e;}
 .right_sidebar {float:right}
 .right_sidebar .blank{width:300px;height:120px;background-color:#F5F5F5;line-height:120px;text-align:center;font-size:18px;}
 .right_sidebar .tell {text-align:right;margin-top:10px;}
-.right_sidebar .tell a {color:#C16333}
