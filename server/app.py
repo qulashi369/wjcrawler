@@ -1,11 +1,12 @@
 # coding: utf8
 import time
 import os
+import json
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
-                   session, flash, request, redirect, make_response)
+                   session, flash, request, redirect, make_response, jsonify)
 
-from models import Book, Chapter, User, Favourite
+from models import Book, Chapter, User, Favourite, UpdateTask, UpdateLog
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
@@ -36,7 +37,10 @@ def recent_reading(request):
     if recent_reading:
         for bid_cid in recent_reading.split(','):
             bid, cid = [int(id) for id in bid_cid.split(':', 1)]
-            recent_book_chapters.append((Book.get(bid), Chapter.get(cid, bid)))
+            book = Book.get(bid)
+            chapter = Chapter.get(cid, bid)
+            if (book and chapter):
+                recent_book_chapters.append((book, chapter))
         recent_book_chapters = recent_book_chapters[:10]
     return recent_book_chapters
 
@@ -71,12 +75,7 @@ def book(book_id):
 @app.route("/<int:book_id>/chapters")
 def chapters(book_id):
     book = Book.get(book_id)
-    chapters = db_session.query(
-        Chapter.id,
-        Chapter.title
-    ).filter_by(
-        book_id=book_id
-    ).all()
+    chapters = Chapter.get_id_titles(book.id)
     return render_template('chapters.html', **locals())
 
 
@@ -215,6 +214,38 @@ def internal_error(exception):
 def not_found_error(exception):
     app.logger.debug(exception)
     return render_template('404.html'), 404
+
+
+'''
+======================================
+            爬虫相关API
+======================================
+'''
+
+
+@app.route('/api/update/tasks')
+def tasks():
+    limit = int(request.args.get('limit', 20))
+    tasks = UpdateTask.get_tasks(limit)
+    UpdateTask.delete_tasks(tasks)
+    return jsonify(tasks=[task.serialize for task in tasks])
+
+
+@app.route('/api/update/<int:bid>', methods=['POST'])
+def update_book(bid):
+    data = json.loads(request.data)
+    assert data, 'no data...'
+    chapter = data.get('chapter')
+    crawler = data.get('crawler', '')
+    title = chapter.get('title', '')
+    type = chapter.get('type', 'text')
+    if type == 'text':
+        content = chapter.get('content', '')
+    elif type == 'image':
+        content = ''
+    chapter = Chapter.add(bid, title, content)
+    log = UpdateLog.add(bid, chapter.id, crawler)
+    return jsonify(status='success', log=log.id)
 
 
 if __name__ == "__main__":
