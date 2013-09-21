@@ -93,7 +93,8 @@ def get_all_chapters(url, source_site):
         elif source_site == 'hao123.se':
             chapter_url = ele.attrib.get('href')
         title = ele.text
-        chapters.insert(0, (title, chapter_url))
+        if title:
+            chapters.insert(0, (title, chapter_url))
     return chapters
 
 
