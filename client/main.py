@@ -116,7 +116,7 @@ def crawl_chapters():
         for title, url in new_chapters:
             content = get_content(url, source_site)
             # 防止爬虫被禁
-            time.sleep(random.random()*3)
+            time.sleep(random.random()*1.5)
             update(bid, content, title, crawler_name, 'text')
             print 'update book %s, chapter %s' % (bid, title)
         print 'book %s update finish.\n\n' % bid
