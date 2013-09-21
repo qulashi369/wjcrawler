@@ -3,6 +3,6 @@
 crawler_name = 'xz'
 yiwanshu = 'http://yiwanshu.com:8000'
 
-interval = 180  # 间隔180秒拿一次更新任务
-limit = 20  # 每次拿20个更新任务
-timeout = 15  # 访问超时
+interval = 120  # 间隔120秒拿一次更新任务
+limit = 10  # 每次拿10个更新任务
+timeout = 30  # 访问超时
