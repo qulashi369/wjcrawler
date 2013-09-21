@@ -2,7 +2,6 @@
 
 import re
 import time
-import random
 import json
 from urlparse import urljoin
 
@@ -14,7 +13,7 @@ from config import limit, crawler_name, yiwanshu, interval, timeout
 
 def get_tasks():
     url = '%s/api/update/tasks?limit=%d' % (yiwanshu, limit)
-    resp = requests.get(url, timeout=timeout)
+    resp = requests.get(url)
     return resp.json().get('tasks')
 
 
@@ -62,7 +61,7 @@ def update(bid, content, title, crawler, type):
         }
     )
     data = json.dumps(data)
-    resp = requests.post(url, data, headers=headers, timeout=timeout)
+    resp = requests.post(url, data, headers=headers)
     assert resp.status_code == 200, 'HTTP ERROR!!'
 
 
@@ -74,7 +73,7 @@ def send_error(bid, crawler, latest_chapter):
         latest_chapter=latest_chapter,
     )
     data = json.dumps(data)
-    resp = requests.post(url, data, headers=headers, timeout=timeout)
+    resp = requests.post(url, data, headers=headers)
     assert resp.status_code == 200, 'HTTP ERROR!!'
 
 
@@ -99,7 +98,7 @@ def get_all_chapters(url, source_site):
 
 
 def get_content(url, source_site):
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=timeout)
     html = resp.content
     tree = etree.HTML(html)
     if source_site == 'fftxt.net':
@@ -119,7 +118,11 @@ def crawl_chapters():
         latest_chapter = book.get('latest_chapter')
         url = book.get('source_url')
         print 'update book %s, try to get new chapters from %s' % (bid, url)
-        chapters = get_all_chapters(url, source_site)
+        try:
+            chapters = get_all_chapters(url, source_site)
+        except requests.exceptions.Timeout:
+            print 'get chapters timeout. %s' % url
+            continue
         new_chapters = get_new_chapters(url, bid, chapters, latest_chapter,
                                         crawler_name)
         if len(new_chapters) == 0:
@@ -127,9 +130,11 @@ def crawl_chapters():
             continue
         print '%d new chapters.' % len(new_chapters)
         for title, url in new_chapters:
-            content = get_content(url, source_site)
-            # 防止爬虫被禁
-            time.sleep(random.random()*1.5)
+            try:
+                content = get_content(url, source_site)
+            except requests.exceptions.Timeout:
+                print 'get content timeout. %s' % url
+                continue
             update(bid, content, title, crawler_name, 'text')
             print 'update book %s, chapter %s' % (bid, title)
         print 'book %s update finish.\n\n' % bid
