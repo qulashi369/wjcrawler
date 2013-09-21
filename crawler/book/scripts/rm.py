@@ -1,6 +1,7 @@
 #-*-coding:utf8
 
 def rm_nullcontent():
+    '''删除没有内容的章节和书'''
     import pymongo
     connection=pymongo.Connection('localhost',27017)
     db = connection.xiaoshuo3
