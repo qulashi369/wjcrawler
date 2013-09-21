@@ -7,6 +7,7 @@ from flask import (Flask, render_template, g, url_for, send_from_directory,
                    session, flash, request, redirect, make_response, jsonify)
 
 from models import Book, Chapter, User, Favourite, UpdateTask, UpdateLog
+from consts import FAILED
 from database import db_session
 
 app = Flask(__name__, template_folder='templates')
@@ -245,6 +246,17 @@ def update_book(bid):
         content = ''
     chapter = Chapter.add(bid, title, content)
     log = UpdateLog.add(bid, chapter.id, crawler)
+    return jsonify(status='success', log=log.id)
+
+
+@app.route('/api/update/error/<int:bid>', methods=['POST'])
+def update_error(bid):
+    data = json.loads(request.data)
+    assert data, 'no data...'
+    latest_chapter = data.get('latest_chapter')
+    crawler = data.get('crawler')
+    log = UpdateLog.add(bid, 0, crawler, type=FAILED,
+                        latest_chapter=latest_chapter)
     return jsonify(status='success', log=log.id)
 
 
