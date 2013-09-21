@@ -110,7 +110,7 @@ def crawl_chapters():
         print 'try to get new chapters.'
         new_chapters = get_new_chapters(url, bid, chapters, latest_chapter)
         if len(new_chapters) == 0:
-            print 'book: %s has no new chapters\n' % bid
+            print 'no new chapters\n'
             continue
         print '%d new chapters.' % len(new_chapters)
         for title, url in new_chapters:
