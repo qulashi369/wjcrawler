@@ -38,6 +38,9 @@ def getqidianID(bname):
     req.add_header('Referer', referer)
     r = urllib2.urlopen(req)
     response = json.loads(r.read())
+    if response['Flag']:
+        return response['Data']['search_response']['books'][0]['coverurl']
+
 
 def main():
     cur = mysqlconn()
@@ -45,9 +48,10 @@ def main():
     for bid in nonpb:
         count = cur.execute('select title from book where id=%d'%bid)
         result = cur.fetchone()
-        print bid, "\t", result[0].encode("utf-8")
+        title = result[0].encode("utf-8")
+        print bid, "\t", title, '\t', getqidianID(title)
     print "#count:%d" % len(nonpb)
 
 if __name__ == "__main__":
-    #main()
-    getqidianID("武动乾坤")
+    main()
+    #getqidianID("武动乾坤")

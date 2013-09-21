@@ -68,10 +68,10 @@ def book(conn, cur, mdb):
             curbid = cur.fetchone()[0]  # 插入后的bookid
 
         # 更改图片名字
-        if len(b['image_path']):
-            syncpics(b['image_path'][0], str(curbid)+'.jpg')
-
-        chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
+        #if len(b['image_path']):
+        #   syncpics(b['image_path'][0], str(curbid)+'.jpg')
+        syncpics("full/" + b['bid'], str(curbid) + '.jpg')
+        #chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
 
 
 def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
@@ -94,8 +94,8 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
 def syncpics(prefn, curfn):
     print prefn, curfn
     pfp = "/home/yj/wyzq/crawler/book/pics/"
-    #cfp = "/var/www/img/covers/"
-    cfp = "/tmp/"
+    cfp = "/var/www/img/covers/"
+    #cfp = "/tmp/"
     shutil.copy(pfp + prefn, cfp + curfn)
 
 

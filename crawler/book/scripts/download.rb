@@ -36,15 +36,13 @@ end
 
 def qidian_main(fname="nonpict_book.txt")
   File.open fname do |file|
-    url = "http://image.cmfu.com/books/%s/%s.jpg"
     file.each_line do |line|
       if line[0] != "#" then 
         attrs = line.split("\t")
-        qidian_id = attrs[2].chomp
-        tempurl = url % [qidian_id, qidian_id]
+        pict_url = attrs[2].chomp
         print "正在下载:", attrs[1], "的图片\n"
-        open(tempurl) do |f|
-          File.open("../pics/full/#{attrs[0]}.jpg","wb") do |file|
+        open(pict_url) do |f|
+          File.open("/var/www/img/covers/#{attrs[0].strip}.jpg","wb") do |file|
             file.puts f.read
           end
         end
