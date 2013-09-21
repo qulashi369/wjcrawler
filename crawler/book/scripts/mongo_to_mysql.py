@@ -9,9 +9,12 @@ from logging import FileHandler
 import time
 
 
-book_handler = FileHandler("/home/yujie/b_%s" % time.strftime("%Y%m%d", time.localtime()), "a+")
-chapter_handler = FileHandler("/home/yujie/c_%s" % time.strftime("%Y%m%d", time.localtime()), "a+")
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+book_handler = FileHandler(
+    "/home/yujie/b_%s" % time.strftime("%Y%m%d", time.localtime()), "a+")
+chapter_handler = FileHandler(
+    "/home/yujie/c_%s" % time.strftime("%Y%m%d", time.localtime()), "a+")
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 book_handler.setFormatter(formatter)
 book_handler.setLevel(logging.INFO)
 chapter_handler.setFormatter(formatter)
@@ -25,8 +28,9 @@ chapter_logger.addHandler(chapter_handler)
 
 
 def init():
-    conn = MySQLdb.connect(host='localhost', user='crawler', passwd='crawlerpwd',
-                           db='xiaoshuo_pict', port=3306, charset='utf8')
+    conn = MySQLdb.connect(
+        host='localhost', user='crawler', passwd='crawlerpwd',
+        db='xiaoshuo_pict', port=3306, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
     return conn, cur, client.xiaoshuo2
@@ -63,7 +67,8 @@ def book(conn, cur, mdb):
             conn.commit()
             curbid = cur.lastrowid
             book_logger.info("新书: %s --- 作者: %s" % (b['title'], b['author']))
-            chapter_logger.info("新书: %s --- 作者: %s" % (b['title'], b['author']))
+            chapter_logger.info(
+                "新书: %s --- 作者: %s" % (b['title'], b['author']))
 
         else:
             curbid = cur.fetchone()[0]  # 插入后的bookid
@@ -71,9 +76,8 @@ def book(conn, cur, mdb):
         # 更改图片名字
         # if len(b['image_path']):
         #    syncpics(b['image_path'][0], str(curbid)+'.jpg')
-
         syncpics("full/" + b['bid'], str(curbid) + '.jpg')
-        # chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'], b['title'])
+        # chapter(conn, cur, mdb, b['bid'], curbid, b['create_time'],
 
 
 def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
@@ -88,9 +92,11 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
             num = cur.execute(
                 "select id from chapter where book_id=%s and title=%s", (curbid, ch['title']))
             if num == 0:
-                cur.execute(sql, (ch['curbid'], ch['title'], cont['content'], ch['create_time']))
+                cur.execute(sql, (ch['curbid'], ch[
+                            'title'], cont['content'], ch['create_time']))
                 conn.commit()
-                chapter_logger.info("新章节: %s --- 书名: %s" % (ch['title'].encode('utf-8'), btitle))
+                chapter_logger.info("新章节: %s --- 书名: %s" %
+                                    (ch['title'].encode('utf-8'), btitle))
 
 #修改图片的名字
 
@@ -98,9 +104,9 @@ def chapter(conn, cur, mdb, tmpbid, curbid, create_time, btitle):
 def syncpics(prefn, curfn):
     print prefn, curfn
     pfp = "/home/yj/wyzq/crawler/book/pics/"
-    # cfp = "/var/www/img/covers/"
-    cfp = "/tmp/"
-    # shutil.copy(pfp + prefn, cfp + curfn)
+    cfp = "/var/www/img/covers/"
+    # cfp = "/tmp/"
+    shutil.copy(pfp + prefn, cfp + curfn)
 
 
 if __name__ == "__main__":
