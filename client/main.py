@@ -45,6 +45,7 @@ def get_new_chapters(url, bid, chapters, latest_chapter):
     if (len(new_chapters) == len(chapters)) and len(new_chapters) != 0:
         print ('Error: URL %s seems can not match book %s chapter %s' %
               (url, bid, latest_chapter))
+        return []
     return new_chapters
 
 
