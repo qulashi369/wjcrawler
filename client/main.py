@@ -1,19 +1,20 @@
 # coding: utf8
 
 import re
+import time
+import random
 import json
 from urlparse import urljoin
-from lxml import etree
 
+from lxml import etree
 import requests
 
-limit = 5
-CRAWLER = 'xz'
+from config import limit, crawler_name, yiwanshu, interval, timeout
 
 
 def get_tasks():
-    url = 'http://yiwanshu.com:8000/api/update/tasks?limit=%d' % limit
-    resp = requests.get(url)
+    url = '%s/api/update/tasks?limit=%d' % (yiwanshu, limit)
+    resp = requests.get(url, timeout=timeout)
     return resp.json().get('tasks')
 
 
@@ -48,7 +49,7 @@ def get_new_chapters(url, bid, chapters, latest_chapter):
 
 
 def update(bid, content, title, crawler, type):
-    url = 'http://yiwanshu.com:8000/api/update/%d' % int(bid)
+    url = '%s/api/update/%s' % (yiwanshu, bid)
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     data = dict(
         crawler=crawler,
@@ -59,13 +60,13 @@ def update(bid, content, title, crawler, type):
         }
     )
     data = json.dumps(data)
-    resp = requests.post(url, data, headers=headers)
+    resp = requests.post(url, data, headers=headers, timeout=timeout)
     assert resp.status_code == 200, 'HTTP ERROR!!'
 
 
 def get_all_chapters(url, source_site):
     chapters = []
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=timeout)
     content = resp.content
     tree = etree.HTML(content)
     if source_site == 'fftxt.net':
@@ -97,7 +98,7 @@ def get_content(url, source_site):
 
 
 def crawl_chapters():
-    print 'get update tasks from yiwanshu.com...'
+    print 'get update tasks from %s...' % yiwanshu
     for book in get_tasks():
         bid = book.get('bid')
         source_site = book.get('source_site')
@@ -110,12 +111,18 @@ def crawl_chapters():
         if len(new_chapters) == 0:
             print 'book: %s has no new chapters\n' % bid
             continue
+        print '%d new chapters.' % len(new_chapters)
         for title, url in new_chapters:
             content = get_content(url, source_site)
-            update(bid, content, title, CRAWLER, 'text')
+            # 防止爬虫被禁
+            time.sleep(random.random()*3)
+            update(bid, content, title, crawler_name, 'text')
             print 'update book %s, chapter %s' % (bid, title)
         print 'book %s update finish.\n\n' % bid
 
 
 if __name__ == '__main__':
-    crawl_chapters()
+    while 1:
+        crawl_chapters()
+        print 'I\'m sleeping...\n'
+        time.sleep(interval)
