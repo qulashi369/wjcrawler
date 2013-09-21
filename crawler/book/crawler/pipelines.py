@@ -67,8 +67,9 @@ class MyImagePipeline(ImagesPipeline):
             yield Request(item['image_url'])
 
     def item_completed(self, results, item, info):
-        image_path = [x['path'] for ok, x in results if ok]
-        item['image_path'] = image_path
+        if item.get('image_url', ''):
+            image_path = [x['path'] for ok, x in results if ok]
+            item['image_path'] = image_path
         return item
 
     def is_in_db(self, item):
