@@ -12,7 +12,7 @@ class Book(Item):
     create_time = Field()
     category = Field()
     source = Field()
-    image_urls = Field()
+    image_url = Field()
     image_path = Field()
 
     def __str__(self):
