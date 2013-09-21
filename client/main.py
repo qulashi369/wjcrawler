@@ -35,7 +35,7 @@ def is_same_chapter(chapter, latest_chapter):
     return False
 
 
-def get_new_chapters(url, bid, chapters, latest_chapter):
+def get_new_chapters(url, bid, chapters, latest_chapter, crawler):
     new_chapters = []
     for title, url in chapters:
         if is_same_chapter(title, latest_chapter):
@@ -45,6 +45,7 @@ def get_new_chapters(url, bid, chapters, latest_chapter):
     if (len(new_chapters) == len(chapters)) and len(new_chapters) != 0:
         print ('Error: URL %s seems can not match book %s chapter %s' %
               (url, bid, latest_chapter))
+        send_error(bid, crawler, latest_chapter)
         return []
     return new_chapters
 
@@ -59,6 +60,18 @@ def update(bid, content, title, crawler, type):
             'title': title,
             'content': content
         }
+    )
+    data = json.dumps(data)
+    resp = requests.post(url, data, headers=headers, timeout=timeout)
+    assert resp.status_code == 200, 'HTTP ERROR!!'
+
+
+def send_error(bid, crawler, latest_chapter):
+    url = '%s/api/update/error/%s' % (yiwanshu, bid)
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    data = dict(
+        crawler=crawler,
+        latest_chapter=latest_chapter,
     )
     data = json.dumps(data)
     resp = requests.post(url, data, headers=headers, timeout=timeout)
@@ -105,10 +118,10 @@ def crawl_chapters():
         source_site = book.get('source_site')
         latest_chapter = book.get('latest_chapter')
         url = book.get('source_url')
-        print 'update book %s, try to visit %s' % (bid, url)
+        print 'update book %s, try to get new chapters from %s' % (bid, url)
         chapters = get_all_chapters(url, source_site)
-        print 'try to get new chapters.'
-        new_chapters = get_new_chapters(url, bid, chapters, latest_chapter)
+        new_chapters = get_new_chapters(url, bid, chapters, latest_chapter,
+                                        crawler_name)
         if len(new_chapters) == 0:
             print 'no new chapters\n'
             continue
