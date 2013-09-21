@@ -61,7 +61,7 @@ def update(bid, content, title, crawler, type):
         }
     )
     data = json.dumps(data)
-    resp = requests.post(url, data, headers=headers)
+    resp = requests.post(url, data, headers=headers, timeout=timeout)
     assert resp.status_code == 200, 'HTTP ERROR!!'
 
 
@@ -132,11 +132,11 @@ def crawl_chapters():
         for title, url in new_chapters:
             try:
                 content = get_content(url, source_site)
+                update(bid, content, title, crawler_name, 'text')
+                print 'update book %s, chapter %s' % (bid, title)
             except requests.exceptions.Timeout:
                 print 'get content timeout. %s' % url
                 continue
-            update(bid, content, title, crawler_name, 'text')
-            print 'update book %s, chapter %s' % (bid, title)
         print 'book %s update finish.\n\n' % bid
 
 
