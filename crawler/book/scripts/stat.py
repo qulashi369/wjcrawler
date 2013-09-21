@@ -2,6 +2,7 @@
 
 
 def stat():
+    '''统计数据'''    
     import pymongo
     connection = pymongo.Connection('localhost', 27017)
     db = connection.xiaoshuo_pict
