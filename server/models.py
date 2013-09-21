@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
-from consts import (FROM_SITE, NORMAL, INPROGRESS)
+from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS)
 
 
 class Book(Base):
@@ -442,7 +442,9 @@ class UpdateLog(Base):
     __tablename__ = 'update_log'
     id = Column(types.Integer, primary_key=True)
     bid = Column(types.Integer, nullable=False)
-    cid = Column(types.Integer, nullable=False)
+    cid = Column(types.Integer)
+    type = Column(types.Integer, default=SUCCESS)
+    latest_chapter = Column(types.String(length=64))
     crawler_name = Column(types.String(length=64))
     create_time = Column(types.DateTime)
 
@@ -453,8 +455,10 @@ class UpdateLog(Base):
         self.create_time = datetime.now()
 
     @classmethod
-    def add(cls, bid, cid, crawler):
+    def add(cls, bid, cid, crawler, **kwargs):
         log = cls(bid, cid, crawler)
+        for k, v in kwargs:
+            log.k = v
         db_session.add(log)
         db_session.commit()
         return log

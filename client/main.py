@@ -2,7 +2,6 @@
 
 import re
 import time
-import random
 import json
 from urlparse import urljoin
 
@@ -14,7 +13,7 @@ from config import limit, crawler_name, yiwanshu, interval, timeout
 
 def get_tasks():
     url = '%s/api/update/tasks?limit=%d' % (yiwanshu, limit)
-    resp = requests.get(url, timeout=timeout)
+    resp = requests.get(url)
     return resp.json().get('tasks')
 
 
@@ -35,7 +34,7 @@ def is_same_chapter(chapter, latest_chapter):
     return False
 
 
-def get_new_chapters(url, bid, chapters, latest_chapter):
+def get_new_chapters(url, bid, chapters, latest_chapter, crawler):
     new_chapters = []
     for title, url in chapters:
         if is_same_chapter(title, latest_chapter):
@@ -45,6 +44,7 @@ def get_new_chapters(url, bid, chapters, latest_chapter):
     if (len(new_chapters) == len(chapters)) and len(new_chapters) != 0:
         print ('Error: URL %s seems can not match book %s chapter %s' %
               (url, bid, latest_chapter))
+        send_error(bid, crawler, latest_chapter)
         return []
     return new_chapters
 
@@ -61,7 +61,19 @@ def update(bid, content, title, crawler, type):
         }
     )
     data = json.dumps(data)
-    resp = requests.post(url, data, headers=headers, timeout=timeout)
+    resp = requests.post(url, data, headers=headers)
+    assert resp.status_code == 200, 'HTTP ERROR!!'
+
+
+def send_error(bid, crawler, latest_chapter):
+    url = '%s/api/update/error/%s' % (yiwanshu, bid)
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    data = dict(
+        crawler=crawler,
+        latest_chapter=latest_chapter,
+    )
+    data = json.dumps(data)
+    resp = requests.post(url, data, headers=headers)
     assert resp.status_code == 200, 'HTTP ERROR!!'
 
 
@@ -86,7 +98,7 @@ def get_all_chapters(url, source_site):
 
 
 def get_content(url, source_site):
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=timeout)
     html = resp.content
     tree = etree.HTML(html)
     if source_site == 'fftxt.net':
@@ -105,18 +117,24 @@ def crawl_chapters():
         source_site = book.get('source_site')
         latest_chapter = book.get('latest_chapter')
         url = book.get('source_url')
-        print 'update book %s, try to visit %s' % (bid, url)
-        chapters = get_all_chapters(url, source_site)
-        print 'try to get new chapters.'
-        new_chapters = get_new_chapters(url, bid, chapters, latest_chapter)
+        print 'update book %s, try to get new chapters from %s' % (bid, url)
+        try:
+            chapters = get_all_chapters(url, source_site)
+        except requests.exceptions.Timeout:
+            print 'get chapters timeout. %s' % url
+            continue
+        new_chapters = get_new_chapters(url, bid, chapters, latest_chapter,
+                                        crawler_name)
         if len(new_chapters) == 0:
             print 'no new chapters\n'
             continue
         print '%d new chapters.' % len(new_chapters)
         for title, url in new_chapters:
-            content = get_content(url, source_site)
-            # 防止爬虫被禁
-            time.sleep(random.random()*1.5)
+            try:
+                content = get_content(url, source_site)
+            except requests.exceptions.Timeout:
+                print 'get content timeout. %s' % url
+                continue
             update(bid, content, title, crawler_name, 'text')
             print 'update book %s, chapter %s' % (bid, title)
         print 'book %s update finish.\n\n' % bid

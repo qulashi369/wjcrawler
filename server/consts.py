@@ -9,3 +9,7 @@ ADMIN = 2
 # Book status
 FINISHED = 0
 INPROGRESS = 1
+
+# UPDATE TYPE
+SUCCESS = 1
+FAILED = 0
