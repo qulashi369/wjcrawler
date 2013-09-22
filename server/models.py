@@ -250,7 +250,7 @@ class Recommend(Base):
     @classmethod
     def add(cls, bid, **kwargs):
         recommend = cls(bid)
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             recommend.k = v
         db_session.add(recommend)
         db_session.commit()
@@ -286,7 +286,7 @@ class Favourite(Base):
     @classmethod
     def add(cls, uid, bid, **kwargs):
         fav = cls(uid, bid)
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             fav.k = v
         db_session.add(fav)
         db_session.commit()
@@ -457,7 +457,7 @@ class UpdateLog(Base):
     @classmethod
     def add(cls, bid, cid, crawler, **kwargs):
         log = cls(bid, cid, crawler)
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             log.k = v
         db_session.add(log)
         db_session.commit()
