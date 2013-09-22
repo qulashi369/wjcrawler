@@ -19,7 +19,7 @@ def download(bid)
     }
 end
 
-def main
+def hao123_main
   mongo_client = MongoClient.new("localhost", 27017)
   db = mongo_client.db("xiaoshuo_pict")
   coll = db["Book"]
@@ -34,4 +34,21 @@ def main
   end
 end
 
-main
+def qidian_main(fname="nonpict_book.txt")
+  File.open fname do |file|
+    file.each_line do |line|
+      if line[0] != "#" then 
+        attrs = line.split("\t")
+        pict_url = attrs[2].chomp
+        print "正在下载:", attrs[1], "的图片\n"
+        open(pict_url) do |f|
+          File.open("/var/www/img/covers/#{attrs[0].strip}.jpg","wb") do |file|
+            file.puts f.read
+          end
+        end
+      end
+    end
+  end
+end
+#hao123_main
+qidian_main

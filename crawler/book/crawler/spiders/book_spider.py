@@ -61,14 +61,13 @@ class BookSpider(BaseSpider):
                 book_desc = book_desc_result[0]
             else:
                 book_desc = ''
-            image_urls = hxs.select(_book_pic_xpath).extract()[0]
+            image_url = hxs.select(_book_pic_xpath).extract()[0]
             book_id = response.url.rsplit('/', 2)[1]
             source = response.url
-
             yield Book(bid=book_id, title=book_title, author=book_author,
                        category=book_category, description=book_desc,
                        create_time=datetime.now(), source=source,
-                       image_urls=image_urls)
+                       image_url=image_url)
 
 
 class ChapterSpider(BaseSpider):
