@@ -7,6 +7,7 @@ from urlparse import urljoin
 
 from lxml import etree
 import requests
+from requests.exceptions import ConnectionError, Timeout, HTTPError
 
 from config import limit, crawler_name, yiwanshu, interval, timeout
 
@@ -121,7 +122,7 @@ def crawl_chapters():
         print 'update book %s, try to get new chapters from %s' % (bid, url)
         try:
             chapters = get_all_chapters(url, source_site)
-        except requests.exceptions.Timeout:
+        except requests(Timeout, ConnectionError, HTTPError):
             print 'get chapters timeout. %s' % url
             continue
         new_chapters = get_new_chapters(url, bid, chapters, latest_chapter,
@@ -135,7 +136,7 @@ def crawl_chapters():
                 content = get_content(url, source_site)
                 update(bid, content, title, crawler_name, 'text')
                 print 'update book %s, chapter %s' % (bid, title)
-            except requests.exceptions.Timeout:
+            except (Timeout, ConnectionError, HTTPError):
                 print 'get content timeout. %s' % url
                 continue
         print 'book %s update finish.\n\n' % bid
@@ -143,6 +144,10 @@ def crawl_chapters():
 
 if __name__ == '__main__':
     while 1:
-        crawl_chapters()
+        try:
+            crawl_chapters()
+        except Exception as e:
+            print 'Error!!!'
+            print e
         print 'I\'m sleeping...\n'
         time.sleep(interval)
