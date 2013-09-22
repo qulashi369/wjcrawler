@@ -7,6 +7,7 @@ from urlparse import urljoin
 
 from lxml import etree
 import requests
+from requests.exceptions import ConnectionError, Timeout, HTTPError
 
 from config import limit, crawler_name, yiwanshu, interval, timeout
 
@@ -61,7 +62,7 @@ def update(bid, content, title, crawler, type):
         }
     )
     data = json.dumps(data)
-    resp = requests.post(url, data, headers=headers)
+    resp = requests.post(url, data, headers=headers, timeout=timeout)
     assert resp.status_code == 200, 'HTTP ERROR!!'
 
 
@@ -93,7 +94,8 @@ def get_all_chapters(url, source_site):
         elif source_site == 'hao123.se':
             chapter_url = ele.attrib.get('href')
         title = ele.text
-        chapters.insert(0, (title, chapter_url))
+        if title:
+            chapters.insert(0, (title, chapter_url))
     return chapters
 
 
@@ -120,7 +122,7 @@ def crawl_chapters():
         print 'update book %s, try to get new chapters from %s' % (bid, url)
         try:
             chapters = get_all_chapters(url, source_site)
-        except requests.exceptions.Timeout:
+        except requests(Timeout, ConnectionError, HTTPError):
             print 'get chapters timeout. %s' % url
             continue
         new_chapters = get_new_chapters(url, bid, chapters, latest_chapter,
@@ -132,16 +134,20 @@ def crawl_chapters():
         for title, url in new_chapters:
             try:
                 content = get_content(url, source_site)
-            except requests.exceptions.Timeout:
+                update(bid, content, title, crawler_name, 'text')
+                print 'update book %s, chapter %s' % (bid, title)
+            except (Timeout, ConnectionError, HTTPError):
                 print 'get content timeout. %s' % url
                 continue
-            update(bid, content, title, crawler_name, 'text')
-            print 'update book %s, chapter %s' % (bid, title)
         print 'book %s update finish.\n\n' % bid
 
 
 if __name__ == '__main__':
     while 1:
-        crawl_chapters()
+        try:
+            crawl_chapters()
+        except Exception as e:
+            print 'Error!!!'
+            print e
         print 'I\'m sleeping...\n'
         time.sleep(interval)
