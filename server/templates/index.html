@@ -12,13 +12,13 @@
           <li>
           {% endif %}
           <div class="cover">
-              <a href="/{{book.id}}" title="{{book.title}}">
+              <a href="{{url_for('book', bid=book.id)}}" title="{{book.title}}">
                   <img src="http://yiwanshu.com/media/covers/{{book.id}}.jpg" alt="{{book.title}}" width="98px" height="128px">
               </a>
           </div>
           <div class="info">
             <div class="title">
-                <a href="/{{book.id}}" title="{{book.title}}" >{{book.title}}</a>
+                <a href="{{url_for('book', bid=book.id)}}" title="{{book.title}}" >{{book.title}}</a>
             </div>
             <div class="author">{{book.author}}</div>
           </div>              
@@ -37,7 +37,7 @@
               <li>
                   <div class="b_name">
                       <span>{{book.category.name}}|</span>
-                      <a title="{{book.title}}" href="/{{book.id}}" >{{book.title}}</a>
+                      <a title="{{book.title}}" href="{{ url_for('book',bid=book.id) }}" >{{book.title}}</a>
                   </div>
                   <div class="c_name">
                       <a href="/{{ book.id }}/{{ book.latest_chapter.id }}" title="{{book.latest_chapter.title}}">
