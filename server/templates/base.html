@@ -41,12 +41,12 @@
                               <ul id="header_rec">
                                   {% for rec_book, rec_chapter in recent_reading(request) %}
                                   {% if loop.index == 1%}
-                                  <li id="header_rec_link"><span>最近看过：<a href="{{url_for('book', book_id=rec_book.id)}}">{{rec_book.title}}</a></span></li>
+                                  <li id="header_rec_link"><span>最近看过：<a href="{{url_for('book', bid=rec_book.id)}}">{{rec_book.title}}</a></span></li>
                                   <ul>
                                   {% endif %}
                                   <li>
-                                  <a href="{{url_for('book', book_id=rec_book.id)}}">{{rec_book.title}}</a>
-                                  <a class="fr" href="{{url_for('content',book_id=rec_book.id, chapter_id=rec_chapter.id)}}" title="{{rec_chapter.title}}">接着读</a>
+                                  <a href="{{url_for('book', bid=rec_book.id)}}">{{rec_book.title}}</a>
+                                  <a class="fr" href="{{url_for('content',bid=rec_book.id, cid=rec_chapter.id)}}" title="{{rec_chapter.title}}">接着读</a>
                                   </li>
                                   {% endfor %}
                                   </ul>
