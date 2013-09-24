@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{book.title}}最新章节-{{book.author}}全文阅读_全本_无弹窗_TXT下载_一碗书小说网 
+    {{book.title}}最新章节-{{book.author}}_全文阅读_全本_无弹窗_TXT下载_一碗书小说网 
 {% endblock title %}
 
 
 {% block keywords %} 
-    {{book.title}},{{book.title}}最新章节,{{book.title}}全文阅读,{{book.title}}无弹窗,{{book.author}},{{book.author}}最新作品
+    {{book.title}},{{book.title}}最新章节,{{book.title}}全文阅读,{{book.title}}无弹窗,{{book.author}},{{book.author}}最新作品, txt下载
 {% endblock keywords %}
 
 {% block description %}
-《{{book.title}}》是{{book.author}}倾力打造的一部神作，一碗书小说网完整收录《{{book.title}}》最新章节，更新及时、页面清爽无弹窗、访问迅速，尽情享受《{{book.title}}》的文字快感.点击开始阅读>>
+《{{book.title}}》是{{book.author}}倾力打造的一部神作，一碗书小说网完整收录《{{book.title}}》最新章节，更新及时,页面清爽无弹窗,访问迅速,尽情享受《{{book.title}}》的文字快感.点击开始阅读>>
 {% endblock description %}
 
 {% block main %}      
     <div class="book_info">
       <div class="cover">
-          <a href="#" title="{{book.title}}">
+          <a href="{{url_for('book', bid=book.id)}}" title="{{book.title}}">
               <img src="http://yiwanshu.com/media/covers/{{book.id}}.jpg" alt="{{book.title}}" width="150" height="200">
           </a>
       </div>
@@ -28,7 +28,7 @@
         <span class="dis_b mb3">作者: <a href="#">{{book.author}}</a></span>
         <span class="dis_b mb30">分类: <a href="#">{{book.category.name}}</a></span>
         <div class="mb10">
-          <form id="fav_form" action="{{url_for("fav", book_id=book.id)}}" method="post">
+          <form id="fav_form" action="{{url_for("fav", bid=book.id)}}" method="post">
               {% if not is_faved %}
                 <input id="fav_action" name="action" type="hidden" value="fav">
                 <a class="btn btn38 fav" id="fav" href="javascript:void()">收藏</a>
@@ -36,10 +36,22 @@
                 <input name="action" type="hidden" value="unfav">
                 <a class="btn btn38 fav" id="fav" href="javascript:void()">取消收藏</a>
               {% endif %}
-              <a class="btn btn38 start" href="/{{book.id}}/{{book.first_chapter.id}}">开始阅读</a>
+              {% if book.first_capter %}
+                  <a class="btn btn38 start" href="{{url_for('content', bid=book.id, cid=book.first_chapter.id)}}">开始阅读</a>
+              {% else %}
+                  <a class="btn btn38 start" href="#">开始阅读</a>
+              {% endif %}
           </form>
         </div>
-        <span class="latest">最新章节：<a href="/{{book.id}}/{{book.latest_chapter.id}}">{{book.latest_chapter.title|truncate(35, True) }}</a></span>
+        
+        <span class="latest">最新章节：
+        {% if book.first_capter %}
+            <a href="{{url_for('content', bid=book.id, cid=book.latest_chapter.id)}}">{{book.latest_chapter.title|truncate(35, True) }}</a>
+        {% else %}
+            <a href="#">木有章节</a>
+        {% endif %}
+        </span>
+        
       </div>
       <div class="desc">
         <p>
@@ -56,12 +68,12 @@
             {% else %}
             <li>
             {% endif %}
-            <a target="_blank" class="btn btn32" href="/{{book.id}}/{{chapter.id}}" title="{{chapter.title}}">{{chapter.title|truncate(20, True) }}</a>
+            <a target="_blank" class="btn btn32" href="{{url_for('content', bid=book.id, cid=chapter.id)}}" title="{{chapter.title}}">{{chapter.title|truncate(20, True) }}</a>
           </li>
         {% endfor %}
         </ol>
       </div>
-      <div class="more"><a href="/{{book.id}}/chapters">「查看所有章节」</a></div>
+      <div class="more"><a href="{{url_for('chapters', bid=book.id)}}">「查看所有章节」</a></div>
       <div class="clearfix">
         <ol class="c_asc">
             {% for chapter in first_six_chapters %}
@@ -70,7 +82,7 @@
                 {% else %}
                 <li>
                 {% endif %}
-                <a target="_blank" class="btn btn32" title="{{chapter.title}}" href="/{{book.id}}/{{chapter.id}}">{{ chapter.title|truncate(20, True) }}</a>
+                <a target="_blank" class="btn btn32" title="{{chapter.title}}" href="{{url_for('content', bid=book.id, cid=chapter.id)}}">{{ chapter.title|truncate(20, True) }}</a>
               </li>
             {% endfor %}
           <li>

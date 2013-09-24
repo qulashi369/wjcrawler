@@ -57,43 +57,46 @@ def index():
     return render_template('index.html', **locals())
 
 
-@app.route("/<int:book_id>")
-def book(book_id):
+@app.route("/<int:bid>")
+@app.route("/book/<int:bid>")
+def book(bid):
     uid = session.get('uid')
     is_faved = False
     if uid:
         user = User.get_by_uid(uid)
-        is_faved = Favourite.is_faved(user.id, book_id)
+        is_faved = Favourite.is_faved(user.id, bid)
 
-    book = Book.get(book_id)
-    chapters = Chapter.query.filter_by(book_id=book_id)
+    book = Book.get(bid)
+    chapters = Chapter.query.filter_by(book_id=bid)
     last_twelve_chapters = chapters.order_by(Chapter.id.desc()).limit(12)
     first_six_chapters = chapters.limit(6).all()
     first_six_chapters.reverse()
     return render_template('book.html', **locals())
 
 
-@app.route("/<int:book_id>/chapters")
-def chapters(book_id):
-    book = Book.get(book_id)
+@app.route("/<int:bid>/chapters")
+@app.route("/book/<int:bid>/chapters")
+def chapters(bid):
+    book = Book.get(bid)
     chapters = Chapter.get_id_titles(book.id)
     return render_template('chapters.html', **locals())
 
 
-@app.route("/<int:book_id>/<int:chapter_id>")
-def content(book_id, chapter_id):
-    book = Book.get(book_id)
-    chapter = Chapter.get(chapter_id, book_id)
+@app.route("/<int:bid>/<int:cid>")
+@app.route("/book/<int:bid>/<int:cid>")
+def content(bid, cid):
+    book = Book.get(bid)
+    chapter = Chapter.get(cid, bid)
 
     # NOTE read/set cookies for recent reading
     recent_reading = request.cookies.get('recent_reading')
     rec_book_chapters = []
     if recent_reading:
         for bid_cid in recent_reading.split(','):
-            bid, cid = [int(id) for id in bid_cid.split(':', 1)]
-            if not bid == book_id:
+            _bid, _cid = [int(id) for id in bid_cid.split(':', 1)]
+            if not _bid == bid:
                 rec_book_chapters.append(
-                    (Book.get(bid), Chapter.get(cid, bid))
+                    (Book.get(_bid), Chapter.get(_cid, _bid))
                 )
     rec_book_chapters.insert(0, (book, chapter))
     rec_book_chapters = rec_book_chapters[:10]
@@ -177,25 +180,25 @@ def user(uid):
         return render_template('user.html', **locals())
 
 
-@app.route("/fav/<int:book_id>/", methods=['POST'])
-def fav(book_id):
+@app.route("/fav/<int:bid>/", methods=['POST'])
+def fav(bid):
     uid = session.get('uid')
     if not uid:
         flash(u'请先登录帐号，再收藏小说', 'error')
         return (
-            redirect(url_for('login', target=url_for('book', book_id=book_id)))
+            redirect(url_for('login', target=url_for('book', bid=bid)))
         )
     else:
         user = User.get_by_uid(uid)
         action = request.form.get('action', 'fav')
         refer = request.form.get('refer', '')
         if action == 'fav':
-            Favourite.add(user.id, book_id)
+            Favourite.add(user.id, bid)
         else:
-            Favourite.remove(user.id, book_id)
+            Favourite.remove(user.id, bid)
         if refer == 'user_page':
             return redirect(url_for('user', uid=uid))
-        return redirect(url_for('book', book_id=book_id))
+        return redirect(url_for('book', bid=bid))
 
 
 @app.route('/favicon.ico')
@@ -259,6 +262,10 @@ def update_error(bid):
                         latest_chapter=latest_chapter)
     return jsonify(status='success', log=log.id)
 
+
+@app.route('/ash/')
+def ash():
+    pass
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000)
