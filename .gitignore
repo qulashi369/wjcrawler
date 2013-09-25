@@ -5,6 +5,7 @@ proxies.txt
 *.log
 *.jpg
 *.png
+client/config.py
 # C extensions
 *.so
 
