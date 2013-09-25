@@ -116,6 +116,10 @@ jQuery(document).ready(function($) {
        var bid = $(this).data('bid');
        $("#book-id").val(bid);
   });
+  
+  $('#edit-book').on('hidden.bs.modal', function () {
+      $(this).removeData('bs.modal');
+  })
 
 });
 
