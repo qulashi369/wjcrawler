@@ -41,7 +41,7 @@ class BookSpider(CrawlSpider):
         book['category'] = other[1]
         book['status'] = other[2]
         book['name'] = bmeta.select("//h1/text()").extract()[0]
-        book['desc'] = hxs.select("//div[@class='msgarea']/p/text()").extract()
+        book['desc'] = hxs.select("//div[@class='msgarea']/p/text()").extract()[0]
         book['source'] = response.meta['target']
         chapters = hxs.select("//ul[@id='chapterlist']/li/a/@href").extract()
         yield book
