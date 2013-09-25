@@ -36,7 +36,7 @@ class BookSpider(CrawlSpider):
         other = bmeta.select("//h2/text()").extract()
         book = Book()
         book['id'] = response.meta['bid']
-        book['creat_time'] = datetime.now()
+        book['create_time'] = datetime.now()
         book['author'] = other[0]
         book['category'] = other[1]
         book['status'] = other[2]
