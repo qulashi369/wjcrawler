@@ -106,10 +106,16 @@ jQuery(document).ready(function($) {
     function(){
         alert('没有下一章啦...');
   });
+
   
   //禁止右键, 禁止选中
-  $("#content_p").bind("contextmenu",function(){return false;});  
-  $("#content_p").bind("selectstart",function(){return false;});  
+  //$("#content_p").bind("contextmenu",function(){return false;});  
+  //$("#content_p").bind("selectstart",function(){return false;});  
+
+  $(document).on("click", ".delete-book-btn", function () {
+       var bid = $(this).data('bid');
+       $("#book-id").val(bid);
+  });
 
 });
 

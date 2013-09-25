@@ -50,9 +50,23 @@ class Book(Base):
         return chapter
 
     @classmethod
-    def get(cls, book_id):
-        book = cls.query.filter_by(id=book_id).scalar()
+    def get(cls, bid):
+        book = cls.query.filter_by(id=bid).scalar()
         return book
+
+    @classmethod
+    def delete(cls, bid):
+        book = cls.query.filter_by(id=bid).scalar()
+        db_session.delete(book)
+        db_session.commit()
+
+    def update(self, title, author, description, status):
+        self.title = title
+        self.author = author
+        self.description = description
+        self.status = status
+        db_session.commit()
+
 
     @classmethod
     def gets(cls, book_ids=[]):

@@ -1,0 +1,48 @@
+
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="bookedit">编辑作品</h4>
+              </div>
+              <div class="modal-body">
+                  <form role="form" action="/ash/m_book/modal/{{book.id}}" method='post' id="m_book_form">
+                    <div class="form-group">
+                      <label for="bookid">Book ID</label>
+                      <input type="text" class="form-control" id="bookid" name="bookid" placeholder="Book id" disabled value="{{book.id}}" >
+                    </div>
+                    <div class="form-group">
+                      <label for="bookname">书名</label>
+                      <input type="text" class="form-control" id="bookname" name="bookname" placeholder="书名" value="{{book.title}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="author">作者</label>
+                      <input type="text" class="form-control" name="author" id="author" placeholder="作者" value="{{book.author}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="description">描述</label>
+                      <textarea class="form-control" id='description' name='description' rows="3">{{book.description}}</textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="status">状态</label>
+                      <select name="status" id='name' class="form-control">
+                        <option value='0' {% if book.status==0 %} selected="selected" {% endif %}>完本</option>
+                        <option value='1' {% if book.status==1 %} selected="selected" {% endif %}>连载中</option>
+                        <option value='2' {% if book.status==2 %} selected="selected" {% endif %}>断更</option>
+                      </select> 
+                    </div>
+                    <div class="form-group">
+                      <label for="cover">封面</label>
+                      <input name='cover' type="file" id="cover">
+                      <p class="help-block">上传图片更改书本封面</p>
+                    </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="$('#m_book_form').submit()">保存</button>
+              </div>
+          </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+
+

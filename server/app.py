@@ -263,9 +263,48 @@ def update_error(bid):
     return jsonify(status='success', log=log.id)
 
 
-@app.route('/ash/')
+'''
+======================================
+            后台相关页面
+======================================
+'''
+
+@app.route('/ash', methods=['GET'])
 def ash():
-    pass
+    return redirect(url_for('m_book', page=1))
+
+@app.route('/ash/m_book', methods=['GET'], defaults={'page': 1})
+@app.route('/ash/m_book/page/<int:page>', methods=['GET'])
+def m_book(page):
+    limit = 30
+    start = limit * (page-1)
+    books = Book.query.slice(start, limit+start).all()
+
+    if len(books) < limit:
+        has_next = False
+    else:
+        has_next = True
+
+    return render_template('admin/book.html', **locals())
+
+@app.route('/ash/m_book/modal/<int:bid>', methods=['GET', 'POST'])
+def m_book_modal(bid):
+    book = Book.get(bid)
+    if request.method == 'POST':
+        title = request.form.get('bookname')
+        author = request.form.get('author')
+        description = request.form.get('description')
+        status = request.form.get('status')
+        book.update(title, author, description, status)
+        return redirect(request.referrer)
+    return render_template('admin/book_modal.html', **locals())
+
+@app.route('/ash/m_book/modal/delete', methods=['POST'])
+def m_book_delete():
+    bid = request.form.get('bid')
+    Book.delete(bid)
+    return redirect(request.referrer)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000)
