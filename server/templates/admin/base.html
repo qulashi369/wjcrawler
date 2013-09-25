@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+        <meta charset="utf-8">
+        <title>一碗书后台</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        {% block head_css %} 
+            <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+            <link href="/static/css/bootstrap-glyphicons.css" rel="stylesheet">
+            <style rel="stylesheet">
+                body {padding-top:50px;}
+            </style>
+        {% endblock head_css%}
+    {% endblock head %}
+</head>
+  
+  <body>
+    {% block body%}
+        {% block header %}
+        <nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+          <div class="navbar-header">
+              <a class="navbar-brand" href="{{url_for('ash')}}">一碗书·后台</a>
+          </div>
+          <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+              <li {%if request.endpoint == 'm_book' %}class="active" {%endif%}>
+                <a href="#">作品管理</a>
+              </li>
+              <li {%if request.endpoint == 'm_chapter' %}class="active" {%endif%}>
+                <a data-toggle="modal" href="#manage-chapters" href="#">章节管理</a>
+              </li>
+              <li {%if request.endpoint == 'm_sentence' %}class="active" {%endif%}>
+                <a href="#">句子管理</a>
+              </li>
+              <li {%if request.endpoint == 'm_user' %}class="active" {%endif%}>
+                <a href="#">用户管理</a>
+              </li>
+              <li class="dropdown" >
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">更新管理<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li {%if request.endpoint == 'm_source' %}class="active" {%endif%}><a href="#">更新源</a></li>
+                  <li {%if request.endpoint == 'm_task' %}class="active" {%endif%}><a href="#">更新任务</a></li>
+                  <li {%if request.endpoint == 'm_task_log' %}class="active" {%endif%}><a href="#">更新日志</a></li>
+                </ul>
+              </li>
+            </ul>
+            <p class="navbar-text pull-right">
+              <a href="#" class="navbar-link">langqixu</a>
+              <a href="#" class="navbar-link">登出</a>
+            </p>
+          </div>
+        </nav>
+        {% endblock header %}
+        <div class="container">
+          <div class="page-header">
+              {% block page_header %}
+              {% endblock page_header %}
+          </div>
+          {% block main%}
+          {% endblock main %} 
+          <!-- Modal -->
+          {% block modal %} 
+          {% endblock modal %}
+
+          {% block modal_zjgl%}
+            <div class="modal fade" id="manage-chapters" tabindex="-1" role="dialog" aria-labelledby="zjgl" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h4 class="modal-title" id="zjgl">章节管理</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form class="form-inline" role="form">
+                        <div class="form-group">
+                          <label class="sr-only" for="zj-bookid">Book ID</label>
+                          <input type="text" class="form-control" id="zj-bookid" placeholder="输入书本 ID 后跳转">
+                        </div>
+                        <button type="submit" class="btn btn-primary">我跳</button>
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                  </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+          {% endblock modal_zjgl %}
+        </div>
+        
+        {% block body_js %}
+            <script src="/static/js/jquery.min.js"></script>
+            <script src="/static/js/bootstrap.min.js"></script>
+            <script src="/static/js/main.js"></script>
+        {% endblock body_js%}
+    {% endblock body %}
+  </body>
+</html>

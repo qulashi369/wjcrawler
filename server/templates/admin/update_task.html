@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8">
+    <title>
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-glyphicons.css" rel="stylesheet">
+  
+    <link href="css/main.css" rel="stylesheet">
+</head>
+  
+  <body>
+    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">一碗书·后台</a>
+      </div>
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="#">作品管理</a>
+          </li>
+          <li>
+            <a data-toggle="modal" href="#manage-chapters" href="#">章节管理</a>
+          </li>
+          <li>
+            <a href="#">句子管理</a>
+          </li>
+          <li>
+            <a href="#">用户管理</a>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">更新管理<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li ><a href="#">更新源</a></li>
+              <li class="active"><a href="#">更新任务</a></li>
+              <li><a href="#">更新日志</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p class="navbar-text pull-right">
+          <a href="#" class="navbar-link">langqixu</a>
+          <a href="#" class="navbar-link">登出</a>
+        </p>
+      </div>
+    </nav>
+  <div class="container">
+    <div class="page-header">
+      <h1 id="type">更新任务管理</h1>
+    </div>
+    <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>作品 ID</th>
+            <th>源网站</th>
+            <th>原地址</th>
+            <th>最新章节</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>10001</td>
+            <td>hao123.se</td>
+            <td>http://hao123.se/12121</td>
+            <td>你好我是吃货一号</td>
+            <td>2013-09-09 08:88</td>
+            <td>
+                <a data-toggle="modal" href="#edit-task">编辑</a>
+                <a data-toggle="modal" href="#delete-task" >删除</a>
+            </td>
+          </tr>
+          
+          
+        </tbody>
+      </table> 
+      <div class="pull-right">
+        <ul class="pager">
+          <li class="disabled "><a href="#">Previous</a></li>
+          <li><a href="#">Next</a></li>
+        </ul>  
+      </div>
+      
+    </div>
+    
+    <!-- Modal -->
+      <div class="modal fade" id="edit-task" tabindex="-1" role="dialog" aria-labelledby="et-label" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="et-label">更新任务编辑</h4>
+            </div>
+            <div class="modal-body">
+              <form role="form" action="testing">
+                    <div class="form-group">
+                      <label for="source-id">任务 ID</label>
+                      <input type="text" class="form-control" id="source-id" placeholder="Source id" disabled >
+                    </div>
+                    <div class="form-group">
+                      <label for="book-id">作品 ID</label>
+                      <input type="text" class="form-control" id="book-id" placeholder="Book id" >
+                    </div>
+                    <div class="form-group">
+                      <label for="source-site">源网站</label>
+                      <input type="text" class="form-control" id="source-site" placeholder="源网站" >
+                    </div>
+                    <div class="form-group">
+                      <label for="source-url">源地址</label>
+                      <input type="text" class="form-control" id="source-url" placeholder="源地址">
+                    </div>
+                    <div class="form-group">
+                      <label for="latest-chapter">最新章节</label>
+                      <input type="text" class="form-control" id="latest-chapter" placeholder="最新章节">
+                    </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary">保存</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <!-- Modal -->
+      <div class="modal fade" id="delete-task" tabindex="-1" role="dialog" aria-labelledby="dt-label" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="dt-label">删除更新任务</h4>
+            </div>
+            <div class="modal-body">
+              你真的要如此狠心？
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary">确定</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+     
+    
+    
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+
+</html>
