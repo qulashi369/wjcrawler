@@ -57,7 +57,8 @@ class BookSpider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         chapter['name'] = hxs.select("//h1[@class='novel_title']/text()").extract()[0]
         content = hxs.select("//div[@class='novel_content']").extract()
-        chapter['content'] = filter_tags(content[0])[39:]  # 前面39个字符是广告
+        #chapter['content'] = filter_tags(content[0])[39:]  # 前面39个字符是广告
+        chapter['content'] = content[0][69:]  # 前面66个字符是广告
         chapter['id'] = response.meta['cid']
         chapter['bid'] = response.meta['book']['id']
         yield chapter

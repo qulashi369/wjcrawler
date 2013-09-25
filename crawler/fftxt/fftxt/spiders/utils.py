@@ -17,7 +17,7 @@ def filter_tags(htmlstr):
     s = re_cdata.sub('', htmlstr)  # 去掉CDATA
     s = re_script.sub('', s)  # 去掉SCRIPT
     s = re_style.sub('', s)  # 去掉style
-    s = re_br.sub('\n', s)  # 将br转换为换行
+    #s = re_br.sub('\n', s)  # 将br转换为换行
     s = re_h.sub('', s)  # 去掉HTML 标签
     s = re_comment.sub('', s)  # 去掉HTML注释
     #去掉多余的空行
@@ -58,6 +58,6 @@ def repalce(s, re_exp, repl_string):
     return re_exp.sub(repl_string, s)
 
 if __name__ == '__main__':
-    s = file('Google.htm').read()
+    s = file('/tmp/index.html').read()
     news = filter_tags(s)
     print news
