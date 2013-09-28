@@ -14,7 +14,7 @@ SECRET_KEY = '%^&S*DUFtf2132&*(2g3]]'
 PROPAGATE_EXCEPTIONS = True
 LOG = '/var/log/applog/app.log'
 LOG_LEVEL = logging.WARNING
-DATABASE_URL = 'mysql://crawler:crawlerpwd@localhost:3306/xiaoshuo?charset=utf8'
+DATABASE_URL = 'mysql://crawler:crawlerpwd@localhost:3306/xiaoshuo_fftxt?charset=utf8'
 
 if is_production():
     pass

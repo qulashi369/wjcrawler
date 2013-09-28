@@ -7,10 +7,11 @@ import logging
 import shutil
 from logging import FileHandler
 import time
+from datetime import datetime
 
 
-book_log_path = "/tmp/b_%s"
-chapter_log_path = "/tmp/c_%s"
+book_log_path = "/home/yj/b_%s"
+chapter_log_path = "/home/yj/c_%s"
 logformat = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 book_handler = FileHandler(book_log_path % time.strftime("%Y%m%d", time.localtime()), "a+")
 chapter_handler = FileHandler(chapter_log_path % time.strftime("%Y%m%d", time.localtime()), "a+")
@@ -30,7 +31,7 @@ chapter_logger.addHandler(chapter_handler)
 def init():
     conn = MySQLdb.connect(
         host='localhost', user='crawler', passwd='crawlerpwd',
-        db='xiaoshuo_fftxt', port=3306, charset='utf8')
+        db='xiaoshuo', port=3306, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
     return conn, cur, client.xiaoshuo_fftxt
@@ -46,7 +47,7 @@ def book(conn, cur, mdb):
     cid = -1  # category id
     curbid = -1
     for b in mdb.book.find():
-        #TODO 少了desc
+        #TODO 少了status
         for k in ["name", "author", "category", "status"]:
             b[k] = b[k].encode('utf-8')
         if len(b['desc']) > 100:
@@ -90,8 +91,8 @@ def book(conn, cur, mdb):
 def chapter(conn, cur, mdb, curbid, b):
     sql = '''INSERT INTO chapter(book_id, title, content, create_time)VALUES (%s, %s, %s, %s);'''
 
-    for ch in mdb.chapter.find({"bid": b['id']}):
-        ch['create_time'] = b['create_time']
+    for ch in mdb.chapter.find({"bid": b['id']}).sort("id"):
+        ch['create_time'] = datetime.now()
         ch['curbid'] = curbid
         #查询当前章节是否存在
         num = cur.execute("select id from chapter where book_id=%s and title=%s", (curbid, ch['name']))
