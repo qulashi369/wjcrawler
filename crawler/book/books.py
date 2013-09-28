@@ -13,8 +13,6 @@
 def load():
     #bs = open("books.txt", "r")
     #return (b for i, b in enumerate(bs) if i > 400 and i < 500)
-    return ['神印王座']
+    return ['掌御星辰']
 
 books = load()
-
-# 150:16
