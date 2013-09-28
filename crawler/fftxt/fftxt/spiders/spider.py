@@ -6,6 +6,7 @@ from fftxt.items import Book, Chapter
 from utils import filter_tags
 from fftxt.db import get_conn
 from datetime import datetime
+from htmlparser import strip_special_tags
 
 
 class BookSpider(CrawlSpider):
@@ -21,7 +22,7 @@ class BookSpider(CrawlSpider):
             book = book.strip('\n')
             if book[0] != '#':
                 bid = book.split(":")[1]
-                if get_conn("book").find({'id': bid}).count():
+                if get_conn("book").find({'id': int(bid)}).count():
                     print book, ' already exists'
                     continue
                 url = host + bid + "/"
@@ -35,30 +36,38 @@ class BookSpider(CrawlSpider):
         bmeta = hxs.select("//div[@class='book_news_style_text2']")
         other = bmeta.select("//h2/text()").extract()
         book = Book()
-        book['id'] = response.meta['bid']
+        book['id'] = int(response.meta['bid'])
         book['create_time'] = datetime.now()
-        book['author'] = other[0]
-        book['category'] = other[1]
-        book['status'] = other[2]
+        book['author'] = other[0][3:]
+        book['category'] = other[1][3:]
+        book['status'] = other[2][5:]
         book['name'] = bmeta.select("//h1/text()").extract()[0]
-        book['desc'] = hxs.select("//div[@class='msgarea']/p/text()").extract()[0]
+        desc = hxs.select("//div[@class='msgarea']/p/text()").extract()
+        if desc:
+            book['desc'] = strip_special_tags(desc[0])
+        else:
+            book['desc'] = ''
         book['source'] = response.meta['target']
-        chapters = hxs.select("//ul[@id='chapterlist']/li/a/@href").extract()
+        #chapters = hxs.select("//ul[@id='chapterlist']/li/a/@href").extract()
+        chapters = hxs.select("//ul[@id='chapterlist']/li/a")
         yield book
         for ch in chapters:
-            churl = response.meta['target'] + ch
+            url = ch.select("@href").extract()[0]
+            cname = ch.select("@title").extract()[0]
+            churl = response.meta['target'] + url
             req = Request(url=churl, callback=self.parse_chapter)
             req.meta['book'] = book
-            req.meta['cid'] = ch.split('.')[0]
+            req.meta['cid'] = url.split('.')[0]
+            req.meta['cname'] = cname
             yield req
 
     def parse_chapter(self, response):
         chapter = Chapter()
         hxs = HtmlXPathSelector(response)
-        chapter['name'] = hxs.select("//h1[@class='novel_title']/text()").extract()[0]
+        chapter['name'] = response.meta['cname']
         content = hxs.select("//div[@class='novel_content']").extract()
         #chapter['content'] = filter_tags(content[0])[39:]  # 前面39个字符是广告
         chapter['content'] = content[0][69:]  # 前面66个字符是广告
-        chapter['id'] = response.meta['cid']
-        chapter['bid'] = response.meta['book']['id']
+        chapter['id'] = int(response.meta['cid'])
+        chapter['bid'] = int(response.meta['book']['id'])
         yield chapter
