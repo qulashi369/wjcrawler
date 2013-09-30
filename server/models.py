@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
-from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS)
+from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS, BANNED)
 
 
 class Book(Base):
@@ -189,8 +189,14 @@ class User(Base):
 
     @classmethod
     def get_by_uid(cls, uid):
-        user = cls.query.filter_by(id=uid).scalar()
+        try:
+            user = cls.query.filter_by(id=uid).scalar()
+        except:
+            return None
         return user
+
+    def get_id(self):
+        return str(self.id)
 
     @classmethod
     def login(cls, username, password):
@@ -198,6 +204,17 @@ class User(Base):
         if user and check_password_hash(user.password, password):
             return user
         return None
+
+    def is_authenticated(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def is_active(self):
+        if self.type == BANNED:
+            return False
+        return True
 
     @classmethod
     def check_username(cls, username):
