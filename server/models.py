@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
-from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS, BANNED)
+from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS, BANNED, ADMIN)
 
 
 class Book(Base):
@@ -66,7 +66,6 @@ class Book(Base):
         self.description = description
         self.status = status
         db_session.commit()
-
 
     @classmethod
     def gets(cls, book_ids=[]):
@@ -172,6 +171,29 @@ class User(Base):
         self.password = password
         self.create_time = datetime.now()
 
+    def get_favs(self):
+        favs = Favourite.gets(self.id)
+        return favs
+
+    def is_admin(self):
+        if self.type == ADMIN:
+            return True
+        return False
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def is_active(self):
+        if self.type == BANNED:
+            return False
+        return True
+
     @classmethod
     def add(cls, username, password, **kwargs):
         # NOTE 此处password为加密后的密码hash
@@ -195,26 +217,12 @@ class User(Base):
             return None
         return user
 
-    def get_id(self):
-        return str(self.id)
-
     @classmethod
     def login(cls, username, password):
         user = cls.get(username)
         if user and check_password_hash(user.password, password):
             return user
         return None
-
-    def is_authenticated(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def is_active(self):
-        if self.type == BANNED:
-            return False
-        return True
 
     @classmethod
     def check_username(cls, username):
@@ -234,10 +242,6 @@ class User(Base):
     def register(cls, username, password):
         pw_hash = generate_password_hash(password)
         return cls.add(username, pw_hash)
-
-    def get_favs(self):
-        favs = Favourite.gets(self.id)
-        return favs
 
     def __repr__(self):
         return '<User(%r, %r)>' % (self.id, self.username)

@@ -4,9 +4,13 @@ import os
 import json
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
-                   flash, request, redirect, make_response, jsonify)
+                   flash, request, redirect, make_response, jsonify,
+                   current_app)
 from flask.ext.login import (LoginManager, login_user, logout_user,
                              login_required, current_user)
+from flask.ext.principal import (Principal, Permission, RoleNeed, UserNeed,
+                                 identity_loaded, identity_changed, Identity,
+                                 AnonymousIdentity)
 
 from models import Book, Chapter, User, Favourite, UpdateTask, UpdateLog
 from consts import FAILED
@@ -16,11 +20,23 @@ app = Flask(__name__, template_folder='templates')
 app.config.from_object('config')
 
 login_manager = LoginManager(app)
+principals = Principal(app)
+admin_permission = Permission(RoleNeed('admin'))
 
 
 @login_manager.user_loader
 def load_user(uid):
     return User.get_by_uid(uid)
+
+
+@identity_loaded.connect_via(app)
+def on_identity_loaded(sender, identity):
+    identity.user = current_user
+    if hasattr(current_user, 'id'):
+        identity.provides.add(UserNeed(current_user.id))
+    if hasattr(current_user, 'is_admin'):
+        if current_user.is_admin():
+            identity.provides.add(RoleNeed('admin'))
 
 
 @app.before_request
@@ -120,6 +136,7 @@ def login():
     target = request.values.get('target', '')
     if not current_user.is_anonymous():
         return redirect(url_for('uid', uid=current_user.id))
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -134,6 +151,8 @@ def login():
                 login_error = True
             else:
                 login_user(user, remember=True)
+                identity_changed.send(current_app._get_current_object(),
+                                      identity=Identity(user.id))
                 if target:
                     return redirect(target)
                 return redirect(url_for('user', uid=user.id))
@@ -158,6 +177,8 @@ def register():
         else:
             user = User.register(username, password)
             login_user(user, remember=True)
+            identity_changed.send(current_app._get_current_object(),
+                                  identity=Identity(user.id))
             return redirect(url_for('user', uid=current_user.id))
     return render_template('register.html', **locals())
 
@@ -166,6 +187,8 @@ def register():
 @login_required
 def logout():
     logout_user()
+    identity_changed.send(current_app._get_current_object(),
+                          identity=AnonymousIdentity())
     return redirect(url_for('index'))
 
 
@@ -272,26 +295,27 @@ def update_error(bid):
 
 
 @app.route('/ash', methods=['GET'])
+@admin_permission.require()
 def ash():
     return redirect(url_for('m_book', page=1))
 
 
 @app.route('/ash/m_book', methods=['GET'], defaults={'page': 1})
 @app.route('/ash/m_book/page/<int:page>', methods=['GET'])
+@admin_permission.require()
 def m_book(page):
     limit = 30
     start = limit * (page - 1)
     books = Book.query.slice(start, limit + start).all()
-
     if len(books) < limit:
         has_next = False
     else:
         has_next = True
-
     return render_template('admin/book.html', **locals())
 
 
 @app.route('/ash/m_book/modal/<int:bid>', methods=['GET', 'POST'])
+@admin_permission.require()
 def m_book_modal(bid):
     book = Book.get(bid)
     if request.method == 'POST':
@@ -305,6 +329,7 @@ def m_book_modal(bid):
 
 
 @app.route('/ash/m_book/modal/delete', methods=['POST'])
+@admin_permission.require()
 def m_book_delete():
     bid = request.form.get('bid')
     Book.delete(bid)
