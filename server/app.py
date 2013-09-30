@@ -86,7 +86,7 @@ def index():
 @app.route("/book/<int:bid>")
 def book(bid):
     is_faved = False
-    if current_user:
+    if not current_user.is_anonymous():
         is_faved = Favourite.is_faved(current_user.id, bid)
 
     book = Book.get(bid)
@@ -208,7 +208,7 @@ def user(uid):
 
 @app.route("/fav/<int:bid>/", methods=['POST'])
 def fav(bid):
-    if not current_user:
+    if current_user.is_anonymous():
         flash(u'请先登录帐号，再收藏小说', 'error')
         return (
             redirect(url_for('login', target=url_for('book', bid=bid)))

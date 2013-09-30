@@ -56,8 +56,8 @@ class Book(Base):
 
     @classmethod
     def delete(cls, bid):
-        book = cls.query.filter_by(id=bid).scalar()
-        db_session.delete(book)
+        book = cls.query.filter_by(id=bid).delete()
+        chapters = Chapter.gets(bid).delete()
         db_session.commit()
 
     def update(self, title, author, description, status):
@@ -108,6 +108,12 @@ class Chapter(Base):
     def get(cls, chapter_id, book_id):
         chapter = cls.query.filter_by(id=chapter_id, book_id=book_id).scalar()
         return chapter
+
+    @classmethod
+    def gets(cls, book_id):
+        chapters = cls.query.filter_by(book_id=book_id)
+        return chapters
+
 
     @classmethod
     def get_id_titles(cls, book_id):
