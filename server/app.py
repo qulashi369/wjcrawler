@@ -295,14 +295,14 @@ def update_error(bid):
 
 
 @app.route('/ash', methods=['GET'])
-@admin_permission.require()
+@admin_permission.require(http_exception=404)
 def ash():
     return redirect(url_for('m_book', page=1))
 
 
 @app.route('/ash/m_book', methods=['GET'], defaults={'page': 1})
 @app.route('/ash/m_book/page/<int:page>', methods=['GET'])
-@admin_permission.require()
+@admin_permission.require(http_exception=404)
 def m_book(page):
     limit = 30
     start = limit * (page - 1)
@@ -315,7 +315,7 @@ def m_book(page):
 
 
 @app.route('/ash/m_book/modal/<int:bid>', methods=['GET', 'POST'])
-@admin_permission.require()
+@admin_permission.require(http_exception=404)
 def m_book_modal(bid):
     book = Book.get(bid)
     if request.method == 'POST':
@@ -329,7 +329,7 @@ def m_book_modal(bid):
 
 
 @app.route('/ash/m_book/modal/delete', methods=['POST'])
-@admin_permission.require()
+@admin_permission.require(http_exception=404)
 def m_book_delete():
     bid = request.form.get('bid')
     Book.delete(bid)
