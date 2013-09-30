@@ -27,9 +27,13 @@
                     <h1 class="title"><a href="/"><img src="/static/image/logo.png" /></a></h1>  
                       <div class="header_r fr">
                           <div class="login_reg fr">
-                                {%if session['uid'] %}
-                                    <a href="{{url_for('user', uid=session['uid'])}}">{{session['username']}}</a>
+                                {%if not current_user.is_anonymous() %}
+                                    <a href="{{url_for('user', uid=current_user.id)}}">{{current_user.username}}</a>
                                     <span>|</span>
+                                    {%if current_user.is_admin() %}
+                                        <a href="{{url_for('ash')}}">后台</a>
+                                    <span>|</span>
+                                    {%endif%}
                                     <a href="{{url_for('logout')}}">退出</a>
                                 {% else%}
                                     <a href="{{url_for('login')}}">登录</a>
