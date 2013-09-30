@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{user.username}} 
+    {{current_user.username}} 
 {% endblock title %}
 
 
 {% block main %}      
 <div class="profile clearfix">
 	<div class="pic">
-		<a href="{{ url_for('user', username=user.username)}}">
-			<img src="/static/image/default_avatar.jpg" alt="{{user.username}}" width="80" height="80">
+		<a href="{{ url_for('user', username=current_user.username)}}">
+			<img src="/static/image/default_avatar.jpg" alt="{{current_user.username}}" width="80" height="80">
 		</a>	
 	</div>
 	<div class="info">
-		<span class="name">{{user.username}}</span><br>
-		<span class="join">{{user.create_time.date()}} 加入</span>
+		<span class="name">{{current_user.username}}</span><br>
+		<span class="join">{{current_user.create_time.date()}} 加入</span>
 		<div class="account">
 			<span class="setting"><a href="#">设置</a></span>
 			<span class="pwd_protect"><a href="#">帐号密保</a></span>	
@@ -40,7 +40,7 @@
 	             <span class="author"><a href="#">{{ fav.get_book().author }}</a></span><br>
 	             <span class="latest"><a href="/{{ fav.get_book().id}}/{{fav.get_book().latest_chapter.id}}" target="_blank">最新章节：{{fav.get_book().latest_chapter.title}}</a></span>
 	             
-	             <form id="fav_form" action="{{url_for("fav", book_id=fav.get_book().id)}}" method="post">
+	             <form id="fav_form" action="{{url_for('fav', bid=fav.get_book().id)}}" method="post">
                         <input name="action" type="hidden" value="unfav">
                         <input name="refer" type="hidden" value="user_page">
                         <span class="fav">{{ fav.create_time.date()}} 收藏 | <a id="fav" href="javascript:void()">取消收藏</a></span>

@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db_session, Base
-from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS)
+from consts import (FROM_SITE, NORMAL, INPROGRESS, SUCCESS, BANNED, ADMIN)
 
 
 class Book(Base):
@@ -56,8 +56,8 @@ class Book(Base):
 
     @classmethod
     def delete(cls, bid):
-        book = cls.query.filter_by(id=bid).scalar()
-        db_session.delete(book)
+        book = cls.query.filter_by(id=bid).delete()
+        chapters = Chapter.gets(bid).delete()
         db_session.commit()
 
     def update(self, title, author, description, status):
@@ -66,7 +66,6 @@ class Book(Base):
         self.description = description
         self.status = status
         db_session.commit()
-
 
     @classmethod
     def gets(cls, book_ids=[]):
@@ -109,6 +108,12 @@ class Chapter(Base):
     def get(cls, chapter_id, book_id):
         chapter = cls.query.filter_by(id=chapter_id, book_id=book_id).scalar()
         return chapter
+
+    @classmethod
+    def gets(cls, book_id):
+        chapters = cls.query.filter_by(book_id=book_id)
+        return chapters
+
 
     @classmethod
     def get_id_titles(cls, book_id):
@@ -172,6 +177,29 @@ class User(Base):
         self.password = password
         self.create_time = datetime.now()
 
+    def get_favs(self):
+        favs = Favourite.gets(self.id)
+        return favs
+
+    def is_admin(self):
+        if self.type == ADMIN:
+            return True
+        return False
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def is_active(self):
+        if self.type == BANNED:
+            return False
+        return True
+
     @classmethod
     def add(cls, username, password, **kwargs):
         # NOTE 此处password为加密后的密码hash
@@ -189,7 +217,10 @@ class User(Base):
 
     @classmethod
     def get_by_uid(cls, uid):
-        user = cls.query.filter_by(id=uid).scalar()
+        try:
+            user = cls.query.filter_by(id=uid).scalar()
+        except:
+            return None
         return user
 
     @classmethod
@@ -217,10 +248,6 @@ class User(Base):
     def register(cls, username, password):
         pw_hash = generate_password_hash(password)
         return cls.add(username, pw_hash)
-
-    def get_favs(self):
-        favs = Favourite.gets(self.id)
-        return favs
 
     def __repr__(self):
         return '<User(%r, %r)>' % (self.id, self.username)
