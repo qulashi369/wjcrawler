@@ -116,10 +116,27 @@ jQuery(document).ready(function($) {
        var bid = $(this).data('bid');
        $("#book-id").val(bid);
   });
+
+  $(document).on("click", ".delete-chapter-btn", function () {
+       var bid = $(this).data('bid');
+       var cid = $(this).data('cid');
+       $("#book-id").val(bid);
+       $("#chapter-id").val(cid);
+  });
+
   
   $('#edit-book').on('hidden.bs.modal', function () {
       $(this).removeData('bs.modal');
-  })
+  });
+
+  $('#zj-go').click(function(){
+      var bid = $('#zj-bookid').val();
+      window.location = '/ash/m_chapter/'+bid;
+  });
+
+  $('#edit-chapter').on('hidden.bs.modal', function () {
+      $(this).removeData('bs.modal');
+  });
 
 });
 
@@ -138,8 +155,6 @@ function hideHover(el)
         },100));
     
 }
-	
-
 
 function check_username(str){
   if (4 > getByteLen(str) || getByteLen(str) > 16){

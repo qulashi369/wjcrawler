@@ -97,6 +97,11 @@ class Chapter(Base):
         self.content = content
         self.create_time = datetime.now()
 
+    def update(self, title, content):
+        self.title = title
+        self.content = content
+        db_session.commit()
+
     @classmethod
     def add(cls, book_id, title, content):
         chapter = cls(book_id, title, content)
@@ -110,10 +115,15 @@ class Chapter(Base):
         return chapter
 
     @classmethod
+    def delete(cls, bid, cid):
+        chapter = cls.get(cid, bid)
+        db_session.delete(chapter)
+        db_session.commit()
+
+    @classmethod
     def gets(cls, book_id):
         chapters = cls.query.filter_by(book_id=book_id)
         return chapters
-
 
     @classmethod
     def get_id_titles(cls, book_id):
