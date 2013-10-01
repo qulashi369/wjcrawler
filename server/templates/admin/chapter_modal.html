@@ -1,0 +1,35 @@
+<div class="modal-dialog">
+<div class="modal-content">
+  
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h4 class="modal-title" id="ec-lable">编辑章节</h4>
+    </div>
+    <div class="modal-body">
+        <form role="form" action="/ash/m_chapter/modal/{{chapter.book_id}}/{{chapter.id}}" id="m-chapter-form"  method="post">
+          <div class="form-group">
+            <label for="bookid">Book ID</label>
+            <input type="text" class="form-control" id="bookid" placeholder="Book id" disabled value="{{chapter.book_id}}">
+          </div>
+          <div class="form-group">
+            <label for="chapterid">Chapter ID</label>
+            <input type="text" class="form-control" id="chapterid" placeholder="Chapter id" disabled value="{{chapter.id}}">
+          </div>
+          <div class="form-group">
+            <label for="chapter-title">章节标题</label>
+            <input type="text" class="form-control" id="chapter-title" name="title" placeholder="章节标题" value="{{chapter.title}}">
+          </div>
+          <div class="form-group">
+            <label for="description">章节内容</label>
+            <textarea class="form-control" id='description' name='content' rows="12">{{chapter.content}}</textarea>
+          </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      <button type="button" onclick="$('#m-chapter-form').submit()" class="btn btn-primary">保存</button>
+    </div>
+  
+</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+

@@ -56,8 +56,8 @@ class Book(Base):
 
     @classmethod
     def delete(cls, bid):
-        book = cls.query.filter_by(id=bid).delete()
-        chapters = Chapter.gets(bid).delete()
+        cls.query.filter_by(id=bid).delete()
+        Chapter.gets(bid).delete()
         db_session.commit()
 
     def update(self, title, author, description, status):
@@ -97,6 +97,11 @@ class Chapter(Base):
         self.content = content
         self.create_time = datetime.now()
 
+    def update(self, title, content):
+        self.title = title
+        self.content = content
+        db_session.commit()
+
     @classmethod
     def add(cls, book_id, title, content):
         chapter = cls(book_id, title, content)
@@ -110,10 +115,15 @@ class Chapter(Base):
         return chapter
 
     @classmethod
+    def delete(cls, bid, cid):
+        chapter = cls.get(cid, bid)
+        db_session.delete(chapter)
+        db_session.commit()
+
+    @classmethod
     def gets(cls, book_id):
         chapters = cls.query.filter_by(book_id=book_id)
         return chapters
-
 
     @classmethod
     def get_id_titles(cls, book_id):
@@ -339,6 +349,8 @@ class Favourite(Base):
         db_session.delete(fav)
         db_session.commit()
 
+    delete = remove
+
     @classmethod
     def get_bids(cls, uid):
         bids = db_session.query(Favourite.bid).filter_by(uid=uid).all()
@@ -368,6 +380,20 @@ class BookSource(Base):
         self.source_url = source_url
         self.create_time = datetime.now()
 
+    def update(self, bid, ssite, surl):
+        self.bid = bid
+        self.source_site = ssite
+        self.source_url = surl
+        db_session.commit()
+
+    @classmethod
+    def delete(cls, id):
+        source = cls.get(id)
+        print source
+        print 111
+        db_session.delete(source)
+        db_session.commit()
+
     @classmethod
     def add(cls, bid, source_site, source_url):
         is_exists = db_session.query(
@@ -382,7 +408,11 @@ class BookSource(Base):
             db_session.commit()
 
     @classmethod
-    def get(cls, bid):
+    def get(cls, id):
+        return cls.query.filter_by(id=id).scalar()
+
+    @classmethod
+    def get_by_bid(cls, bid):
         book_source = cls.query.filter_by(bid=bid).scalar()
         return book_source
 
@@ -430,7 +460,7 @@ class UpdateTask(Base):
         weight_2 = []
         weight_3 = []
         for book in books:
-            book_source = BookSource.get(book.id)
+            book_source = BookSource.get_by_bid(book.id)
             if book_source is None:
                 print '%d has no book source info' % book.id
                 continue

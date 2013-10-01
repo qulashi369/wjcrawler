@@ -16,7 +16,7 @@
         {% endblock head_css%}
     {% endblock head %}
 </head>
-  
+
   <body>
     {% block body%}
         {% block header %}
@@ -27,7 +27,7 @@
           <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
               <li {%if request.endpoint == 'm_book' %}class="active" {%endif%}>
-                <a href="#">作品管理</a>
+                <a href="/ash/m_book">作品管理</a>
               </li>
               <li {%if request.endpoint == 'm_chapter' %}class="active" {%endif%}>
                 <a data-toggle="modal" href="#manage-chapters" href="#">章节管理</a>
@@ -41,26 +41,29 @@
               <li class="dropdown" >
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">更新管理<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li {%if request.endpoint == 'm_source' %}class="active" {%endif%}><a href="#">更新源</a></li>
+                  <li {%if request.endpoint == 'm_source' %}class="active" {%endif%}><a href="/ash/m_source">更新源</a></li>
                   <li {%if request.endpoint == 'm_task' %}class="active" {%endif%}><a href="#">更新任务</a></li>
                   <li {%if request.endpoint == 'm_task_log' %}class="active" {%endif%}><a href="#">更新日志</a></li>
                 </ul>
               </li>
             </ul>
             <p class="navbar-text pull-right">
-              <a href="#" class="navbar-link">langqixu</a>
-              <a href="#" class="navbar-link">登出</a>
+              <a target="_blank" href="{{url_for('user', uid=current_user.id)}}" class="navbar-link">{{current_user.username}}</a>
+              <a href="{{url_for('logout')}}" class="navbar-link">登出</a>
             </p>
           </div>
         </nav>
         {% endblock header %}
+
         <div class="container">
           <div class="page-header">
               {% block page_header %}
               {% endblock page_header %}
           </div>
+
           {% block main%}
           {% endblock main %} 
+
           <!-- Modal -->
           {% block modal %} 
           {% endblock modal %}
@@ -74,16 +77,14 @@
                       <h4 class="modal-title" id="zjgl">章节管理</h4>
                     </div>
                     <div class="modal-body">
-                      <form class="form-inline" role="form">
                         <div class="form-group">
                           <label class="sr-only" for="zj-bookid">Book ID</label>
                           <input type="text" class="form-control" id="zj-bookid" placeholder="输入书本 ID 后跳转">
                         </div>
-                        <button type="submit" class="btn btn-primary">我跳</button>
-                      </form>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                      <button type="button" class="btn btn-primary" id="zj-go">我跳</button>
                     </div>
                   </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
