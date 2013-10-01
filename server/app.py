@@ -43,8 +43,9 @@ def on_identity_loaded(sender, identity):
 
 @user_loaded_from_cookie.connect_via(app)
 def on_user_loaded_from_cookie(sender, user):
-    identity_changed.send(current_app._get_current_object(),
-                          identity=Identity(user.id))
+    if hasattr(user, 'id'):
+        identity_changed.send(current_app._get_current_object(),
+                              identity=Identity(user.id))
 
 
 @user_logged_in.connect_via(app)
