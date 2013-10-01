@@ -124,8 +124,16 @@ jQuery(document).ready(function($) {
        $("#chapter-id").val(cid);
   });
 
-  
+   $(document).on("click", ".delete-source-btn", function () {
+       var sid = $(this).data('sid');
+       $("#source-id").val(sid);
+  });
+
   $('#edit-book').on('hidden.bs.modal', function () {
+      $(this).removeData('bs.modal');
+  });
+
+  $('#edit-source').on('hidden.bs.modal', function () {
       $(this).removeData('bs.modal');
   });
 

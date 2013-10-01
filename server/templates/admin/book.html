@@ -22,8 +22,8 @@
 
       {% for book in books %}
       <tr>
-          <td><a href="{{url_for('book',bid=book.id)}}">{{ book.id }}</a></td>
-          <td><a href="{{url_for('book',bid=book.id)}}">{{ book.title }}</a></td>
+          <td><a target="_blank" href="{{url_for('book',bid=book.id)}}">{{ book.id }}</a></td>
+          <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
           <td>{{ book.category.name }}</td>
           {% if book.status == 0%}
@@ -35,7 +35,7 @@
           {% endif %}
           <td>{{ book.create_time }}</td>
         <td>
-            <a data-toggle="modal"  data-target="#edit-book" href="/ash/m_book/modal/{{book.id}}"  bid="{{ book.id }}">编辑</a>
+            <a data-toggle="modal"  data-target="#edit-book" href="/ash/m_book/modal/{{book.id}}">编辑</a>
             <a href="/ash/m_chapter/{{book.id}}" bid="{{ book.id }}">章节管理</a>
             <a data-toggle="modal" data-bid="{{book.id}}" class='delete-book-btn' href="#delete-book">删除</a>
         </td>

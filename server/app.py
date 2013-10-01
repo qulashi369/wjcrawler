@@ -13,7 +13,8 @@ from flask.ext.principal import (Principal, Permission, RoleNeed, UserNeed,
                                  identity_loaded, identity_changed, Identity,
                                  AnonymousIdentity)
 
-from models import Book, Chapter, User, Favourite, UpdateTask, UpdateLog
+from models import (Book, Chapter, User, Favourite, UpdateTask, UpdateLog,
+                    BookSource)
 from consts import FAILED
 from database import db_session
 
@@ -378,6 +379,43 @@ def m_chapter_delete():
     bid = request.form.get('bid')
     cid = request.form.get('cid')
     Chapter.delete(bid, cid)
+    return redirect(request.referrer)
+
+
+@app.route('/ash/m_source', methods=['GET'], defaults={'page': 1})
+@app.route('/ash/m_source/page/<int:page>', methods=['GET'])
+@admin_permission.require(http_exception=404)
+def m_source(page):
+    limit = 50
+    start = limit * (page - 1)
+    sources = BookSource.query.slice(start, limit + start).all()
+    if len(sources) < limit:
+        has_next = False
+    else:
+        has_next = True
+    return render_template('admin/book_source.html', **locals())
+
+
+@app.route('/ash/m_source/modal/<int:sid>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=404)
+def m_source_modal(sid):
+    source = BookSource.get(sid)
+    if request.method == 'POST':
+        bid = request.form.get('bid')
+        ssite = request.form.get('ssite')
+        surl = request.form.get('surl')
+        source.update(bid, ssite, surl)
+        return redirect(request.referrer)
+    return render_template('admin/source_modal.html', **locals())
+
+
+@app.route('/ash/m_source/modal/delete', methods=['POST'])
+@admin_permission.require(http_exception=404)
+def m_source_delete():
+    sid = request.form.get('sid')
+    print 44444
+    print sid,44555
+    BookSource.delete(sid)
     return redirect(request.referrer)
 
 

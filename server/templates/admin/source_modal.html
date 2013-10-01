@@ -1,0 +1,33 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title" id="es-label">更新源编辑</h4>
+    </div>
+    <div class="modal-body">
+      <form role="form" method="post" action="/ash/m_source/modal/{{source.id}}"  id="m-source-form">
+            <div class="form-group">
+              <label for="source-id">更新源 ID</label>
+              <input type="text" class="form-control" id="source-id" name="sid" placeholder="Source id" disabled value="{{source.id}}">
+            </div>
+            <div class="form-group">
+              <label for="book-id">作品 ID</label>
+              <input type="text" class="form-control" id="book-id" name="bid" placeholder="Book id" value="{{source.bid}}">
+            </div>
+            <div class="form-group">
+              <label for="source-site">源网站</label>
+              <input type="text" class="form-control" id="source-site" name="ssite" placeholder="源网站" value="{{source.source_site}}">
+            </div>
+            <div class="form-group">
+              <label for="source-url">源地址</label>
+              <input type="text" class="form-control" id="source-url" name="surl" placeholder="源地址" value="{{source.source_url}}" >
+            </div>
+          </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      <button type="button" class="btn btn-primary" onclick="$('#m-source-form').submit()">保存</button>
+    </div>
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+

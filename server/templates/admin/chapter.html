@@ -16,7 +16,7 @@
         <tbody>
           {% for chapter in chapters %}
           <tr>
-              <td>{{chapter.id}}</td>
+              <td><a target="_blank" href="{{url_for('content',bid=chapter.book_id,cid=chapter.id)}}">{{ chapter.id }}</a></td>
               <td>{{chapter.title}}</td>
               <td>{{chapter.create_time}}</td>
             <td>
