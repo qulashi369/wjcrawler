@@ -7,12 +7,14 @@ from flask import (Flask, render_template, g, url_for, send_from_directory,
                    flash, request, redirect, make_response, jsonify,
                    current_app)
 from flask.ext.login import (LoginManager, login_user, logout_user,
-                             login_required, current_user)
+                             login_required, current_user, user_logged_in,
+                             user_loaded_from_cookie)
 from flask.ext.principal import (Principal, Permission, RoleNeed, UserNeed,
                                  identity_loaded, identity_changed, Identity,
                                  AnonymousIdentity)
 
-from models import Book, Chapter, User, Favourite, UpdateTask, UpdateLog
+from models import (Book, Chapter, User, Favourite, UpdateTask, UpdateLog,
+                    BookSource)
 from consts import FAILED
 from database import db_session
 
@@ -39,6 +41,19 @@ def on_identity_loaded(sender, identity):
             identity.provides.add(RoleNeed('admin'))
 
 
+@user_loaded_from_cookie.connect_via(app)
+def on_user_loaded_from_cookie(sender, user):
+    if hasattr(user, 'id'):
+        identity_changed.send(current_app._get_current_object(),
+                              identity=Identity(user.id))
+
+
+@user_logged_in.connect_via(app)
+def on_user_logged_in(sender, user):
+    identity_changed.send(current_app._get_current_object(),
+                          identity=Identity(user.id))
+
+
 @app.before_request
 def before_request():
     if app.debug:
@@ -61,7 +76,7 @@ def recent_reading(request):
     recent_reading = request.cookies.get('recent_reading')
     recent_book_chapters = []
     if recent_reading:
-        for bid_cid in recent_reading.split(','):
+        for bid_cid in recent_reading.split('|'):
             bid, cid = [int(id) for id in bid_cid.split(':', 1)]
             book = Book.get(bid)
             chapter = Chapter.get(cid, bid)
@@ -115,7 +130,7 @@ def content(bid, cid):
     recent_reading = request.cookies.get('recent_reading')
     rec_book_chapters = []
     if recent_reading:
-        for bid_cid in recent_reading.split(','):
+        for bid_cid in recent_reading.split('|'):
             _bid, _cid = [int(id) for id in bid_cid.split(':', 1)]
             if not _bid == bid:
                 rec_book_chapters.append(
@@ -125,7 +140,7 @@ def content(bid, cid):
     rec_book_chapters = rec_book_chapters[:10]
 
     resp = make_response(render_template('content.html', **locals()))
-    recent_reading_str = ','.join(['%s:%s' % (book.id, chapter.id)
+    recent_reading_str = '|'.join(['%s:%s' % (book.id, chapter.id)
                          for book, chapter in rec_book_chapters])
     resp.set_cookie('recent_reading', recent_reading_str)
     return resp
@@ -151,8 +166,6 @@ def login():
                 login_error = True
             else:
                 login_user(user, remember=True)
-                identity_changed.send(current_app._get_current_object(),
-                                      identity=Identity(user.id))
                 if target:
                     return redirect(target)
                 return redirect(url_for('user', uid=user.id))
@@ -177,8 +190,6 @@ def register():
         else:
             user = User.register(username, password)
             login_user(user, remember=True)
-            identity_changed.send(current_app._get_current_object(),
-                                  identity=Identity(user.id))
             return redirect(url_for('user', uid=current_user.id))
     return render_template('register.html', **locals())
 
@@ -304,7 +315,7 @@ def ash():
 @app.route('/ash/m_book/page/<int:page>', methods=['GET'])
 @admin_permission.require(http_exception=404)
 def m_book(page):
-    limit = 30
+    limit = 50
     start = limit * (page - 1)
     books = Book.query.slice(start, limit + start).all()
     if len(books) < limit:
@@ -333,6 +344,79 @@ def m_book_modal(bid):
 def m_book_delete():
     bid = request.form.get('bid')
     Book.delete(bid)
+    return redirect(request.referrer)
+
+
+@app.route('/ash/m_chapter/<int:bid>', methods=['GET'], defaults={'page': 1})
+@app.route('/ash/m_chapter/<int:bid>/page/<int:page>', methods=['GET'])
+@admin_permission.require(http_exception=404)
+def m_chapter(bid, page):
+    limit = 50
+    start = limit * (page - 1)
+    chapters = Chapter.query.filter_by(
+        book_id=bid).slice(start, limit + start).all()
+    if len(chapters) < limit:
+        has_next = False
+    else:
+        has_next = True
+    return render_template('admin/chapter.html', **locals())
+
+
+@app.route('/ash/m_chapter/modal/<int:bid>/<int:cid>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=404)
+def m_chapter_modal(bid, cid):
+    chapter = Chapter.get(cid, bid)
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        chapter.update(title, content)
+        return redirect(request.referrer)
+    return render_template('admin/chapter_modal.html', **locals())
+
+
+@app.route('/ash/m_chapter/modal/delete', methods=['POST'])
+@admin_permission.require(http_exception=404)
+def m_chapter_delete():
+    bid = request.form.get('bid')
+    cid = request.form.get('cid')
+    Chapter.delete(bid, cid)
+    return redirect(request.referrer)
+
+
+@app.route('/ash/m_source', methods=['GET'], defaults={'page': 1})
+@app.route('/ash/m_source/page/<int:page>', methods=['GET'])
+@admin_permission.require(http_exception=404)
+def m_source(page):
+    limit = 50
+    start = limit * (page - 1)
+    sources = BookSource.query.slice(start, limit + start).all()
+    if len(sources) < limit:
+        has_next = False
+    else:
+        has_next = True
+    return render_template('admin/book_source.html', **locals())
+
+
+@app.route('/ash/m_source/modal/<int:sid>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=404)
+def m_source_modal(sid):
+    source = BookSource.get(sid)
+    if request.method == 'POST':
+        bid = request.form.get('bid')
+        ssite = request.form.get('ssite')
+        surl = request.form.get('surl')
+        source.update(bid, ssite, surl)
+        return redirect(request.referrer)
+    return render_template('admin/source_modal.html', **locals())
+
+
+@app.route('/ash/m_source/modal/delete', methods=['POST'])
+@admin_permission.require(http_exception=404)
+def m_source_delete():
+    sid = request.form.get('sid')
+    print 44444
+    print sid,44555
+    BookSource.delete(sid)
     return redirect(request.referrer)
 
 
