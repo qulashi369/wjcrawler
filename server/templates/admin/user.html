@@ -24,7 +24,11 @@
               <td>{{user.id}}</td>
               <td>{{user.username}}</td>
               <td>{{user.email}}</td>
-              <td>{{user.type}}</td>
+              <td>
+                  {%if user.type == 1%}普通用户{%endif%}
+                  {%if user.type == 2%}管理员{%endif%}
+                  {%if user.type == 3%}被禁用户{%endif%}
+              </td>
               <td>{{user.create_time}}</td>
             <td>
                 <a data-toggle="modal" data-target="#edit-user" href="/ash/m_user/modal/{{user.id}}">编辑</a>

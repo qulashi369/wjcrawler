@@ -214,8 +214,6 @@ class User(Base):
         self.username = username
         self.email = email
         self.type = type
-        print username, email, type
-        print 111
         db_session.commit()
 
 
@@ -236,11 +234,9 @@ class User(Base):
 
     @classmethod
     def get_by_uid(cls, uid):
-        print uid
         try:
             user = cls.query.filter_by(id=uid).scalar()
-            print user, type(uid)
-        except Exception as e:
+        except:
             return None
         return user
 
