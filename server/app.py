@@ -150,7 +150,7 @@ def content(bid, cid):
 def login():
     target = request.values.get('target', '')
     if not current_user.is_anonymous():
-        return redirect(url_for('uid', uid=current_user.id))
+        return redirect(url_for('user', uid=current_user.id))
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -414,10 +414,44 @@ def m_source_modal(sid):
 @admin_permission.require(http_exception=404)
 def m_source_delete():
     sid = request.form.get('sid')
-    print 44444
-    print sid,44555
     BookSource.delete(sid)
     return redirect(request.referrer)
+
+
+@app.route('/ash/m_user', methods=['GET'], defaults={'page': 1})
+@app.route('/ash/m_user/page/<int:page>', methods=['GET'])
+@admin_permission.require(http_exception=404)
+def m_user(page):
+    limit = 50
+    start = limit * (page - 1)
+    users= User.query.slice(start, limit + start).all()
+    if len(users) < limit:
+        has_next = False
+    else:
+        has_next = True
+    return render_template('admin/user.html', **locals())
+
+
+@app.route('/ash/m_user/modal/<int:uid>', methods=['GET', 'POST'])
+@admin_permission.require(http_exception=404)
+def m_user_modal(uid):
+    user = User.get_by_uid(uid)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        type = request.form.get('type')
+        user.update(username, email, type)
+        return redirect(request.referrer)
+    return render_template('admin/user_modal.html', **locals())
+
+
+@app.route('/ash/m_user/modal/delete', methods=['POST'])
+@admin_permission.require(http_exception=404)
+def m_user_delete():
+    uid = request.form.get('uid')
+    User.delete(uid)
+    return redirect(request.referrer)
+
 
 
 if __name__ == "__main__":
