@@ -210,6 +210,15 @@ class User(Base):
             return False
         return True
 
+    def update(self, username, email, type):
+        self.username = username
+        self.email = email
+        self.type = type
+        print username, email, type
+        print 111
+        db_session.commit()
+
+
     @classmethod
     def add(cls, username, password, **kwargs):
         # NOTE 此处password为加密后的密码hash
@@ -227,11 +236,19 @@ class User(Base):
 
     @classmethod
     def get_by_uid(cls, uid):
+        print uid
         try:
             user = cls.query.filter_by(id=uid).scalar()
-        except:
+            print user, type(uid)
+        except Exception as e:
             return None
         return user
+
+    @classmethod
+    def delete(cls, id):
+        user = cls.get_by_uid(id)
+        db_session.delete(user)
+        db_session.commit()
 
     @classmethod
     def login(cls, username, password):
@@ -389,8 +406,6 @@ class BookSource(Base):
     @classmethod
     def delete(cls, id):
         source = cls.get(id)
-        print source
-        print 111
         db_session.delete(source)
         db_session.commit()
 

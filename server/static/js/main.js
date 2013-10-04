@@ -129,11 +129,24 @@ jQuery(document).ready(function($) {
        $("#source-id").val(sid);
   });
 
+  $(document).on("click", ".delete-user-btn", function () {
+       var uid = $(this).data('uid');
+       $("#user-id").val(uid);
+  });
+
   $('#edit-book').on('hidden.bs.modal', function () {
       $(this).removeData('bs.modal');
   });
 
+  $('#edit-user').on('hidden.bs.modal', function () {
+      $(this).removeData('bs.modal');
+  });
+
   $('#edit-source').on('hidden.bs.modal', function () {
+      $(this).removeData('bs.modal');
+  });
+
+  $('#edit-chapter').on('hidden.bs.modal', function () {
       $(this).removeData('bs.modal');
   });
 
@@ -142,9 +155,7 @@ jQuery(document).ready(function($) {
       window.location = '/ash/m_chapter/'+bid;
   });
 
-  $('#edit-chapter').on('hidden.bs.modal', function () {
-      $(this).removeData('bs.modal');
-  });
+  
 
 });
 
