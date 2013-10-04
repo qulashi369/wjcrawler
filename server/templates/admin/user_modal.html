@@ -1,0 +1,37 @@
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="zjgl">用户资料编辑</h4>
+            </div>
+            <div class="modal-body">
+              <form role="form" id="m-user-form" action="/ash/m_user/modal/{{user.id}}" method='post'>
+                    <div class="form-group">
+                      <label for="userid">User ID</label>
+                      <input type="text" class="form-control" id="userid" placeholder="User id" value="{{user.id}}" disabled >
+                    </div>
+                    <div class="form-group">
+                      <label for="username">用户名</label>
+                      <input type="text" class="form-control" id="username" name="username" placeholder="用户名" value="{{user.username}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="email">邮箱</label>
+                      <input type="text" class="form-control" id="email" name="email" placeholder="邮箱地址" value="{{user.email}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="status">类型</label>
+                      <select id="status" class="form-control" name="type">
+                          <option{% if user.type==1%} selected {%endif%} value="1">普通用户</option>
+                          <option{% if user.type==2%} selected {%endif%} value="2">管理员</option>
+                          <option{% if user.type==3%} selected {%endif%} value="3">被禁</option>
+                      </select> 
+                    </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button type="button"  onclick="$('#m-user-form').submit()" class="btn btn-primary">保存</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+
