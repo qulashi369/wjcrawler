@@ -30,6 +30,13 @@ class Book(Base):
         self.category_id = category_id
         self.create_time = datetime.now()
 
+    def update(self, title, author, description, status):
+        self.title = title
+        self.author = author
+        self.description = description
+        self.status = status
+        db_session.commit()
+
     @property
     def category(self):
         category = Category.query.filter_by(id=self.category_id).one()
@@ -60,13 +67,6 @@ class Book(Base):
         Chapter.gets(bid).delete()
         db_session.commit()
 
-    def update(self, title, author, description, status):
-        self.title = title
-        self.author = author
-        self.description = description
-        self.status = status
-        db_session.commit()
-
     @classmethod
     def gets(cls, book_ids=[]):
         if not book_ids:
@@ -77,6 +77,12 @@ class Book(Base):
             if book:
                 result.append(book)
         return result
+
+    @classmethod
+    def search(cls, keyword):
+        books_by_title = cls.query.filter(cls.title.like("%{0}%".format(keyword))).all()
+        books_by_author = cls.query.filter(cls.author.like("%{0}%".format(keyword))).all()
+        return (books_by_title, books_by_author)
 
     def __repr__(self):
         return '<Book(%s, %s)>' % (self.title.encode('utf8'),
