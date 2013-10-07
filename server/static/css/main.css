@@ -19,7 +19,9 @@ a:hover{color: #bd6a3e;}
 /*base*/
 .pr {position:relative}
 .fr {float:right}
+.mb5 {margin-bottom:5px;}
 .mb10 {margin-bottom:10px;}
+.mb25 {margin-bottom:25px;}
 .mb30 {margin-bottom:30px;}
 .mb50 {margin-bottom:50px;}
 .mb3 {margin-bottom:3px;}
@@ -113,7 +115,7 @@ a:hover{color: #bd6a3e;}
 .main .lr_form {width:474px;margin:0 auto;padding-top:40px;}
 .main .lr_form .hint{text-align: center; margin-bottom: 10px; font-size: 14px; color: red;}
 .main .lr_form h2{text-align: center;font-size: 24px;margin-bottom:40px;}
-.main .lr_form form p {height: 40px;margin-bottom: 25px;width:600px;}
+.main .lr_form form p {height: 40px;width:600px;}
 .main .lr_form form p label {float: left; width: 70px; text-align:right;padding-right:26px;font-size:14px;line-height:40px;}
 .main .lr_form form p input {height: 36px;width: 260px;font-size: 25px;padding-left: 10px;}
 .main .lr_form form p .error {color:red; line-height:40px;display:inline-block;zoom:1;*display:inline;vertical-align: top;}
