@@ -133,9 +133,10 @@ def content(bid, cid):
         for bid_cid in recent_reading.split('|'):
             _bid, _cid = [int(id) for id in bid_cid.split(':', 1)]
             if not _bid == bid:
-                rec_book_chapters.append(
-                    (Book.get(_bid), Chapter.get(_cid, _bid))
-                )
+                if Book.get(_bid) and Chapter.get(_cid, _bid):
+                    rec_book_chapters.append(
+                        (Book.get(_bid), Chapter.get(_cid, _bid))
+                    )
     rec_book_chapters.insert(0, (book, chapter))
     rec_book_chapters = rec_book_chapters[:10]
 
@@ -424,7 +425,7 @@ def m_source_delete():
 def m_user(page):
     limit = 50
     start = limit * (page - 1)
-    users= User.query.slice(start, limit + start).all()
+    users = User.query.slice(start, limit + start).all()
     if len(users) < limit:
         has_next = False
     else:
@@ -451,7 +452,6 @@ def m_user_delete():
     uid = request.form.get('uid')
     User.delete(uid)
     return redirect(request.referrer)
-
 
 
 if __name__ == "__main__":
