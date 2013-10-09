@@ -10,8 +10,8 @@ import time
 from datetime import datetime
 
 
-book_log_path = "/home/yj/b_%s"
-chapter_log_path = "/home/yj/c_%s"
+book_log_path = "/home/yujie/b_%s"
+chapter_log_path = "/home/yujie/c_%s"
 logformat = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 book_handler = FileHandler(book_log_path % time.strftime("%Y%m%d", time.localtime()), "a+")
 chapter_handler = FileHandler(chapter_log_path % time.strftime("%Y%m%d", time.localtime()), "a+")
@@ -30,8 +30,8 @@ chapter_logger.addHandler(chapter_handler)
 
 def init():
     conn = MySQLdb.connect(
-        host='localhost', user='crawler', passwd='crawlerpwd',
-        db='xiaoshuo', port=3306, charset='utf8')
+        host='yiwanshu.com', user='crawler', passwd='crawlerpwd',
+        db='xiaoshuo', port=4280, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
     return conn, cur, client.xiaoshuo_fftxt
@@ -77,15 +77,15 @@ def book(conn, cur, mdb):
             book_logger.info("新书: %s --- 作者: %s" % (b['name'], b['author']))
             chapter_logger.info(
                 "新书: %s --- 作者: %s" % (b['name'], b['author']))
+            print "正在导入", b['name']
+            chapter(conn, cur, mdb, curbid, b)
         else:
             curbid = cur.fetchone()[0]  # 插入后的bookid
 
-        print curbid
         # 更改图片名字
         # if len(b['image_path']):
         #    syncpics(b['image_path'][0], str(curbid)+'.jpg')
         # syncpics("full/" + b['bid'], str(curbid) + '.jpg')
-        chapter(conn, cur, mdb, curbid, b)
 
 
 def chapter(conn, cur, mdb, curbid, b):
