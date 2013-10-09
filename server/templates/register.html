@@ -6,7 +6,7 @@
 <div class="lr_form"> 
   <h2>注册一碗书，天天一碗书。</h2>
   <form id="reg_form" action="{{url_for('register')}}" method="post">
-    <p>
+    <p class="mb25">
       <label for="username">用户名</label>
       <input id="username" type="text" name="username">
       <span class="error">
@@ -21,7 +21,7 @@
           {%endif%}
       </span>
     </p>
-    <p>
+    <p class="mb25">
       <label for="password">密码</label>
       <input id="password" type="password" name="password">
       <span class="error">
@@ -30,14 +30,18 @@
           {%endif%}
       </span>
     </p>
-    <p>
+    <p class="mb25">
       <label for="re_password">确认密码</label>
       <input id="re_password" type="password">
       <span class="error"></span>
     </p>
-    <p>
+    <p class="mb5">
         <label>&nbsp;</label>
         <a class="btn btn274" id="reg_submit" href="javascript:void();">注册</a>	
+    </p>
+    <p>
+        <label>&nbsp;</label>
+        <a href="{{url_for('login')}}">已注册? 点击登录</a>
     </p>
   </form>
 </div>
