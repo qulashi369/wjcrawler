@@ -8,6 +8,7 @@ wyzq
 
 
 
+
 ### Server 
 * 使用virtualenv + pip 管理项目依赖
 * 初次开发时先运行server 目录下的 `./dev_init.sh`

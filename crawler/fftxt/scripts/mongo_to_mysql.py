@@ -31,7 +31,7 @@ chapter_logger.addHandler(chapter_handler)
 def init():
     conn = MySQLdb.connect(
         host='yiwanshu.com', user='crawler', passwd='crawlerpwd',
-        db='test_remote', port=3306, charset='utf8')
+        db='xiaoshuo', port=4280, charset='utf8')
     cur = conn.cursor()
     client = pymongo.MongoClient("localhost", 27017)
     return conn, cur, client.xiaoshuo_fftxt

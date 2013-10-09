@@ -3,7 +3,7 @@ from scrapy.contrib.spiders import CrawlSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from fftxt.items import Book, Chapter
-from utils import filter_tags
+#from utils import filter_tags
 from fftxt.db import get_conn
 from datetime import datetime
 from htmlparser import strip_special_tags
@@ -13,7 +13,7 @@ class BookSpider(CrawlSpider):
     name = 'fftxt'
     allowed_domains = ['fftxt.net']
 
-    def __init__(self, category="books.txt", *args, **kwargs):
+    def __init__(self, category="bs.txt", *args, **kwargs):
         self.category = open(category)
 
     def start_requests(self):
