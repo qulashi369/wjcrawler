@@ -45,7 +45,7 @@
         </div>
         
         <span class="latest">最新章节：
-        {% if book.first_capter %}
+        {% if book.latest_chapter %}
             <a href="{{url_for('content', bid=book.id, cid=book.latest_chapter.id)}}">{{book.latest_chapter.title|truncate(35, True) }}</a>
         {% else %}
             <a href="#">木有章节</a>

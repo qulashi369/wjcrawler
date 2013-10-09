@@ -11,7 +11,7 @@
       {% endif %}
     {% endwith %}
   <form id="login_form" action="{{url_for("login")}}" method="post">
-    <p>
+    <p class="mb25">
       <label for="username">用户名</label>
       <input id="username" type="text" name="username">
       <span class="error">
@@ -23,7 +23,7 @@
       {%endif%}
       </span>
     </p>
-    <p>
+    <p class="mb25">
       <label for="password">密码</label>
       <input id="password" type="password" name="password">
       <span class="error">
@@ -32,10 +32,15 @@
       {%endif%}
       </span>
     </p>
-    <p>
+    <p class="mb5">
         <label>&nbsp;</label>
         <a class="btn btn274" id="login_submit" href="javascript:void();">登录</a>	
     </p>
+    <p>
+        <label>&nbsp;</label>
+        <a href="{{url_for('register')}}">还没有注册?</a>
+    </p>
+    
     <input type="hidden" name="target" value="{{target}}">
   </form>
 </div>

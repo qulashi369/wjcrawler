@@ -19,7 +19,9 @@ a:hover{color: #bd6a3e;}
 /*base*/
 .pr {position:relative}
 .fr {float:right}
+.mb5 {margin-bottom:5px;}
 .mb10 {margin-bottom:10px;}
+.mb25 {margin-bottom:25px;}
 .mb30 {margin-bottom:30px;}
 .mb50 {margin-bottom:50px;}
 .mb3 {margin-bottom:3px;}
@@ -36,7 +38,7 @@ a:hover{color: #bd6a3e;}
 
 /*pages*/
 .reading {background-color:#dce5db;overflow:auto;min-height:100%;}
-.reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:600px;height:100%}
+.reading .wrapper {background-color:#f6fbf5;padding:0px 60px;width:800;height:100%}
 .header {border-bottom:solid #C16333 2px;}
 .header .title_lr{height:43px;padding-top:45px;}
 .header .title {font-size:32px;color:#C16333;display:inline-block;zoom:1;*display:inline;margin-top:5px;}
@@ -96,9 +98,8 @@ a:hover{color: #bd6a3e;}
 .reading .chapters .info .title{text-align:center;font-size:24px;color:#262626;}
 .reading .chapters .info .author{text-align:center;font-size:14px;color:#404040;}
 .reading .chapters .list .bar {text-align:center;background-color:#C5E4B7;font-size:18px;color:#009121;height:34px;line-height:34px;}
-.reading .chapters .list ol li{float: left;width: 260px;padding: 0 50px 0 10px;border-bottom:solid #C5E4B7 1px;height:36px;line-height:36px;font-size:14px;color:#aaaaaa; zoom:1;}
-.reading .chapters .list ol .rt {padding:0 10px}
-.reading .rb_btn {position: fixed;margin-left: 670px;background-color: #A3BB99;color:#fff;font-size: 15px;}
+.reading .chapters .list ol li{float: left;width: 300px;padding: 0 10px 0 10px;border-bottom:solid #C5E4B7 1px;height:36px;line-height:36px;font-size:14px;color:#aaaaaa; zoom:1;}
+.reading .rb_btn {position: fixed;margin-left: 1070px;background-color: #A3BB99;color:#fff;font-size: 15px;}
 
 .reading .last_chapter a {bottom: 154px;line-height:40px;font-size:13px;}
 .reading .next_chapter a {bottom: 102px;line-height:40px;font-size:13px;}
@@ -114,7 +115,7 @@ a:hover{color: #bd6a3e;}
 .main .lr_form {width:474px;margin:0 auto;padding-top:40px;}
 .main .lr_form .hint{text-align: center; margin-bottom: 10px; font-size: 14px; color: red;}
 .main .lr_form h2{text-align: center;font-size: 24px;margin-bottom:40px;}
-.main .lr_form form p {height: 40px;margin-bottom: 25px;width:600px;}
+.main .lr_form form p {height: 40px;width:600px;}
 .main .lr_form form p label {float: left; width: 70px; text-align:right;padding-right:26px;font-size:14px;line-height:40px;}
 .main .lr_form form p input {height: 36px;width: 260px;font-size: 25px;padding-left: 10px;}
 .main .lr_form form p .error {color:red; line-height:40px;display:inline-block;zoom:1;*display:inline;vertical-align: top;}
