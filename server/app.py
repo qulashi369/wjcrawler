@@ -5,7 +5,7 @@ import json
 
 from flask import (Flask, render_template, g, url_for, send_from_directory,
                    flash, request, redirect, make_response, jsonify,
-                   current_app)
+                   current_app, abort)
 from flask.ext.login import (LoginManager, login_user, logout_user,
                              login_required, current_user, user_logged_in,
                              user_loaded_from_cookie)
@@ -105,6 +105,8 @@ def book(bid):
         is_faved = Favourite.is_faved(current_user.id, bid)
 
     book = Book.get(bid)
+    if not book:
+        abort(404)
     chapters = Chapter.query.filter_by(book_id=bid)
     last_twelve_chapters = chapters.order_by(Chapter.id.desc()).limit(12)
     first_six_chapters = chapters.limit(6).all()
@@ -116,6 +118,8 @@ def book(bid):
 @app.route("/book/<int:bid>/chapters")
 def chapters(bid):
     book = Book.get(bid)
+    if not book:
+        abort(404)
     chapters = Chapter.get_id_titles(book.id)
     return render_template('chapters.html', **locals())
 
@@ -125,6 +129,8 @@ def chapters(bid):
 def content(bid, cid):
     book = Book.get(bid)
     chapter = Chapter.get(cid, bid)
+    if not (book and chapter):
+        abort(404)
 
     # NOTE read/set cookies for recent reading
     recent_reading = request.cookies.get('recent_reading')
